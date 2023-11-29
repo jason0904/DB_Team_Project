@@ -1,5 +1,6 @@
-CREATE TABLE `users` (
-  `Uid` integer PRIMARY KEY,
+USE caudbdesign;
+CREATE TABLE `user` (
+  `Uid` integer PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(255),
   `usertype` varchar(255),
   `account_status` varchar(255),
@@ -24,7 +25,7 @@ CREATE TABLE `login` (
 );
 
 CREATE TABLE `login_log` (
-  `log_id` integer PRIMARY KEY,
+  `log_id` integer PRIMARY KEY AUTO_INCREMENT,
   `Uid` integer,
   `attempt_time` timestamp,
   `attempt_status` varchar(255),
@@ -40,7 +41,7 @@ CREATE TABLE `sensitive_info` (
 );
 
 CREATE TABLE `address` (
-  `address_id` integer PRIMARY KEY,
+  `address_id` integer PRIMARY KEY AUTO_INCREMENT,
   `Uid` integer,
   `street_address` varchar(255),
   `city` varchar(255),
@@ -50,7 +51,7 @@ CREATE TABLE `address` (
 );
 
 CREATE TABLE `certificate_auth` (
-  `certificate_id` integer PRIMARY KEY,
+  `certificate_id` integer PRIMARY KEY AUTO_INCREMENT,
   `Uid` integer,
   `certificate_data` varchar(255),
   `issued_at` timestamp,
@@ -58,7 +59,7 @@ CREATE TABLE `certificate_auth` (
 );
 
 CREATE TABLE `otp_auth` (
-  `otp_id` integer PRIMARY KEY,
+  `otp_id` integer PRIMARY KEY AUTO_INCREMENT,
   `Uid` integer,
   `secret_key` varchar(255),
   `devicename` varchar(255),
@@ -66,7 +67,7 @@ CREATE TABLE `otp_auth` (
 );
 
 CREATE TABLE `Account` (
-  `account_id` integer PRIMARY KEY,
+  `account_id` integer PRIMARY KEY AUTO_INCREMENT,
   `Uid` integer,
   `account_number` varchar(255),
   `account_type` varchar(255),
@@ -98,7 +99,7 @@ CREATE TABLE `GoldAccount` (
 );
 
 CREATE TABLE `StockPortfolio` (
-  `portfolio_id` integer PRIMARY KEY,
+  `portfolio_id` integer PRIMARY KEY AUTO_INCREMENT,
   `account_id` integer,
   `stock_symbol` varchar(255),
   `quantity` integer,
@@ -108,7 +109,7 @@ CREATE TABLE `StockPortfolio` (
 );
 
 CREATE TABLE `Order` (
-  `order_id` integer PRIMARY KEY,
+  `order_id` integer PRIMARY KEY AUTO_INCREMENT,
   `account_id` integer,
   `item_id` integer,
   `purchase_type` varchar(255),
@@ -120,7 +121,7 @@ CREATE TABLE `Order` (
 );
 
 CREATE TABLE `StockTradeLog` (
-  `trade_id` integer PRIMARY KEY,
+  `trade_id` integer PRIMARY KEY AUTO_INCREMENT,
   `order_id` integer,
   `executed_quantity` integer,
   `executed_price` decimal,
@@ -143,7 +144,7 @@ CREATE TABLE `AccountLoginLog` (
 );
 
 CREATE TABLE `CurrencyExchange` (
-  `exchange_id` integer PRIMARY KEY,
+  `exchange_id` integer PRIMARY KEY AUTO_INCREMENT,
   `account_id` integer,
   `from_currency` varchar(255),
   `to_currency` varchar(255),
@@ -154,13 +155,13 @@ CREATE TABLE `CurrencyExchange` (
 );
 
 CREATE TABLE `ExchangeRate` (
-  `rate_id` integer PRIMARY KEY,
+  `rate_id` integer PRIMARY KEY AUTO_INCREMENT,
   `rate` decimal,
   `last_updated` timestamp
 );
 
 CREATE TABLE `Item` (
-  `item_id` integer PRIMARY KEY,
+  `item_id` integer PRIMARY KEY AUTO_INCREMENT,
   `symbol` varchar(255),
   `name` varchar(255),
   `item_type` varchar(255),
@@ -169,8 +170,8 @@ CREATE TABLE `Item` (
   `opening_price` decimal,
   `daily_high` decimal,
   `daily_low` decimal,
-  `52week_high` decimal,
-  `52week_low` decimal,
+  `year_high` decimal,
+  `year_low` decimal,
   `volume` bigint,
   `market_cap` bigint,
   `created_at` timestamp,
@@ -185,7 +186,7 @@ CREATE TABLE `CurrentPrice` (
 );
 
 CREATE TABLE `MarketInfo` (
-  `market_id` integer PRIMARY KEY,
+  `market_id` integer PRIMARY KEY AUTO_INCREMENT,
   `market_name` varchar(255),
   `country` varchar(255),
   `time_zone` varchar(255),
@@ -216,23 +217,23 @@ CREATE TABLE `Gold` (
   `weight` varchar(255)
 );
 
-ALTER TABLE `personal` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `personal` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `organization` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `organization` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `login` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `login` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `login_log` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `login_log` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `sensitive_info` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `sensitive_info` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `address` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `address` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `certificate_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `certificate_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `otp_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `otp_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `Account` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `Account` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
 ALTER TABLE `Balance` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
@@ -260,7 +261,7 @@ ALTER TABLE `CurrencyExchange` ADD FOREIGN KEY (`rate_id`) REFERENCES `ExchangeR
 
 ALTER TABLE `CurrentPrice` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
 
-ALTER TABLE `MarketInfo` ADD FOREIGN KEY (`market_id`) REFERENCES `Item` (`market_id`);
+ALTER TABLE `Item` ADD FOREIGN KEY (`market_id`) REFERENCES `MarketInfo` (`market_id`);
 
 ALTER TABLE `Stock` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
 
