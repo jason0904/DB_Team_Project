@@ -1,5 +1,5 @@
 USE caudbdesign;
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `Uid` integer PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(255),
   `usertype` varchar(255),
@@ -170,8 +170,8 @@ CREATE TABLE `Item` (
   `opening_price` decimal,
   `daily_high` decimal,
   `daily_low` decimal,
-  `52week_high` decimal,
-  `52week_low` decimal,
+  `year_high` decimal,
+  `year_low` decimal,
   `volume` bigint,
   `market_cap` bigint,
   `created_at` timestamp,
@@ -217,23 +217,23 @@ CREATE TABLE `Gold` (
   `weight` varchar(255)
 );
 
-ALTER TABLE `personal` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `personal` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `organization` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `organization` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `login` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `login` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `login_log` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `login_log` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `sensitive_info` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `sensitive_info` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `address` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `address` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `certificate_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `certificate_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `otp_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `otp_auth` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
-ALTER TABLE `Account` ADD FOREIGN KEY (`Uid`) REFERENCES `users` (`Uid`);
+ALTER TABLE `Account` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
 
 ALTER TABLE `Balance` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
