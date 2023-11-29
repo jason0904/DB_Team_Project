@@ -149,7 +149,7 @@ CREATE TABLE `CurrencyExchange` (
   `to_currency` varchar(255),
   `from_amount` decimal,
   `to_amount` decimal,
-  `rate_id` decimal,
+  `rate_id` integer,
   `exchange_time` timestamp
 );
 
@@ -164,7 +164,7 @@ CREATE TABLE `Item` (
   `symbol` varchar(255),
   `name` varchar(255),
   `item_type` varchar(255),
-  `market_id` varchar(255),
+  `market_id` integer,
   `closing_price` decimal,
   `opening_price` decimal,
   `daily_high` decimal,
