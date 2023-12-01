@@ -225,8 +225,8 @@ CREATE TABLE CurrentExchangeRate
     base_currency         VARCHAR(255),
     foreign_currency      VARCHAR(255),
     current_exchange_rate DECIMAL(10, 2),
-    updated_at            TIMESTAMP,
-    PRIMARY KEY (base_currency, foreign_currency)
+    PRIMARY KEY (base_currency, foreign_currency),
+    updated_at            TIMESTAMP
 );
 
 CREATE TABLE ExchangeRateHistory
@@ -234,9 +234,10 @@ CREATE TABLE ExchangeRateHistory
     base_currency    VARCHAR(255),
     foreign_currency VARCHAR(255),
     updated_at       TIMESTAMP,
-    exchange_rate    DECIMAL(10, 2),
-    PRIMARY KEY (base_currency, foreign_currency, updated_at)
+    PRIMARY KEY (base_currency, foreign_currency, updated_at),
+    exchange_rate    DECIMAL(10, 2)
 );
+
 
 CREATE TABLE ItemPrice_Info
 (
@@ -287,6 +288,56 @@ CREATE TABLE StockData
 -- Financial Statements-related table
 CREATE TABLE FinancialStatements
 (
-    statement_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    item_id      INTEGER
+    statement_id      INTEGER PRIMARY KEY AUTO_INCREMENT,
+    item_id           INTEGER,
+    report_period     VARCHAR(255),
+    revenue           BIGINT,
+    net_income        BIGINT,
+    total_assets      BIGINT,
+    total_liabilities BIGINT,
+    equity            BIGINT,
+    report_date       TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES Stock (item_id)
+);
+
+-- Analyst-related tables
+CREATE TABLE Analyst
+(
+    analyst_id     INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name           VARCHAR(255),
+    firm           VARCHAR(255),
+    expertise_area VARCHAR(255),
+    contact_info   VARCHAR(255)
+);
+
+CREATE TABLE Analyst_Info
+(
+    stock_info_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
+    item_id        INTEGER,
+    analyst_id     INTEGER,
+    analyst_rating VARCHAR(255),
+    target_price   DECIMAL(10, 2),
+    updated_at     TIMESTAMP,
+    FOREIGN KEY (item_id) REFERENCES Stock (item_id),
+    FOREIGN KEY (analyst_id) REFERENCES Analyst (analyst_id)
+);
+
+-- Bond-related table
+CREATE TABLE Bond
+(
+    item_id             INTEGER PRIMARY KEY,
+    bond_type           VARCHAR(255),
+    coupon_rate         DECIMAL(5, 2),
+    coupon_payment_date TIMESTAMP,
+    maturity_date       TIMESTAMP,
+    credit_rating       VARCHAR(255),
+    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+);
+
+-- Gold-related table
+CREATE TABLE Gold
+(
+    item_id INTEGER PRIMARY KEY,
+    weight  VARCHAR(255),
+    FOREIGN KEY (item_id) REFERENCES Item (item_id)
 );
