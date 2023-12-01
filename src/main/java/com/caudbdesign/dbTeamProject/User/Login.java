@@ -17,6 +17,7 @@ public class Login {
   private Integer uID;
   private String ID;
   private String password_hash;
+  private Integer login_attempt;
 
   public Login(Integer uID, String id, String pw) {
     this.uID = uID;
