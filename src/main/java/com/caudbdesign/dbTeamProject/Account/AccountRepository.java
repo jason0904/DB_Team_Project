@@ -34,4 +34,15 @@ public class AccountRepository {
     return Optional.of(account);
   }
 
+  public String getAccountTypeByAccountId(int account_id) {
+    String sql = "select account_type from Account where account_id = ?";
+    return jdbcTemplate.queryForObject(sql, String.class, account_id);
+  }
+
+  public AccountType getGeneralAccountByAccountIdAndAccountType(int account_id, String account_type) {
+    String sql = "select * from ? where account_id = ?";
+    RowMapper<AccountType> rowMapper = new BeanPropertyRowMapper<>(AccountType.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, account_type, account_id);
+  }
+
 }
