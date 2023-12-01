@@ -1,6 +1,5 @@
 package com.caudbdesign.dbTeamProject.User;
 
-import com.caudbdesign.dbTeamProject.Account.Account;
 import com.caudbdesign.dbTeamProject.Account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class UserController {
       if(user.getAccount_status().equals("inactive")) {
         return ResponseEntity.badRequest().body("Inactive Account");
       }
-      UserAccountForm userAccountForm = new UserAccountForm(user.getUsername(), accountService.getAccountNumbersByUID(uid));
+      UserAccountForm userAccountForm = new UserAccountForm(user.getUID(), user.getUsername(), accountService.getAccountNumbersByUID(uid));
       return ResponseEntity.ok(userAccountForm);
     } else {
       return ResponseEntity.badRequest().body("Invalid Password");

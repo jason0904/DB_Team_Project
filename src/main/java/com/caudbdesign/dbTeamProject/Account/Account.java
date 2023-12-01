@@ -1,13 +1,14 @@
 package com.caudbdesign.dbTeamProject.Account;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Component
 @Getter
 @Setter
+@Component
 @RequiredArgsConstructor
 public class Account {
 
