@@ -40,6 +40,7 @@
           - output
           ```json
                 {
+                  "uID" : 1
                   "username": "admin",
                   "accountNumbers": [
                      "120312312-1231231"
@@ -50,7 +51,7 @@
       - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
       - [ ] 주문 창 - itemid, account_id, 시장가 여부, 지정가, 매수 매도 여부, 수량 / 주문 신청 성공여부 
       - [ ] 주문 창(정정) - itemid, account_id, 정정 가격, 원주문번호/ 정정주문번호, 정정주문 신청 성공여부
-      - [] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
+      - [ ] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
          - input
           ```json
           {
@@ -75,7 +76,7 @@
       - [ ] 기업 정보 - item_id/기업정보
       - [ ] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
       - [ ] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
-   9. Front
+9. Front
       - [ ] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
       - [ ] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
       - [ ] vuex에 account 정보, 현재 선택된 account
