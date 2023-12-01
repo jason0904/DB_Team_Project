@@ -1,23 +1,20 @@
 package com.caudbdesign.dbTeamProject.User;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-
 @Getter
 @Setter
-@Component
-@RequiredArgsConstructor
-public class User {
+@AllArgsConstructor
+public class UserAccountForm {
 
-  private Integer uID;
   private String username;
-  private String usertype;
-  private String account_status;
-  private Timestamp created_at;
+  private ArrayList<String> accountNumbers = new ArrayList<>();
+
 
 
 }
