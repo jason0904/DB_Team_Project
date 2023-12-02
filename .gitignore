@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Nuxt ###
+/front/node_modules/
+/front/package-lock.json
+/front/.nuxt/
+
+### macOS ###
+.DS_Store
+/front/.DS_Store
