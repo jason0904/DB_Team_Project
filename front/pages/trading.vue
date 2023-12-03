@@ -30,6 +30,7 @@
         <div class="trade-type">
           <button :class="{ active: tradeType === 'buy' }" @click="toggleTradeType('buy')">매수</button>
           <button :class="{ active: tradeType === 'sell' }" @click="toggleTradeType('sell')">매도</button>
+          <button :class="{ active: tradeType === 'modify' }" @click="toggleTradeType('modify')">정정</button>
         </div>
 
         <!-- 지정가/시장가 선택 -->
@@ -38,23 +39,57 @@
           <button :class="{ active: priceType === 'market' }" @click="togglePriceType('market')">시장가</button>
         </div>
 
+        <!-- 원 주문 번호 표시 -->
+        <div v-if="tradeType === 'modify'">
+          <div>원 주문 번호: {{ originalOrderNumber }}</div>
+        </div>
+
         <!-- 지정가 입력 -->
         <div v-if="priceType === 'limit'">
           <input type="number" v-model="limitPrice" placeholder="가격을 입력하세요">
         </div>
 
         <!-- 주문 물량 입력 -->
-        <input type="number" v-model="orderQuantity" placeholder="물량을 입력하세요">
+        <div v-if="tradeType !== 'modify'">
+          <input type="number" v-model="orderQuantity" placeholder="물량을 입력하세요">
+        </div>
 
         <!-- 구매 가능 주수 및 총 주문 금액 표시 -->
-        <div>
-          <div>구매 가능 주수: {{ availableShares }}주</div>
-          <div v-if="priceType === 'limit'">총 주문 금액: {{ roundedTotalPrice }}원</div>
-          <div v-else>최대 주문 금액: {{ roundedTotalPrice }}원</div>
+        <div >
+          <div v-if="tradeType !== 'modify'">구매 가능 주수: {{ availableShares }}주</div>
+          <div v-if="priceType === 'limit' && tradeType !== 'modify'">총 주문 금액: {{ roundedTotalPrice }}원</div>
+          <div v-if="priceType === 'market' && tradeType !== 'modify'">최대 주문 금액: {{ roundedTotalPrice }}원</div>
+        </div>
+
+        <!-- 정정 주문 선택 -->
+        <div v-if="tradeType === 'modify'" class="modify-list">
+          <div class="modify-header">
+            <span>종목명</span>
+            <span>매매구분</span>
+            <span>주문단가</span>
+            <span>미채결량</span>
+            <span>현재가</span>
+            <span>원주문번호</span>
+          </div>
+          <div class="modify-items">
+            <div class="modify-item" v-for="stock in modifyData" :key="stock.id" @click="modifyClick(stock)">
+              <span>{{ stock.name }}</span>
+              <span>{{ stock.orderType }}</span>
+              <span>{{ stock.orderPrice }}</span>
+              <span>{{ stock.orderQuantity }}</span>
+              <span>{{ stock.currentPrice }}</span>
+              <span>{{ stock.orderNumber }}</span>
+            </div>
+          </div>
         </div>
 
         <!-- 구매하기 버튼 -->
-        <button @click="placeOrder">구매하기</button>
+        <div>
+          <button v-if="tradeType !== 'modify'" @click="placeOrder">구매하기</button>
+          <button v-if="tradeType === 'modify'" @click="placeModify('modify')">정정하기</button>
+          <button v-if="tradeType === 'modify'" @click="placeModify('cancel')">취소하기</button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -106,6 +141,10 @@ export default {
         // ... 중간 호가들 ...
         { price: 75000, quantity: 400 }  // 하한가
       ],
+      modifyData: [
+        {name: '제이슨전자', orderType: '매수', orderPrice: '14000', orderQuantity: '100', currentPrice: '1000', orderNumber: '123456'},
+        {name: '제이슨전자', orderType: '매도', orderPrice: '14000', orderQuantity: '100', currentPrice: '1000', orderNumber: '123457'},
+      ],
       upperLimit: 125000, // 상한가
       lowerLimit: 75000,  // 하한가
       tradeType: 'buy', // 매수 or 매도
@@ -118,16 +157,23 @@ export default {
       desiredPrice: null, // 희망 가격
       itemName: "null", // 종목명
       itemID: 0, // 종목 ID
+      originalOrderNumber: '', // 원 주문 번호
     };
   },
   created() {
     // URL 쿼리 파라미터에서 itemId 값을 추출하여 itemID에 할당
     this.itemID = this.$route.query.itemId || this.itemID;
+    this.originalOrderNumber = ''
     // API 호출 로직 - 종목명, 현재가
   },
   computed: {
     roundedTotalPrice() {
-      return Math.ceil(this.totalPrice / 100) * 100; // 총 주문 금액을 100원 단위로 올림
+      if (this.priceType === 'limit') {
+        return this.totalPrice;
+      }
+      else if(this.priceType === 'market') {
+        return this.orderQuantity * this.upperLimit;
+      }
     }
   },
   methods: {
@@ -147,6 +193,9 @@ export default {
     placeOrder() {
       // 주문 로직 (여기에 백엔드 통신 코드 작성)
     },
+    placeModify(type) {
+      // 정정/취소 주문 로직 (여기에 백엔드 통신 코드 작성)
+    },
     toggleTradeType(type) {
       this.tradeType = type;
     },
@@ -164,6 +213,11 @@ export default {
       this.$router.push({ name: 'stock_detail',  query: { itemId: this.itemID }});
       console.log('Redirecting to stock_detail page');
     },
+    modifyClick(stock) {
+      this.limitPrice = stock.orderPrice;
+      this.orderQuantity = stock.orderQuantity;
+      this.originalOrderNumber = stock.orderNumber;
+    }
   },
   watch: {
     limitPrice() {
@@ -320,6 +374,16 @@ input[type='number'] {
   .order-book, .trade-execution {
     margin: 0 auto;
   }
+}
+
+.modify-header, .modify-item {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6개의 컬럼으로 나눕니다 */
+  gap: 10px;
+}
+
+.modify-header > div, .modify-item > div {
+  text-align: center; /* 내용을 가운데 정렬 */
 }
 
 .opacity_itemname:hover {
