@@ -23,8 +23,12 @@ export default {
   data() {
     return {
       searchQuery: '',
-      items: []
+      items: [],
+      accountType: '',
     };
+  },
+  created() {
+    this.accountType = this.$store.state.typeAccount;
   },
   methods: {
     fetchItems() {

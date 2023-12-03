@@ -55,10 +55,12 @@ export default {
       userAccountID: '',
       userAccountPassword: '',
       loginError: false, // 로그인 오류 메시지 상태
-      accountNumbers: ['1234567890', '0987654321', '1357924680'], // 계좌 번호 목록
+      accountNumbers: ['1234567890(일반)', '0987654321(금)', '1357924680(일반)'], // 계좌 번호 목록
       selectedAccount: '', // 선택된 계좌 번호
       accountPassword: '', // 계좌 비밀번호
-      accountLoggined: false
+      accountLoggined: false,
+      accountType: '',
+      typeAccount: ''
     };
   },
   computed: {
@@ -146,8 +148,12 @@ export default {
       console.log('Checking exchange rate');
     },
     accountSelected(accountNumber) {
+      //accountNumber 는 accountAccount(typeAccount) 형식이므로 (와 )를 기준으로 나누어 selectedAccount와 typeAccount에 저장한다.
       this.accountLoggined = false;
-      this.selectedAccount = accountNumber;
+
+      let accountNumberSplit = accountNumber.split('(');
+      this.selectedAccount = accountNumberSplit[0];
+      this.typeAccount = accountNumberSplit[1].split(')')[0];
     },
     async checkAccount() {
       console.log(this.accountPassword);
@@ -169,7 +175,10 @@ export default {
         const accountData = response.data;
         // API 응답 예시
 
-        this.$store.commit('setStoredAccount', this.selectedAccount);
+        this.$store.commit('setStoredAccount', {
+          storedAccount: this.selectedAccount,
+          typeAccount: this.typeAccount
+        });
         this.accountPassword = '';
       } catch (error) {
         // 에러 처리

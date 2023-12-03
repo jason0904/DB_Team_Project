@@ -2,7 +2,8 @@ export const state = () => ({
   isLoggedIn: false,
   userData: null,
   userName: null,
-  storedAccount: null
+  storedAccount: null,
+  typeAccount: null
 });
 
 export const mutations = {
@@ -13,8 +14,9 @@ export const mutations = {
     state.userData = userData;
     state.userName = userName;
   },
-  setStoredAccount(state, storedAccount) {
+  setStoredAccount(state, { storedAccount, typeAccount }) {
     state.storedAccount = storedAccount;
+    state.typeAccount = typeAccount;
   }
 };
 
