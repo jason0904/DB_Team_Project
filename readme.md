@@ -45,6 +45,7 @@
                   "accountNumbers": [
                      "120312312-1231231"
                   ]
+                  "account_type": "GeneralAccount"
                 }
           ```
       - [ ] 계좌 로그인 - accountNumber(account), password_hash(accountPassword) / ok, bad request
