@@ -3,7 +3,9 @@
     <div class="content-wrapper">
       <!-- 종목명, 현재가 -->
       <div class="stock-info">
-        <h2>{{itemName}}({{ itemID }})</h2>
+        <h2 class="opacity-itemname" @click="goToStockDetail">
+          {{itemName}}({{ itemID }})
+        </h2>
         <p>현재가격: {{ currentPrice }}원</p>
       </div>
       <!-- 호가창 -->
@@ -157,7 +159,11 @@ export default {
         this.limitPrice = price;
       }
       this.desiredPrice = price;
-    }
+    },
+    goToStockDetail() {
+      this.$router.push({ name: 'stock_detail' });
+      console.log('Redirecting to stock_detail page');
+    },
   },
   watch: {
     limitPrice() {
@@ -315,5 +321,8 @@ input[type='number'] {
     margin: 0 auto;
   }
 }
-</style>
 
+.opacity_itemname:hover {
+  opacity: 0.8;
+}
+</style>
