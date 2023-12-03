@@ -85,8 +85,8 @@
       - [ ] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
 9. Front
       - [x] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
-      - [ ] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
-      - [ ] vuex에 account 정보, 현재 선택된 account
+      - [x] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
+      - [x] vuex에 account 정보, 현재 선택된 account
       - [ ] 종목 검색페이지 갈때 request parameter로 계좌 타입도
       - [ ] 주문 신청 성공 여부 창
       - [ ] 정정신청 시 기존 주문 지우고 새주문 띄우기
