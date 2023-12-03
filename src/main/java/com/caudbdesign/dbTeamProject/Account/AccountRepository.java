@@ -34,15 +34,28 @@ public class AccountRepository {
     return Optional.of(account);
   }
 
+  public boolean isAccountExist(int account_id) {
+    String sql = "select count(*) from Account where account_id = ?";
+    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, account_id);
+    if(count == null) {
+      return false;
+    }
+    return count != 0;
+  }
+
   public String getAccountTypeByAccountId(int account_id) {
     String sql = "select account_type from Account where account_id = ?";
     return jdbcTemplate.queryForObject(sql, String.class, account_id);
   }
 
   public AccountType getGeneralAccountByAccountIdAndAccountType(int account_id, String account_type) {
-    String sql = "select * from ? where account_id = ?";
+    String sql;
+    if(account_type.equals("GeneralAccount")) {
+      sql = "select * from GeneralAccount where account_id = ?";
+    }
+    else sql = "select * from GoldAccount where account_id = ?";
     RowMapper<AccountType> rowMapper = new BeanPropertyRowMapper<>(AccountType.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, account_type, account_id);
+    return jdbcTemplate.queryForObject(sql, rowMapper, account_id);
   }
 
 }

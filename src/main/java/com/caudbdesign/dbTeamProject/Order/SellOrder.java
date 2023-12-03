@@ -9,13 +9,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SellOrder {
-
-  private int order_id;
-  private int quantity;
-  private int left_quantity;
-  private String order_type;
-  private float limit_price;
-
+public class SellOrder extends OrderType {
 
 }
