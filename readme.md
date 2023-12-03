@@ -83,7 +83,7 @@
       - [ ] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
       - [ ] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
 9. Front
-      - [ ] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
+      - [x] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
       - [ ] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
       - [ ] vuex에 account 정보, 현재 선택된 account
       - [ ] 종목 검색페이지 갈때 request parameter로 계좌 타입도
