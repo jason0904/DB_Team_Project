@@ -56,19 +56,23 @@
           ```json
           {
             "account_number" : "120312312-1231231"
+            "password": "1234"
           }
           ```
          - output(아직 미완성)
           ```json
-          {
-            "account_id": 1,
-            "account_number": "120312312-1231231",
-            "account_type": "gerneal",
-            "stock_value": 2012030.0,
-            "status": "123123",
-            "created_at": "2023-12-01 04:29:09",
-            "uid": 1
-          }
+            {
+                "stock_value": 2012030.0, // Account 평가금액
+                "KRW_balance": 100001, // balance //예수금
+                "name": 삼성전자 // item
+                "평가손익": 40000  // (current_price - average_purchase_price) * quantity
+                "수익률": 3 // (current_price - average_purchase_price) / average_purchase_price * 100
+                "quantity": 3 // stockportfolio 보유수량
+                "평가금액": 120000 // current_price * quantity
+                "average_purchase_price": 90000 // 매입단가 stockportfolio
+                "매수금액": 270000 // average_purchase_price * quantity
+                "current_price": 40000 // 현재가 CurrentPrice
+            }
           ``` 
       - [ ] 환율 기록조회 - 시작 날짜, 종료날짜, from통화, to 통화 / 날짜, 환율
       - [ ] 환전 - account_id / 원화, 달러 잔고, 현재 환율
