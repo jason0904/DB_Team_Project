@@ -324,4 +324,4 @@ ALTER TABLE `Gold` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
 
 ALTER TABLE `ExchangeRateHistory` ADD FOREIGN KEY (`base_currency`, `foreign_currency`) REFERENCES `CurrentExchangeRate` (`base_currency`, `foreign_currency`);
 
-ALTER TABLE `CurrentExchangeRate` ADD FOREIGN KEY (`base_currency`, `foreign_currency`) REFERENCES `CurrencyExchange` (`base_currency`, `foreign_currency`);
+ALTER TABLE `CurrencyExchange` ADD FOREIGN KEY (`base_currency`, `foreign_currency`) REFERENCES `CurrentExchangeRate` (`base_currency`, `foreign_currency`);
