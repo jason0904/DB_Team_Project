@@ -45,7 +45,7 @@
         </div>
 
         <!-- 지정가 입력 -->
-        <div v-if="priceType === 'limit' || tradeType === 'modify'">
+        <div v-if="priceType === 'limit'">
           <input type="number" v-model="limitPrice" placeholder="가격을 입력하세요">
         </div>
 

@@ -24,8 +24,23 @@
       <button @click="logout" class="bg-red-500 text-white p-2">로그아웃</button>
     </div>
 
+    <!-- 로그인 후 계좌 선택표시 -->
+    <!-- 드롭다운으로 계좌 선택, 별도 버튼 없이 선택만으로 적용 -->
+    <div v-if="isLoggedIn" class="text-center text-white mt- 10">
+      <p>계좌를 선택하세요</p>
+      <select v-model="selectedAccount" @change="accountSelected($event.target.value)">
+        <option disabled value="">계좌를 선택하세요</option>
+        <option v-for="account in accountNumbers" :key="account" :value="account">{{ account }}</option>
+      </select>
+      <!-- 계좌 비밀번호(this.accountPassword에 저장) -->
+      <div v-if="!accountLoggined">
+        <input type="password" placeholder="계좌 비밀번호" class="text-black p-2" v-model="accountPassword" />
+        <button @click="checkAccount" class="bg-blue-500 text-white p-2">조회</button>
+      </div>
+    </div>
+
     <!-- 조건부 네비게이션 버튼 -->
-    <div v-if="isLoggedIn" class="text-center mt-5">
+    <div v-if="isLoggedIn && accountLoggined" class="text-center mt-5">
       <button @click="goToOrder" class="bg-red-500 text-white p-2">주문하기</button>
       <button @click="checkBalance" class="bg-green-500 text-white p-2">잔고 확인</button>
       <button @click="checkExchangeRate" class="bg-blue-500 text-white p-2">환율 확인</button>
@@ -40,6 +55,10 @@ export default {
       userAccountID: '',
       userAccountPassword: '',
       loginError: false, // 로그인 오류 메시지 상태
+      accountNumbers: ['1234567890', '0987654321', '1357924680'], // 계좌 번호 목록
+      selectedAccount: '', // 선택된 계좌 번호
+      accountPassword: '', // 계좌 비밀번호
+      accountLoggined: false
     };
   },
   computed: {
@@ -53,6 +72,19 @@ export default {
     userID() {
       return this.$store.state.userData;
     }
+  },
+  created() {
+    let accountNumber = this.$store.state.storedAccount;
+    if (accountNumber === null){
+      this.accountLoggined = false;
+    } else {
+      this.accountLoggined = true;
+      this.selectedAccount = accountNumber;
+    }
+    //계정 로그인이 되어있으면 계좌 로그인이 되었는지 여부를 판단하고 로그인이 되어있으면 비밀번호 조회버튼이 뜨지않는다.
+    //계좌를 새로 선택하면 비밀번호 조회버튼이 뜬다.
+    //계정이 로그인 되어있지 않으면 계좌 로그인 창이 뜨지않는다.
+    //계정이 로그인되어있고 게좌 로그인이 되어있지않으면 계좌 비밀번호 조회 버튼이 뜬다.
   },
   methods: {
     async login() {
@@ -94,11 +126,11 @@ export default {
         this.loginError = true;
         console.error('Login error:', error);
       }
-
     },
     logout() {
       // 로그아웃 상태를 Vuex 스토어에 저장합니다.
       this.$store.dispatch('logout');
+      this.$store.commit('setStoredAccount', null);
       console.log('Logged out');
     },
     goToOrder() {
@@ -112,6 +144,37 @@ export default {
     checkExchangeRate() {
       this.$router.push({ name: 'exchange_rate' });
       console.log('Checking exchange rate');
+    },
+    accountSelected(accountNumber) {
+      this.accountLoggined = false;
+      this.selectedAccount = accountNumber;
+    },
+    async checkAccount() {
+      console.log(this.accountPassword);
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/check_account', {
+          id: this.userID,
+          account_number: this.selectedAccount,
+          account_password: this.accountPassword
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 응답 처리
+        const accountData = response.data;
+        // API 응답 예시
+
+        this.$store.commit('setStoredAccount', this.selectedAccount);
+        this.accountPassword = '';
+      } catch (error) {
+        // 에러 처리
+        console.error('Account check error:', error);
+      }
     }
   }
 }
@@ -142,6 +205,19 @@ button {
   cursor: pointer;
 }
 button:hover {
+  opacity: 0.9;
+}
+select {
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+  background-color: white; /* 배경 색상 변경 */
+  color: black; /* 글씨 색상 변경 */
+  cursor: pointer;
+}
+
+select:hover {
   opacity: 0.9;
 }
 </style>
