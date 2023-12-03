@@ -1,343 +1,327 @@
-use caudbdesign;
-
-#일단 db가 있으면 db테이블 다 날리고 다시 만듬
-DROP DATABASE IF EXISTS caudbdesign;
-
-CREATE DATABASE caudbdesign;
-
-use caudbdesign;
-
--- User-related tables
-CREATE TABLE user
-(
-    Uid            INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username       VARCHAR(255),
-    usertype       VARCHAR(255),
-    account_status VARCHAR(255),
-    created_at     TIMESTAMP,
-    updated_at     TIMESTAMP
+CREATE TABLE `user` (
+  `Uid` integer PRIMARY KEY AUTO_INCREMENT,
+  `username` varchar(255),
+  `usertype` varchar(255),
+  `account_status` varchar(255),
+  `created_at` timestamp,
+  `updated_at` timestamp
 );
 
-CREATE TABLE personal
-(
-    Uid            INTEGER PRIMARY KEY,
-    social_id_hash VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `personal` (
+  `Uid` integer PRIMARY KEY,
+  `social_id_hash` varchar(255)
 );
 
-CREATE TABLE organization
-(
-    Uid             INTEGER PRIMARY KEY,
-    businessid_hash VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `organization` (
+  `Uid` integer PRIMARY KEY,
+  `businessid_hash` varchar(255)
 );
 
-CREATE TABLE login
-(
-    Uid                  INTEGER PRIMARY KEY,
-    ID                   VARCHAR(255),
-    password_hash        VARCHAR(255),
-    password_attempts    INTEGER,
-    security_question    VARCHAR(255),
-    security_answer_hash VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `login` (
+  `Uid` integer PRIMARY KEY,
+  `ID` varchar(255),
+  `password_hash` varchar(255),
+  `password_attempts` integer,
+  `security_question` varchar(255),
+  `security_answer_hash` varchar(255)
 );
 
-CREATE TABLE login_log
-(
-    log_id         INTEGER PRIMARY KEY AUTO_INCREMENT,
-    Uid            INTEGER,
-    attempt_time   TIMESTAMP,
-    attempt_status VARCHAR(255),
-    ip_address     VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `login_log` (
+  `log_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `Uid` integer,
+  `attempt_time` timestamp,
+  `attempt_status` varchar(255),
+  `ip_address` varchar(255)
 );
 
-CREATE TABLE sensitive_info
-(
-    Uid   INTEGER PRIMARY KEY,
-    email VARCHAR(255),
-    phone VARCHAR(255),
-    age   VARCHAR(255),
-    sex   VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `sensitive_info` (
+  `Uid` integer PRIMARY KEY,
+  `email` varchar(255),
+  `phone` varchar(255),
+  `age` varchar(255),
+  `sex` varchar(255)
 );
 
-CREATE TABLE AdditionalContactInfo
-(
-    ContactInfoID INTEGER PRIMARY KEY AUTO_INCREMENT,
-    Uid           INTEGER,
-    ContactType   VARCHAR(255),
-    ContactValue  VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES sensitive_info (Uid)
+CREATE TABLE `AdditionalContactInfo` (
+  `ContactInfoID` integer PRIMARY KEY AUTO_INCREMENT,
+  `Uid` integer,
+  `ContactType` varchar(255),
+  `ContactValue` varchar(255)
 );
 
-CREATE TABLE address
-(
-    address_id     INTEGER PRIMARY KEY AUTO_INCREMENT,
-    Uid            INTEGER,
-    street_address VARCHAR(255),
-    city           VARCHAR(255),
-    state          VARCHAR(255),
-    postal_code    VARCHAR(255),
-    country        VARCHAR(255),
-    FOREIGN KEY (Uid) REFERENCES sensitive_info (Uid)
+CREATE TABLE `address` (
+  `address_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `Uid` integer,
+  `street_address` varchar(255),
+  `city` varchar(255),
+  `state` varchar(255),
+  `postal_code` varchar(255),
+  `country` varchar(255)
 );
 
--- Account-related tables
-CREATE TABLE Account
-(
-    account_id     INTEGER PRIMARY KEY AUTO_INCREMENT,
-    Uid            INTEGER,
-    account_number VARCHAR(255),
-    account_type   VARCHAR(255),
-    stock_value    DECIMAL(10, 2),
-    status         VARCHAR(255),
-    created_at     TIMESTAMP,
-    updated_at     TIMESTAMP,
-    FOREIGN KEY (Uid) REFERENCES user (Uid)
+CREATE TABLE `Account` (
+  `account_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `Uid` integer,
+  `account_number` varchar(255),
+  `account_type` varchar(255),
+  `stock_value` decimal,
+  `status` varchar(255),
+  `created_at` timestamp,
+  `updated_at` timestamp
 );
 
-CREATE TABLE AccountPassword
-(
-    account_id        INTEGER PRIMARY KEY,
-    password_attempts INTEGER,
-    password_hash     VARCHAR(255),
-    updated_at        TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `AccountPassword` (
+  `account_id` integer PRIMARY KEY,
+  `password_attempts` integer,
+  `password_hash` varchar(255),
+  `updated_at` timestamp
 );
 
-CREATE TABLE AccountLoginLog
-(
-    log_id       INTEGER PRIMARY KEY AUTO_INCREMENT,
-    account_id   INTEGER,
-    login_time   TIMESTAMP,
-    login_status VARCHAR(255),
-    ip_address   VARCHAR(255),
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `AccountLoginLog` (
+  `log_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `account_id` integer,
+  `login_time` timestamp,
+  `login_status` varchar(255),
+  `ip_address` varchar(255)
 );
 
-CREATE TABLE Balance
-(
-    account_id    INTEGER PRIMARY KEY,
-    Total_balance DECIMAL(10, 2),
-    KRW_balance   DECIMAL(10, 2),
-    USD_balance   DECIMAL(10, 2),
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `Balance` (
+  `account_id` integer PRIMARY KEY,
+  `Total_balance` decimal,
+  `KRW_balance` decimal,
+  `USD_balance` decimal
 );
 
--- Offer Type-related tables
-CREATE TABLE GeneralAccount
-(
-    account_id           INTEGER PRIMARY KEY,
-    Available_offer_Type VARCHAR(255),
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `GeneralAccount` (
+  `account_id` integer PRIMARY KEY,
+  `Available_offer_Type` varchar(255)
 );
 
-CREATE TABLE GoldAccount
-(
-    account_id           INTEGER PRIMARY KEY,
-    Available_offer_Type VARCHAR(255),
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `GoldAccount` (
+  `account_id` integer PRIMARY KEY,
+  `Available_offer_Type` varchar(255)
 );
 
--- Stock-related tables
-CREATE TABLE StockPortfolio
-(
-    portfolio_id           INTEGER PRIMARY KEY AUTO_INCREMENT,
-    account_id             INTEGER,
-    stock_symbol           VARCHAR(255),
-    quantity               INTEGER,
-    average_purchase_price DECIMAL(10, 2),
-    current_price          DECIMAL(10, 2),
-    created_at             TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `StockPortfolio` (
+  `account_id` integer,
+  `item_id` integer,
+  `quantity` integer,
+  `average_purchase_price` decimal,
+  `current_price` decimal,
+  `created_at` timestamp,
+  PRIMARY KEY (`account_id`, `item_id`)
 );
 
-CREATE TABLE Item
-(
-    item_id    INTEGER PRIMARY KEY AUTO_INCREMENT,
-    symbol     VARCHAR(255),
-    name       VARCHAR(255),
-    item_type  VARCHAR(255),
-    market     VARCHAR(255),
-    created_at TIMESTAMP
+CREATE TABLE `Order` (
+  `order_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `account_id` integer,
+  `item_id` integer,
+  `purchase_type` varchar(255),
+  `order_status` varchar(255),
+  `created_at` timestamp
 );
 
-CREATE TABLE _Order
-(
-    order_id      INTEGER PRIMARY KEY AUTO_INCREMENT,
-    account_id    INTEGER,
-    item_id       INTEGER,
-    purchase_type VARCHAR(255),
-    order_status  VARCHAR(255),
-    created_at    TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES Account (account_id),
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `BuyOrder` (
+  `order_id` integer PRIMARY KEY,
+  `quantity` integer,
+  `left_quantity` integer,
+  `order_type` varchar(255),
+  `limit_price` decimal
 );
 
-CREATE TABLE BuyOrder
-(
-    order_id      INTEGER PRIMARY KEY,
-    quantity      INTEGER,
-    left_quantity INTEGER,
-    order_type    VARCHAR(255),
-    limit_price   DECIMAL(10, 2),
-    FOREIGN KEY (order_id) REFERENCES _Order (order_id)
+CREATE TABLE `SellOrder` (
+  `order_id` integer PRIMARY KEY,
+  `quantity` integer,
+  `left_quantity` integer,
+  `order_type` varchar(255),
+  `limit_price` decimal
 );
 
-CREATE TABLE SellOrder
-(
-    order_id      INTEGER PRIMARY KEY,
-    quantity      INTEGER,
-    left_quantity INTEGER,
-    order_type    VARCHAR(255),
-    limit_price   DECIMAL(10, 2),
-    FOREIGN KEY (order_id) REFERENCES _Order (order_id)
+CREATE TABLE `StockTradeLog` (
+  `trade_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `order_id` integer,
+  `purchase_type` varchar(255),
+  `executed_quantity` integer,
+  `executed_price` decimal,
+  `trade_time` timestamp
 );
 
-CREATE TABLE StockTradeLog
-(
-    trade_id          INTEGER PRIMARY KEY AUTO_INCREMENT,
-    order_id          INTEGER,
-    purchase_type     VARCHAR(255),
-    executed_quantity INTEGER,
-    executed_price    DECIMAL(10, 2),
-    trade_time        TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES _Order (order_id)
+CREATE TABLE `CurrencyExchange` (
+  `exchange_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `account_id` integer,
+  `base_currency` varchar(255),
+  `foreign_currency` varchar(255),
+  `base_amount` decimal,
+  `foreign_amount` decimal,
+  `exchange_time` timestamp
 );
 
--- Currency Exchange-related tables
-CREATE TABLE CurrencyExchange
-(
-    exchange_id      INTEGER PRIMARY KEY AUTO_INCREMENT,
-    account_id       INTEGER,
-    base_currency    VARCHAR(255),
-    foreign_currency VARCHAR(255),
-    base_amount      DECIMAL(10, 2),
-    foreign_amount   DECIMAL(10, 2),
-    exchange_time    TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES Account (account_id)
+CREATE TABLE `CurrentExchangeRate` (
+  `base_currency` varchar(255),
+  `foreign_currency` varchar(255),
+  `current_exchange_rate` decimal,
+  `updated_at` timestamp,
+  PRIMARY KEY (`base_currency`, `foreign_currency`)
 );
 
-CREATE TABLE CurrentExchangeRate
-(
-    base_currency         VARCHAR(255),
-    foreign_currency      VARCHAR(255),
-    current_exchange_rate DECIMAL(10, 2),
-    PRIMARY KEY (base_currency, foreign_currency),
-    updated_at            TIMESTAMP
+CREATE TABLE `ExchangeRateHistory` (
+  `base_currency` varchar(255),
+  `foreign_currency` varchar(255),
+  `updated_at` timestamp,
+  `exchange_rate` decimal,
+  PRIMARY KEY (`base_currency`, `foreign_currency`, `updated_at`)
 );
 
-CREATE TABLE ExchangeRateHistory
-(
-    base_currency    VARCHAR(255),
-    foreign_currency VARCHAR(255),
-    updated_at       TIMESTAMP,
-    PRIMARY KEY (base_currency, foreign_currency, updated_at),
-    exchange_rate    DECIMAL(10, 2)
+CREATE TABLE `Item` (
+  `item_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `symbol` varchar(255),
+  `name` varchar(255),
+  `item_type` varchar(255),
+  `market` varchar(255),
+  `created_at` timestamp
 );
 
-
-CREATE TABLE ItemPrice_Info
-(
-    item_id         INTEGER PRIMARY KEY,
-    closing_price   DECIMAL(10, 2),
-    opening_price   DECIMAL(10, 2),
-    daily_high      DECIMAL(10, 2),
-    daily_low       DECIMAL(10, 2),
-    week_52_high    DECIMAL(10, 2),
-    week_52_low     DECIMAL(10, 2),
-    historical_high DECIMAL(10, 2),
-    historical_low  DECIMAL(10, 2),
-    updated_at      TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `ItemPrice_Info` (
+  `item_id` integer PRIMARY KEY,
+  `closing_price` decimal,
+  `opening_price` decimal,
+  `daily_high` decimal,
+  `daily_low` decimal,
+  `week_52_high` decimal,
+  `week_52_low` decimal,
+  `historical_high` decimal,
+  `historical_low` decimal,
+  `updated_at` timestamp
 );
 
-CREATE TABLE CurrentPrice
-(
-    item_id       INTEGER,
-    timestamp     TIMESTAMP,
-    current_price DECIMAL(10, 2),
-    PRIMARY KEY (item_id, timestamp),
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `CurrentPrice` (
+  `item_id` integer,
+  `timestamp` timestamp,
+  `current_price` decimal,
+  PRIMARY KEY (`item_id`, `timestamp`)
 );
 
-CREATE TABLE Stock
-(
-    item_id               INTEGER PRIMARY KEY,
-    CEO                   VARCHAR(255),
-    sector                VARCHAR(255),
-    industry              VARCHAR(255),
-    dividend_yield        DECIMAL(5, 2),
-    dividend_payment_date TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `Stock` (
+  `item_id` integer PRIMARY KEY,
+  `CEO` varchar(255),
+  `sector` varchar(255),
+  `industry` varchar(255),
+  `dividend_yield` decimal,
+  `dividend_payment_date` timestamp
 );
 
-CREATE TABLE StockData
-(
-    item_id    INTEGER,
-    volume     BIGINT,
-    market_cap BIGINT,
-    PER        DECIMAL(5, 2),
-    EPS        DECIMAL(5, 2),
-    updated_at TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES Stock (item_id)
+CREATE TABLE `StockData` (
+  `item_id` integer,
+  `volume` bigint,
+  `market_cap` bigint,
+  `PER` decimal,
+  `EPS` decimal,
+  `updated_at` timestamp
 );
 
--- Financial Statements-related table
-CREATE TABLE FinancialStatements
-(
-    statement_id      INTEGER PRIMARY KEY AUTO_INCREMENT,
-    item_id           INTEGER,
-    report_period     VARCHAR(255),
-    revenue           BIGINT,
-    net_income        BIGINT,
-    total_assets      BIGINT,
-    total_liabilities BIGINT,
-    equity            BIGINT,
-    report_date       TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES Stock (item_id)
+CREATE TABLE `FinancialStatements` (
+  `statement_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `item_id` integer,
+  `report_period` varchar(255),
+  `revenue` bigint,
+  `net_income` bigint,
+  `total_assets` bigint,
+  `total_liabilities` bigint,
+  `equity` bigint,
+  `report_date` timestamp
 );
 
--- Analyst-related tables
-CREATE TABLE Analyst
-(
-    analyst_id     INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name           VARCHAR(255),
-    firm           VARCHAR(255),
-    expertise_area VARCHAR(255),
-    contact_info   VARCHAR(255)
+CREATE TABLE `Analyst_Info` (
+  `stock_info_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `item_id` integer,
+  `analyst_id` integer,
+  `analyst_rating` varchar(255),
+  `target_price` decimal,
+  `updated_at` timestamp
 );
 
-CREATE TABLE Analyst_Info
-(
-    stock_info_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
-    item_id        INTEGER,
-    analyst_id     INTEGER,
-    analyst_rating VARCHAR(255),
-    target_price   DECIMAL(10, 2),
-    updated_at     TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES Stock (item_id),
-    FOREIGN KEY (analyst_id) REFERENCES Analyst (analyst_id)
+CREATE TABLE `Analyst` (
+  `analyst_id` integer PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255),
+  `firm` varchar(255),
+  `expertise_area` varchar(255),
+  `contact_info` varchar(255)
 );
 
--- Bond-related table
-CREATE TABLE Bond
-(
-    item_id             INTEGER PRIMARY KEY,
-    bond_type           VARCHAR(255),
-    coupon_rate         DECIMAL(5, 2),
-    coupon_payment_date TIMESTAMP,
-    maturity_date       TIMESTAMP,
-    credit_rating       VARCHAR(255),
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `Bond` (
+  `item_id` integer PRIMARY KEY,
+  `bond_type` varchar(255),
+  `coupon_rate` decimal,
+  `coupon_payment_date` timestamp,
+  `maturity_date` timestamp,
+  `credit_rating` varchar(255)
 );
 
--- Gold-related table
-CREATE TABLE Gold
-(
-    item_id INTEGER PRIMARY KEY,
-    weight  VARCHAR(255),
-    FOREIGN KEY (item_id) REFERENCES Item (item_id)
+CREATE TABLE `Gold` (
+  `item_id` integer PRIMARY KEY,
+  `weight` varchar(255)
 );
+
+ALTER TABLE `personal` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `organization` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `login` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `login_log` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `sensitive_info` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `AdditionalContactInfo` ADD FOREIGN KEY (`Uid`) REFERENCES `sensitive_info` (`Uid`);
+
+ALTER TABLE `address` ADD FOREIGN KEY (`Uid`) REFERENCES `sensitive_info` (`Uid`);
+
+ALTER TABLE `Account` ADD FOREIGN KEY (`Uid`) REFERENCES `user` (`Uid`);
+
+ALTER TABLE `AccountPassword` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `AccountLoginLog` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `Balance` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `GeneralAccount` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `GoldAccount` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `StockPortfolio` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `StockPortfolio` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `Order` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `Order` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `BuyOrder` ADD FOREIGN KEY (`order_id`) REFERENCES `Order` (`order_id`);
+
+ALTER TABLE `SellOrder` ADD FOREIGN KEY (`order_id`) REFERENCES `Order` (`order_id`);
+
+ALTER TABLE `StockTradeLog` ADD FOREIGN KEY (`order_id`) REFERENCES `Order` (`order_id`);
+
+ALTER TABLE `CurrencyExchange` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `ItemPrice_Info` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `CurrentPrice` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `Stock` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `StockData` ADD FOREIGN KEY (`item_id`) REFERENCES `Stock` (`item_id`);
+
+ALTER TABLE `FinancialStatements` ADD FOREIGN KEY (`item_id`) REFERENCES `Stock` (`item_id`);
+
+ALTER TABLE `Analyst_Info` ADD FOREIGN KEY (`item_id`) REFERENCES `Stock` (`item_id`);
+
+ALTER TABLE `Analyst_Info` ADD FOREIGN KEY (`analyst_id`) REFERENCES `Analyst` (`analyst_id`);
+
+ALTER TABLE `Bond` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `Gold` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+
+ALTER TABLE `ExchangeRateHistory` ADD FOREIGN KEY (`base_currency`, `foreign_currency`) REFERENCES `CurrentExchangeRate` (`base_currency`, `foreign_currency`);
+
+ALTER TABLE `CurrentExchangeRate` ADD FOREIGN KEY (`base_currency`, `foreign_currency`) REFERENCES `CurrencyExchange` (`base_currency`, `foreign_currency`);
