@@ -161,7 +161,7 @@ export default {
       this.desiredPrice = price;
     },
     goToStockDetail() {
-      this.$router.push({ name: 'stock_detail' });
+      this.$router.push({ name: 'stock_detail',  query: { itemId: this.itemID }});
       console.log('Redirecting to stock_detail page');
     },
   },

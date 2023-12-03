@@ -174,6 +174,10 @@
       ]
       };
     },
+    created() {
+      // URL 쿼리 파라미터에서 itemId 값을 추출하여 itemID에 할당
+      this.stockData.item_id = this.$route.query.itemId;
+    },
     methods: {
       formatDate(date) {
         return date ? new Date(date).toLocaleDateString() : '';
