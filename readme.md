@@ -50,13 +50,13 @@
                   ]
                 }
           ```
-      - [ ] 계좌 로그인 - accountNumber(account), password_hash(accountPassword) / ok, bad request
+      - [X] 계좌 로그인 - accountNumber(account), password_hash(accountPassword) / ok, bad request
       - [ ] 종목검색 - 검색어 / itemid, name, market_name, price
       - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
-      - [ ] 주문 창 - itemid, account_id, 시장가 여부, 지정가, 매수 매도 여부, 수량 / 주문 신청 성공여부
-      - [ ] 주문 창(미채결 주문) - itemid, account_id / 종목명, 매매구분(매수 매도),주문단가, 미채결량,현재가, 원주문번호
-      - [ ] 주문 창(정정) - itemid, account_id, 정정 가격, 원주문번호/ 정정주문번호, 정정주문 신청 성공여부
-      - [ ] 주문 창(취소) - itemid, account_id, 원주문번호/ 정정(취소)주문 신청 성공여부
+      - [X] 주문 창 - itemid, account_id, 시장가 여부, 지정가, 매수 매도 여부, 수량 / 주문 신청 성공여부
+      - [X] 주문 창(미채결 주문) - itemid, account_id / 종목명, 매매구분(매수 매도),주문단가, 미채결량,현재가, 원주문번호
+      - [X] 주문 창(정정) - itemid, account_id, 정정 가격, 원주문번호/ 정정주문번호, 정정주문 신청 성공여부
+      - [X] 주문 창(취소) - itemid, account_id, 원주문번호/ 정정(취소)주문 신청 성공여부
       - [ ] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
          - input
           ```json
@@ -81,10 +81,10 @@
             }
           ``` 
       - [ ] 환율 기록조회 - 시작 날짜, 종료날짜, from통화, to 통화 / 날짜, 환율
-      - [ ] 환전 - account_id / 원화, 달러 잔고, 현재 환율
-      - [ ] 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
+      - [X] 환전 - account_id / 원화, 달러 잔고, 현재 환율
+      - [X] 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
       - [ ] 기업 정보 - item_id/기업정보
-      - [ ] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
+      - [X] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
       - [ ] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
 9. Front
       - [x] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
