@@ -18,13 +18,25 @@ public class AccountController {
 
   @PostMapping("/api/account")
   public ResponseEntity<?> getAccountInfo(@RequestBody Account account) {
-    Optional<Account> accountInfo = accountService.getAccountByAccountNumber(
-        account.getAccount_number());
-    if (accountInfo.isPresent()) {
-      return ResponseEntity.ok(accountInfo.get());
-    } else {
-      return ResponseEntity.badRequest().body("Invalid Account Number");
+    Optional<Account> accountOptional = accountService.getAccountByAccountNumber(account.getAccount_number());
+    if(accountOptional.isEmpty()) {
+      return ResponseEntity.badRequest().body("Account not found");
     }
+    AccountType accountType = accountService.getAccountTypeByAccountId(accountOptional.get().getAccount_id());
+    AccountForm accountForm = accountService.getAccountForm(accountOptional.get(), accountType);
+    return ResponseEntity.ok(accountForm);
   }
+
+  @PostMapping("/api/account/login")
+  public ResponseEntity<?> accountLogin(@RequestBody AccountPassword accountPassword) {
+    if(accountService.accountLogin(accountPassword.getAccount_id(), accountPassword.getPassword_hash())) {
+      Account account = accountService.getAccountByAccountId(accountPassword.getAccount_id());
+      AccountType accountType = accountService.getAccountTypeByAccountId(account.getAccount_id());
+      return ResponseEntity.ok(accountService.getAccountForm(account, accountType));
+    }
+    return ResponseEntity.badRequest().body("Login failed");
+  }
+
+
 
 }
