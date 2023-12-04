@@ -27,4 +27,16 @@ public class AccountController {
     return ResponseEntity.ok(accountForm);
   }
 
+  @PostMapping("/api/account/login")
+  public ResponseEntity<?> accountLogin(@RequestBody AccountPassword accountPassword) {
+    if(accountService.accountLogin(accountPassword.getAccount_id(), accountPassword.getPassword_hash())) {
+      Account account = accountService.getAccountByAccountId(accountPassword.getAccount_id());
+      AccountType accountType = accountService.getAccountTypeByAccountId(account.getAccount_id());
+      return ResponseEntity.ok(accountService.getAccountForm(account, accountType));
+    }
+    return ResponseEntity.badRequest().body("Login failed");
+  }
+
+
+
 }

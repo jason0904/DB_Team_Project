@@ -26,6 +26,21 @@ public class AccountService {
     return accountRepository.getGeneralAccountByAccountIdAndAccountType(account_id, account_type);
   }
 
+  public ArrayList<String> getAccountTypesByUID(int uid) {
+    ArrayList<String> accountNumbers = accountRepository.getAccountNumbersByUID(uid);
+    ArrayList<String> accountTypes = new ArrayList<>();
+    for (String accountNumber : accountNumbers) {
+      Optional<Account> accountOptional = accountRepository.getAccountByAccountNumber(
+          accountNumber);
+      if (accountOptional.isPresent()) {
+        accountTypes.add(accountOptional.get().getAccount_type());
+      } else {
+        accountTypes.add("null");
+      }
+    }
+    return accountTypes;
+  }
+
   public AccountForm getAccountForm(Account account, AccountType accountType) {
     AccountForm accountForm = new AccountForm();
     accountForm.setAccount_id(account.getAccount_id());
@@ -39,6 +54,12 @@ public class AccountService {
     return accountForm;
   }
 
+  public boolean accountLogin(int account_id, String password_hash) {
+    return accountRepository.accountLogin(account_id,password_hash);
+  }
 
+  public Account getAccountByAccountId(int account_id) {
+    return accountRepository.getAccountByAccountId(account_id);
+  }
 
 }

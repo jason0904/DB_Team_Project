@@ -1,5 +1,6 @@
 package com.caudbdesign.dbTeamProject.Order;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,5 +55,11 @@ public class OrderController {
     }
   }
 
+  @PostMapping("/api/order/pending")
+  public ResponseEntity<?> showPendingInfo(@RequestBody OrderForm orderForm) {
+    //Order_id를 받아서 Pending인 주문의 정보를 보여줌.
+    ArrayList<OrderForm> result = orderService.showPendingInfo(orderForm.getAccount_id());
+    return ResponseEntity.ok(result);
+  }
 
 }

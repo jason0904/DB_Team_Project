@@ -27,7 +27,7 @@ public class UserController {
       if(user.getAccount_status().equals("inactive")) {
         return ResponseEntity.badRequest().body("Inactive Account");
       }
-      UserAccountForm userAccountForm = new UserAccountForm(user.getUID(), user.getUsername(), accountService.getAccountNumbersByUID(uid));
+      UserAccountForm userAccountForm = new UserAccountForm(user.getUID(), user.getUsername(), accountService.getAccountNumbersByUID(uid), accountService.getAccountTypesByUID(uid));
       return ResponseEntity.ok(userAccountForm);
     } else {
       return ResponseEntity.badRequest().body("Invalid Password");

@@ -1,5 +1,6 @@
 package com.caudbdesign.dbTeamProject.Order;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,10 @@ public class OrderService {
 
   public Order selectOrder(Integer order_id) {
     return orderRepository.selectOrder(order_id);
+  }
+
+  public ArrayList<OrderForm> showPendingInfo(Integer account_id) {
+    return orderRepository.showPendingInfo(account_id);
   }
 
 }

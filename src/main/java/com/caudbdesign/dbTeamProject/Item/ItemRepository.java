@@ -33,6 +33,12 @@ public class ItemRepository {
     return Optional.of(item);
   }
 
+  public ItemPrice_Info getItemPriceInfoByItemId(int itemId) {
+    String sql = "SELECT * FROM ItemPrice_Info WHERE item_id = ?;";
+    RowMapper<ItemPrice_Info> rowMapper = new BeanPropertyRowMapper<>(ItemPrice_Info.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
+
 
 
 }

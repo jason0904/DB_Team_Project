@@ -16,6 +16,7 @@ public class UserAccountForm {
   private Integer uid;
   private String username;
   private ArrayList<String> accountNumbers = new ArrayList<>();
+  private ArrayList<String> accountTypes = new ArrayList<>();
 
 
 
