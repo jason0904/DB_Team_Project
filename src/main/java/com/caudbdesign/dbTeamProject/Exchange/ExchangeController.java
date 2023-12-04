@@ -5,6 +5,7 @@ import com.caudbdesign.dbTeamProject.Balance.BalanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,6 +19,7 @@ public class ExchangeController {
 
   //환전 - account_id / 원화, 달러 잔고, 현재 환율(KRW -> USD)
   @PostMapping("/api/exchange")
+  @CrossOrigin
   public ResponseEntity<?> showExchange(@RequestBody CurrencyExchange currencyExchange) {
     Integer account_id = currencyExchange.getAccount_id();
     ExchangeForm exchangeForm = exchangeService.showExchangeForm(account_id);
@@ -26,6 +28,7 @@ public class ExchangeController {
 
   // 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
   @PostMapping("/api/exchange/exchange")
+  @CrossOrigin
   public ResponseEntity<?> exchange(@RequestBody CurrencyExchange currencyExchange) {
     Integer account_id = currencyExchange.getAccount_id();
     float base_amount = currencyExchange.getBase_amount();
@@ -40,7 +43,5 @@ public class ExchangeController {
       return ResponseEntity.badRequest().build();
     }
   }
-
-
 
 }

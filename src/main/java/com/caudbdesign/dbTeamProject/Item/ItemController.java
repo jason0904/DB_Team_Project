@@ -1,4 +1,4 @@
-package com.caudbdesign.dbTeamProject.Log;
+package com.caudbdesign.dbTeamProject.Item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
-public class StockTradeLogController {
+public class ItemController {
 
-  private final StockTradeLogService stockTradeLogService;
+  private final ItemService itemService;
 
-  @PostMapping("api/stocktradelog")
+  @PostMapping("/api/item")
   @CrossOrigin
-  public ResponseEntity<?> getTradeLogByAccountId(@RequestBody int account_id, String trade_time) {
-    return ResponseEntity.ok(stockTradeLogService.getTradeLogByAccountId(account_id, trade_time));
+  public ResponseEntity<?> getItems(@RequestBody String search) {
+    return ResponseEntity.ok(itemService.getItemsbySearch(search));
   }
-
 
 }
