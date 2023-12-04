@@ -183,6 +183,8 @@ CREATE TABLE `Item` (
 
 CREATE TABLE `ItemPrice_Info` (
   `item_id` integer PRIMARY KEY,
+    `currency` varchar(255),
+    `current_price` decimal,
   `closing_price` decimal,
   `opening_price` decimal,
   `daily_high` decimal,
