@@ -91,10 +91,10 @@ export default {
 
 <style>
 body {
-  background-color: #000000; /* Black color */
-  margin: 0; /* Removes default margin */
-  padding: 0; /* Removes default padding */
-  min-height: 100vh; /* 100% of the viewport height */
+  background-color: #000000;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 .exchange-rate-container {
@@ -105,11 +105,11 @@ body {
   border-radius: 10px;
 }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
+.controls, .daily-rates {
+  background-color: #333; /* 박스의 배경색 */
+  border-radius: 10px; /* 둥근 모서리 */
+  padding: 15px; /* 안쪽 여백 */
+  margin-bottom: 20px; /* 박스 간 간격 */
 }
 
 .date-selector, .currency-selector {
@@ -121,21 +121,12 @@ body {
   color: white;
 }
 
-.date-selector input, .currency-selector select {
-  color: black; /* 글씨 색상을 검은색으로 변경 */
-  background-color: white; /* 배경을 흰색으로 설정 */
-  border: 1px solid grey; /* 경계선을 추가하여 더 잘 보이게 함 */
+.date-selector input, .currency-selector select, button {
+  color: black;
+  background-color: white;
+  border: 1px solid grey;
   padding: 5px;
   border-radius: 5px;
-}
-
-button {
-  background-color: white;
-  color: black;
-  border: 1px solid grey;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 button:hover {
@@ -174,6 +165,7 @@ button:hover {
 .down {
   color: blue;
 }
+
 @media (min-width: 768px) {
   .exchange-rate-container {
     width: 50%;
@@ -181,3 +173,4 @@ button:hover {
   }
 }
 </style>
+
