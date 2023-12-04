@@ -43,7 +43,8 @@
     <div v-if="isLoggedIn && accountLoggined" class="text-center mt-5">
       <button @click="goToOrder" class="bg-red-500 text-white p-2">주문하기</button>
       <button @click="checkBalance" class="bg-green-500 text-white p-2">잔고 확인</button>
-      <button @click="checkExchangeRate" class="bg-blue-500 text-white p-2">환율 확인</button>
+      <button @click="checkTrade" class="bg-blue-500 text-white p-2">채결 확인</button>
+      <button @click="checkExchangeRate" class="bg-white text-white p-2">환율 확인</button>
     </div>
   </div>
 </template>
@@ -142,6 +143,10 @@ export default {
     checkBalance() {
       this.$router.push({ name: 'balance' });
       console.log('Checking balance');
+    },
+    checkTrade() {
+      this.$router.push({ name: 'trade_history' });
+      console.log('Checking trade_history');
     },
     checkExchangeRate() {
       this.$router.push({ name: 'exchange_rate' });
