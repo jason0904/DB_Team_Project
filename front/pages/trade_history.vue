@@ -19,17 +19,17 @@
       <p>계좌 타입: {{ accountType }}</p>
     </div>
 
-    <!-- 채결 기록 섹션 -->
+    <!-- 체결 기록 섹션 -->
     <div class="transaction-records">
-      <h2>채결 기록</h2>
+      <h2 style="margin-bottom: 5px;">체결 기록</h2>
       <table>
         <thead>
         <tr>
           <th>주문번호</th>
-          <th>채결유형</th>
-          <th>채결수량</th>
-          <th>채결가</th>
-          <th>채결일시</th>
+          <th>체결유형</th>
+          <th>체결수량</th>
+          <th>체결가</th>
+          <th>체결일시</th>
         </tr>
         </thead>
         <tbody>
