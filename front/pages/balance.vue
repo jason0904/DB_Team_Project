@@ -33,7 +33,6 @@
         <span>매입단가</span>
         <span>매수금액</span>
         <span>현재가</span>
-        <span>전일가</span>
       </div>
       <div class="stock-items">
         <div class="stock-item" v-for="stock in stockData" :key="stock.id">
@@ -46,7 +45,6 @@
           <span>{{ stock.purchasePrice | currency }}</span>
           <span>{{ stock.purchaseAmount | currency }}</span>
           <span>{{ stock.currentPrice | currency }}</span>
-          <span>{{ stock.previousPrice | currency }}</span>
         </div>
       </div>
     </div>
@@ -142,22 +140,14 @@ body {
   margin-bottom: 10px;
 }
 
-.stock-list .stock-header {
-  display: flex;
-  justify-content: space-around;
-  font-weight: bold;
-  padding-bottom: 10px;
+.stock-header, .stock-item {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr); /* 6개의 컬럼으로 나눕니다 */
+  gap: 10px;
 }
 
-.stock-list .stock-items {
-  max-height: 200px;
-  overflow-y: scroll;
-}
-
-.stock-list .stock-item {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 5px;
+.stock-header > span, .stock-item > span {
+  text-align: center; /* 내용을 가운데 정렬 */
 }
 
 button {

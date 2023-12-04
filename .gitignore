@@ -41,6 +41,9 @@ out/
 /front/package-lock.json
 /front/.nuxt/
 
+### eslint ###
+/front/.eslintcache
+/front/.eslintrc.js
 
 ### macOS ###
 .DS_Store
