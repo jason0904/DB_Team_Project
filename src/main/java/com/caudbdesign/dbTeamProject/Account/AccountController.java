@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -17,6 +18,7 @@ public class AccountController {
   private final AccountService accountService;
 
   @PostMapping("/api/account")
+  @CrossOrigin
   public ResponseEntity<?> getAccountInfo(@RequestBody Account account) {
     Optional<Account> accountOptional = accountService.getAccountByAccountNumber(account.getAccount_number());
     if(accountOptional.isEmpty()) {
@@ -28,6 +30,7 @@ public class AccountController {
   }
 
   @PostMapping("/api/account/login")
+  @CrossOrigin
   public ResponseEntity<?> accountLogin(@RequestBody AccountPassword accountPassword) {
     if(accountService.accountLogin(accountPassword.getAccount_id(), accountPassword.getPassword_hash())) {
       Account account = accountService.getAccountByAccountId(accountPassword.getAccount_id());
