@@ -47,14 +47,19 @@ public class AccountService {
     accountForm.setAccount_number(account.getAccount_number());
     accountForm.setAccount_type(account.getAccount_type());
     accountForm.setAvailable_offer_Type(accountType.getAvailable_offer_Type());
-    accountForm.setUID(account.getUID());
+    accountForm.setUid(account.getUid());
     accountForm.setStatus(account.getStatus());
-    accountForm.setCreated_at(account.getCreated_at());
+    accountForm.setCreated_at(String.valueOf(account.getCreated_at()));
     accountForm.setStock_value(account.getStock_value());
     return accountForm;
   }
 
-  public boolean accountLogin(int account_id, String password_hash) {
+  public boolean accountLogin(String account_number, String password_hash) {
+    Optional<Account> accountOptional = accountRepository.getAccountByAccountNumber(account_number);
+    if(accountOptional.isEmpty()) {
+      return false;
+    }
+    int account_id = accountOptional.get().getAccount_id();
     return accountRepository.accountLogin(account_id,password_hash);
   }
 

@@ -11,7 +11,7 @@ public class AccountForm {
   //Account와 AccountType을 합친 Form
   private Integer account_id;
   private String Available_offer_Type;
-  private Integer uID;
+  private Integer uid;
   private String account_number;
   private String account_type;
   private float stock_value;
