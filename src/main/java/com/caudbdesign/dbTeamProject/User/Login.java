@@ -1,31 +1,35 @@
 package com.caudbdesign.dbTeamProject.User;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Component;
 
 
 @Getter
 @Setter
 @Component
-@RequiredArgsConstructor
 public class Login {
 
-  private Integer uID;
+  private Integer Uid;
+  @JsonProperty("id")
   private String ID;
   private String password_hash;
   private Integer login_attempt;
+  private String security_question;
+  private String security_answer_hash;
 
-  public Login(Integer uID, String id, String pw) {
-    this.uID = uID;
-    this.ID = id;
-    this.password_hash = pw;
+  public Login(String ID, String password_hash) {
+
+    this.ID = ID;
+    this.password_hash = password_hash;
+
   }
 
+  public Login() {
 
-
+  }
 
 }

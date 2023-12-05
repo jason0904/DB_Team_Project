@@ -17,22 +17,21 @@ public class UserController {
 
   @PostMapping("/api/login")
   @CrossOrigin
-  public ResponseEntity<?> authenticateUser(@RequestBody Login login) {
+  public ResponseEntity<?> login(@RequestBody Login login) {
+    if(login.getID() == null || login.getPassword_hash() == null) {
+      return ResponseEntity.badRequest().body("ID and password are required");
+    }
     if(userService.validateLogin(login.getID(), login.getPassword_hash())) {
       Integer uid = userService.getUIDbyID(login.getID());
-      if(uid == null) {
-        return ResponseEntity.badRequest().body("Invalid ID");
-      }
       User user = userService.getUserbyUID(uid);
       if(user.getAccount_status().equals("inactive")) {
         return ResponseEntity.badRequest().body("Inactive Account");
       }
-      UserAccountForm userAccountForm = new UserAccountForm(user.getUID(), user.getUsername(), accountService.getAccountNumbersByUID(uid), accountService.getAccountTypesByUID(uid));
+      UserAccountForm userAccountForm = new UserAccountForm(user.getUid(), user.getUsername(), accountService.getAccountNumbersByUID(uid), accountService.getAccountTypesByUID(uid));
       return ResponseEntity.ok(userAccountForm);
     } else {
-      return ResponseEntity.badRequest().body("Invalid Password");
+      return ResponseEntity.badRequest().body("Invalid ID or password");
     }
   }
-
 
 }

@@ -13,11 +13,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class User {
 
-  private Integer uID;
+  private Integer Uid;
   private String username;
   private String usertype;
   private String account_status;
   private Timestamp created_at;
+  private Timestamp updated_at;
 
 
 }

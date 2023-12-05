@@ -3,6 +3,7 @@ package com.caudbdesign.dbTeamProject.User;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,23 +19,25 @@ public class UserRepository {
   @Transactional
   public void save(User user) {
     String sql = "insert into user (uid, username, usertype, account_status, created_at) values (?, ?, ?, ?, ?, ?)";
-    jdbcTemplate.update(sql, user.getUID(), user.getUsername(), user.getUsertype(), user.getAccount_status(), user.getCreated_at());
+    jdbcTemplate.update(sql, user.getUid(), user.getUsername(), user.getUsertype(), user.getAccount_status(), user.getCreated_at());
   }
 
   public Optional<User> findUserByUID(int uid) {
     try {
-      String sql = "select * from user where uid = ?";
+      String sql = "select * from user where Uid = ?";
       RowMapper<User> rowMapper = BeanPropertyRowMapper.newInstance(User.class);
       User user = jdbcTemplate.queryForObject(sql, rowMapper, uid);
       return Optional.of(user);
     } catch (EmptyResultDataAccessException e) {
-      return Optional.empty();
+      e.printStackTrace();
+      // return Optional.empty();
     }
+    return Optional.empty();
   }
 
   public Optional<Login> findByUID(int uid) {
     try {
-      String sql = "select * from login where uid = ?";
+      String sql = "select * from login where Uid = ?";
       RowMapper<Login> rowMapper = BeanPropertyRowMapper.newInstance(Login.class);
       Login login = jdbcTemplate.queryForObject(sql, rowMapper, uid);
       return Optional.of(login);
@@ -45,10 +48,10 @@ public class UserRepository {
 
   public Integer findByID(String id) {
     try {
-      String sql = "Select uid from login where id = ?";
+      String sql = "select Uid from login where ID = ?";
       RowMapper<Login> rowMapper = BeanPropertyRowMapper.newInstance(Login.class);
       Login login = jdbcTemplate.queryForObject(sql, rowMapper, id);
-      return login.getUID();
+      return login.getUid();
     } catch (EmptyResultDataAccessException e) {
       return null;
     }
@@ -56,13 +59,13 @@ public class UserRepository {
 
   public void updateStatusByUID(int uid) {
     //account_status = 'inactive'로 변경
-    String sql = "update user set account_status = 'inactive' where uid = ?";
+    String sql = "update user set account_status = 'inactive' where Uid = ?";
     jdbcTemplate.update(sql, uid);
   }
 
   public void updateAttemptByUID(int uid, int login_attempt) {
     //login_attempt = login_attempt + 1
-    String sql = "update login set login_attempt = ? where uid = ?";
+    String sql = "update login set login_attempt = ? where Uid = ?";
     jdbcTemplate.update(sql, login_attempt, uid);
   }
 }
