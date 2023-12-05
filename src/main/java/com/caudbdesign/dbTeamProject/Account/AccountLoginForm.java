@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
 @Component
 @RequiredArgsConstructor
-public class AccountType {
+@Getter
+@Setter
+public class AccountLoginForm {
 
-  private Integer account_id;
-  private String available_offer_Type;
+    private String account_number;
+    private String password_hash;
 
 }

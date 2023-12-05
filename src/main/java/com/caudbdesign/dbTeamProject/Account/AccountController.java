@@ -31,11 +31,12 @@ public class AccountController {
 
   @PostMapping("/api/account/login")
   @CrossOrigin
-  public ResponseEntity<?> accountLogin(@RequestBody AccountPassword accountPassword) {
-    if(accountService.accountLogin(accountPassword.getAccount_id(), accountPassword.getPassword_hash())) {
-      Account account = accountService.getAccountByAccountId(accountPassword.getAccount_id());
-      AccountType accountType = accountService.getAccountTypeByAccountId(account.getAccount_id());
-      return ResponseEntity.ok(accountService.getAccountForm(account, accountType));
+  public ResponseEntity<?> accountLogin(@RequestBody AccountLoginForm accountPassword) {
+    if(accountService.accountLogin(accountPassword.getAccount_number(), accountPassword.getPassword_hash())) {
+      Optional<Account> account = accountService.getAccountByAccountNumber(accountPassword.getAccount_number());
+      AccountType accountType = accountService.getAccountTypeByAccountId(account.get()
+          .getAccount_id());
+      return ResponseEntity.ok(accountService.getAccountForm(account.get(), accountType));
     }
     return ResponseEntity.badRequest().body("Login failed");
   }
