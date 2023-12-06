@@ -84,25 +84,24 @@ export default {
       return this.$store.state.userData;
     }
   },
-  created() {
-    let accountNumber = this.$store.state.storedAccount;
-    console.log(accountNumber);
-    if (accountNumber === ''){
-      this.accountLoggined = false;
-    } else {
-      this.accountLoggined = true;
-    }
-    this.selectedAccount = accountNumber;
-  },
   mounted() {
-    let accountNumber = this.$store.state.storedAccount;
-    console.log(accountNumber);
-    if (accountNumber === ''){
-      this.accountLoggined = false;
-    } else {
+    if(this.$store !== undefined){
+      if(this.$store.state.accoutNumbers === []){
+        this.logout();
+        console.log(1)
+        return
+      }
+      if (!this.$store.state.isLoggedIn) {
+        this.logout();
+        console.log(2)
+        return;
+      }
+      this.isLoggedIn = true;
       this.accountLoggined = true;
+      this.selectedAccount = this.$store.state.storedAccount;
+    }else{
+      this.logout()
     }
-    this.selectedAccount = accountNumber;
   },
   methods: {
     validateCredentials() {
@@ -174,9 +173,19 @@ export default {
       }
     },
     logout() {
-      // 로그아웃 상태를 Vuex 스토어에 저장합니다.
-      this.$store.dispatch('logout');
-      this.$store.dispatch('setStoredAccount',{accountNumber: '', accountType: '', account_id: ''})
+      this.userAccountID = '';
+      this.userAccountPassword = '';
+      this.loginError = false;
+      this.invalidCredentials = false;
+      this.accountNumbers = [];
+      this.selectedAccount = '';
+      this.accountPassword = '';
+      this.accountLoggined = false;
+      this.accountLogginError = false;
+      if (this.$store !== undefined) {
+        // 로그아웃 상태를 Vuex 스토어에 저장합니다.
+        this.$store.dispatch('logout');
+      }
       console.log('Logged out');
     },
     goToOrder() {
@@ -243,7 +252,7 @@ export default {
           const accountType = this.selectedAccount.split('(')[1].split(')')[0];
           const account_id = accountData.account_id;
 
-          this.$store.commit('setStoredAccount', {accountNumber, accountType, account_id});
+          this.$store.commit('setStoredAccount', {storedAccount: accountNumber, storedAccountType: accountType, storedAccountID: account_id});
           console.log('Account login success');
         } else {
           this.accountLogginError = true;

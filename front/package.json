@@ -42,5 +42,19 @@
     "postcss": "^8.4.17",
     "prettier": "^2.7.1",
     "vue-jest": "^3.0.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "@nuxtjs",
+      "plugin:nuxt/recommended",
+      "plugin:vue/recommended",
+      "eslint:recommended"
+    ],
+    "rules": {
+    }
   }
 }

@@ -3,7 +3,7 @@ export const state = () => ({
   userData: null,
   userName: null,
   storedAccount: '',
-  typeAccount: null,
+  typeAccount: '',
   account_id: '',
   accoutNumbers: []
 });
@@ -35,6 +35,8 @@ export const actions = {
   logout({ commit }) {
     commit('setLoginState', false);
     commit('setUserData', { userData: null, userName: null });
+    commit('setStoredAccount', { storedAccount: '', typeAccount: '', account_id: '' });
+    commit('setAccountNumbers', []);
   },
     setStoredAccount({ commit }, { storedAccount, typeAccount, account_id }) {
         commit('setStoredAccount', { storedAccount, typeAccount, account_id });
