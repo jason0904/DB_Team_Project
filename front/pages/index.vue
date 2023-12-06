@@ -85,6 +85,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.$store.state)
     if(this.$store !== undefined){
       if(this.$store.state.accoutNumbers === []){
         this.logout();
@@ -96,9 +97,11 @@ export default {
         console.log(2)
         return;
       }
+      if(this.$store.state.storedAccount !== ''){
+        this.selectedAccount = this.$store.state.storedAccount + '(' + this.$store.state.typeAccount + ')';
+        this.accountLoggined = true;
+      }
       this.isLoggedIn = true;
-      this.accountLoggined = true;
-      this.selectedAccount = this.$store.state.storedAccount;
     }else{
       this.logout()
     }
@@ -115,7 +118,13 @@ export default {
         this.invalidCredentials = true;
         return;
       }
-
+      if (this.$store !== undefined){
+        await this.$store.dispatch('setStoredAccount', {
+          storedAccount: '',
+          typeAccount: '',
+          account_id: ''
+        });
+      }
       this.invalidCredentials = false;
       this.loginError = false;
       // Import axios and crypto-js modules
@@ -146,7 +155,7 @@ export default {
           // Successful login
           this.loginError = false;
           await this.$store.dispatch('login', {
-            userData: userData.userData, // Use user data from API response
+            userData: userData.uid, // Use user data from API response
             userName: userData.username
           });
 
@@ -155,7 +164,7 @@ export default {
             return `${accountNumber}(${userData.accountTypes[index]})`;
           });
 
-          this.$store.dispatch('setAccountNumbers', this.accountNumbers);
+          await this.$store.dispatch('setAccountNumbers', this.accountNumbers);
 
           // Clear the input fields
           this.userAccountID = '';
@@ -244,6 +253,7 @@ export default {
         const accountData = response.data;
         console.log(accountData);
 
+
         if(accountData.status === 'activate') {
           this.accountLogginError = false;
           this.accountLoggined = true;
@@ -252,7 +262,13 @@ export default {
           const accountType = this.selectedAccount.split('(')[1].split(')')[0];
           const account_id = accountData.account_id;
 
-          this.$store.commit('setStoredAccount', {storedAccount: accountNumber, storedAccountType: accountType, storedAccountID: account_id});
+          await this.$store.dispatch('setStoredAccount', {
+            storedAccount: accountNumber,
+            typeAccount: accountType,
+            account_id: account_id
+          });
+
+          console.log(this.$store.state, 'test state');
           console.log('Account login success');
         } else {
           this.accountLogginError = true;

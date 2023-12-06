@@ -1,3 +1,4 @@
+
 export const state = () => ({
   isLoggedIn: false,
   userData: null,
@@ -16,12 +17,12 @@ export const mutations = {
     state.userData = userData;
     state.userName = userName;
   },
-  setStoredAccount(state, { storedAccount, typeAccount, account_id }) {
+  setStoredAccountm(state, { storedAccount, typeAccount, account_id }) {
     state.storedAccount = storedAccount;
     state.typeAccount = typeAccount;
     state.account_id = account_id;
   },
-  setAccountNumbers(state, accoutNumbers) {
+  setAccountNumbersm(state, accoutNumbers) {
     state.accoutNumbers = accoutNumbers;
   }
 };
@@ -39,9 +40,10 @@ export const actions = {
     commit('setAccountNumbers', []);
   },
     setStoredAccount({ commit }, { storedAccount, typeAccount, account_id }) {
-        commit('setStoredAccount', { storedAccount, typeAccount, account_id });
+        commit('setStoredAccountm', { storedAccount, typeAccount, account_id });
     },
     setAccountNumbers({ commit }, accoutNumbers) {
-        commit('setAccountNumbers', accoutNumbers);
+        commit('setAccountNumbersm', accoutNumbers);
     }
 };
+
