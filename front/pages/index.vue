@@ -9,6 +9,11 @@
       <p>아이디 또는 비밀번호를 확인해주세요.</p>
     </div>
 
+    <!-- 유효성 검사 오류 메시지 -->
+    <div v-if="invalidCredentials" class="text-center text-red-500 mt-5">
+      <p>아이디에는 특수문자를 포함할 수 없으며, 비밀번호는 !@#$를 제외한 특수문자를 포함할 수 없습니다.</p>
+    </div>
+
     <!-- 조건부 로그인 폼 -->
     <div v-if="!isLoggedIn" class="text-center mt-10">
       <form @submit.prevent="login">
@@ -19,20 +24,23 @@
     </div>
 
     <!-- 로그인 후 표시 -->
-    <div v-if="isLoggedIn" class="text-center text-white mt- 10">
+    <div v-if="isLoggedIn" class="text-center text-white mt-10">
       <p>안녕하세요, {{username}}님</p>
       <button @click="logout" class="bg-red-500 text-white p-2">로그아웃</button>
     </div>
 
+    <!-- 계좌 비밀번호를 확인해주세요. -->
+    <div v-if="accountLogginError" class="text-center text-red-500 mt-10">
+      <p>계좌 비밀번호를 확인해주세요.(숫자 4자리)</p>
+    </div>
+
     <!-- 로그인 후 계좌 선택표시 -->
-    <!-- 드롭다운으로 계좌 선택, 별도 버튼 없이 선택만으로 적용 -->
-    <div v-if="isLoggedIn" class="text-center text-white mt- 10">
-      <p>계좌를 선택하세요</p>
-      <select v-model="selectedAccount" @change="accountSelected($event.target.value)">
+    <div v-if="isLoggedIn" class="text-center text-white mt-10">
+      <p>현재 선택된 계좌: {{selectedAccount}}</p>
+      <select v-model="selectedAccount" @focus="loadAccounts" @change="accountSelected($event.target.value)">
         <option disabled value="">계좌를 선택하세요</option>
         <option v-for="account in accountNumbers" :key="account" :value="account">{{ account }}</option>
       </select>
-      <!-- 계좌 비밀번호(this.accountPassword에 저장) -->
       <div v-if="!accountLoggined">
         <input type="password" placeholder="계좌 비밀번호" class="text-black p-2" v-model="accountPassword" />
         <button @click="checkAccount" class="bg-blue-500 text-white p-2">조회</button>
@@ -43,8 +51,6 @@
     <div v-if="isLoggedIn && accountLoggined" class="text-center mt-5">
       <button @click="goToOrder" class="bg-red-500 text-white p-2">주문하기</button>
       <button @click="checkBalance" class="bg-green-500 text-white p-2">잔고 확인</button>
-    </div>
-    <div v-if="isLoggedIn && accountLoggined" class="text-center mt-5">
       <button @click="checkTrade" class="bg-blue-500 text-white p-2">채결 확인</button>
       <button @click="checkExchangeRate" class="bg-yellow-500 text-white p-2">환율 확인</button>
     </div>
@@ -58,10 +64,12 @@ export default {
       userAccountID: '',
       userAccountPassword: '',
       loginError: false, // 로그인 오류 메시지 상태
-      accountNumbers: ['1234567890(금)', '0987654321(일반)', '1357924680(금)'], // 계좌 번호 목록
+      invalidCredentials: false, // 유효하지 않은 입력값에 대한 상태
+      accountNumbers: [], // 계좌 번호 목록
       selectedAccount: '', // 선택된 계좌 번호
       accountPassword: '', // 계좌 비밀번호
-      accountLoggined: false
+      accountLoggined: false,
+      accountLogginError: false
     };
   },
   computed: {
@@ -76,64 +84,108 @@ export default {
       return this.$store.state.userData;
     }
   },
-  created() {
-    let accountNumber = this.$store.state.storedAccount;
-    if (accountNumber === null){
-      this.accountLoggined = false;
-    } else {
+  mounted() {
+    if(this.$store !== undefined){
+      if(this.$store.state.accoutNumbers === []){
+        this.logout();
+        console.log(1)
+        return
+      }
+      if (!this.$store.state.isLoggedIn) {
+        this.logout();
+        console.log(2)
+        return;
+      }
+      this.isLoggedIn = true;
       this.accountLoggined = true;
-      this.selectedAccount = accountNumber;
+      this.selectedAccount = this.$store.state.storedAccount;
+    }else{
+      this.logout()
     }
-    //계정 로그인이 되어있으면 계좌 로그인이 되었는지 여부를 판단하고 로그인이 되어있으면 비밀번호 조회버튼이 뜨지않는다.
-    //계좌를 새로 선택하면 비밀번호 조회버튼이 뜬다.
-    //계정이 로그인 되어있지 않으면 계좌 로그인 창이 뜨지않는다.
-    //계정이 로그인되어있고 게좌 로그인이 되어있지않으면 계좌 비밀번호 조회 버튼이 뜬다.
   },
   methods: {
+    validateCredentials() {
+      const idRegex = /[^\w]/; // 특수문자를 포함하지 않아야 함
+      const passwordRegex = /[^!@#$\w]/; // !@#$와 문자/숫자만 허용
+      return !idRegex.test(this.userAccountID) &&
+          !passwordRegex.test(this.userAccountPassword);
+    },
     async login() {
+      if (!this.validateCredentials()) {
+        this.invalidCredentials = true;
+        return;
+      }
+
+      this.invalidCredentials = false;
+      this.loginError = false;
+      // Import axios and crypto-js modules
       const axiosModule = await import('axios');
+      const CryptoJS = await import('crypto-js');
       const axios = axiosModule.default;
 
       try {
+        // Concatenate "ABC" to the password and then hash it using MD5
+        const hashedPassword = CryptoJS.MD5(this.userAccountPassword + "abc").toString();
+
+        // Send the request with the hashed password
         const response = await axios.post('https://dbspring.dongwoo.win/api/login', {
           id: this.userAccountID,
-          password_hash: this.userAccountPassword
+          password_hash: hashedPassword
         }, {
           headers: {
             'Content-Type': 'application/json'
           }
         });
 
-        // 응답 처리
+        // Handling the response
         const userData = response.data;
-        // API 응답 예시
-        // Login response: {uid: 1, username: 'admin', usertype: 'personal', account_status: 'active', created_at: '2019-01-01T00:00:00.000+00:00'}
+        // 예시 - {uid: 1, username: 'admin', accountNumbers: Array(0), accountTypes: Array(0)}
+        console.log(userData)
 
-        if (userData.account_status === 'active') { // API 응답에서 성공 여부를 확인하는 조건
-          // 로그인 처리
+        if (userData.username) {
+          // Successful login
           this.loginError = false;
-          this.$store.dispatch('login', {
-            userData: userData.userData, // API 응답에서 사용자 데이터 사용
+          await this.$store.dispatch('login', {
+            userData: userData.userData, // Use user data from API response
             userName: userData.username
           });
 
+          // fill accountNumbers - accountNumbers(accountTypes) 형태로 채워야함(index기준으로 두 배열을 합침)
+          this.accountNumbers = userData.accountNumbers.map((accountNumber, index) => {
+            return `${accountNumber}(${userData.accountTypes[index]})`;
+          });
+
+          this.$store.dispatch('setAccountNumbers', this.accountNumbers);
+
+          // Clear the input fields
           this.userAccountID = '';
           this.userAccountPassword = '';
           console.log('Logged in as:', userData.username);
         } else {
+          // Login failed
           this.loginError = true;
           console.log('Login failed:', userData.message);
         }
       } catch (error) {
-        // 에러 처리
+        // Error handling
         this.loginError = true;
         console.error('Login error:', error);
       }
     },
     logout() {
-      // 로그아웃 상태를 Vuex 스토어에 저장합니다.
-      this.$store.dispatch('logout');
-      this.$store.commit('setStoredAccount', null);
+      this.userAccountID = '';
+      this.userAccountPassword = '';
+      this.loginError = false;
+      this.invalidCredentials = false;
+      this.accountNumbers = [];
+      this.selectedAccount = '';
+      this.accountPassword = '';
+      this.accountLoggined = false;
+      this.accountLogginError = false;
+      if (this.$store !== undefined) {
+        // 로그아웃 상태를 Vuex 스토어에 저장합니다.
+        this.$store.dispatch('logout');
+      }
       console.log('Logged out');
     },
     goToOrder() {
@@ -148,6 +200,12 @@ export default {
       this.$router.push({ name: 'trade_history' });
       console.log('Checking trade_history');
     },
+
+    async loadAccounts() {
+        // Vuex 스토어에서 계좌 번호를 불러오는 로직
+        this.accountNumbers = this.$store.state.accoutNumbers;
+
+    },
     checkExchangeRate() {
       this.$router.push({ name: 'exchange_rate' });
       console.log('Checking exchange rate');
@@ -157,20 +215,25 @@ export default {
       this.selectedAccount = accountNumber;
     },
     async checkAccount() {
-      // test code
-      this.$store.commit('setStoredAccount', this.selectedAccount);
-      this.accountPassword = '';
-      this.accountLoggined = true;
-      return;
+      // passord 숫자 4자리
+      const passwordRegex = /[0-9]{4}/;
+      if (!passwordRegex.test(this.accountPassword)) {
+        this.accountLogginError = true;
+        return;
+      }
+      this.accountLogginError = false;
 
       const axiosModule = await import('axios');
+      const CryptoJS = await import('crypto-js');
       const axios = axiosModule.default;
 
+      // password hash
+      const hashedPassword = CryptoJS.MD5(this.accountPassword + "abc").toString();
+
       try {
-        const response = await axios.post('https://dbspring.dongwoo.win/api/check_account', {
-          id: this.userID,
-          account_number: this.selectedAccount,
-          account_password: this.accountPassword
+        const response = await axios.post('https://dbspring.dongwoo.win/api/account/login', {
+          account_number: this.selectedAccount.split('(')[0],
+          password_hash: hashedPassword
         }, {
           headers: {
             'Content-Type': 'application/json'
@@ -179,9 +242,22 @@ export default {
 
         // 응답 처리
         const accountData = response.data;
-        // API 응답 예시
+        console.log(accountData);
 
-        this.$store.commit('setStoredAccount', this.selectedAccount);
+        if(accountData.status === 'activate') {
+          this.accountLogginError = false;
+          this.accountLoggined = true;
+
+          const accountNumber = this.selectedAccount.split('(')[0];
+          const accountType = this.selectedAccount.split('(')[1].split(')')[0];
+          const account_id = accountData.account_id;
+
+          this.$store.commit('setStoredAccount', {storedAccount: accountNumber, storedAccountType: accountType, storedAccountID: account_id});
+          console.log('Account login success');
+        } else {
+          this.accountLogginError = true;
+          console.log('Account login failed');
+        }
         this.accountPassword = '';
       } catch (error) {
         // 에러 처리
