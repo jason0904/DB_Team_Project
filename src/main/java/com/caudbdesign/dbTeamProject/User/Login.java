@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Login {
 
-  private Integer Uid;
+  private Integer uid;
   @JsonProperty("id")
   private String ID;
   private String password_hash;
