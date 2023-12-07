@@ -1,7 +1,8 @@
-package com.caudbdesign.dbTeamProject.Stock;
+package com.caudbdesign.dbTeamProject.Item;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,8 +17,12 @@ import java.math.BigInteger;
 public class StockData {
 
     private int item_id;
-    BigInteger volume = new BigInteger("0");
-    BigInteger market_cap = new BigInteger("0");
+    private BigInteger volume = new BigInteger("0");
+    private BigInteger market_cap = new BigInteger("0");
+    private float PER;
+    private float EPS;
+    private Timestamp created_at;
+
 
 
 //    @JsonProperty("ceo")

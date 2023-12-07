@@ -1,4 +1,4 @@
-package com.caudbdesign.dbTeamProject.Stock;
+package com.caudbdesign.dbTeamProject.Item;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

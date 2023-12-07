@@ -19,4 +19,11 @@ public class ItemController {
     return ResponseEntity.ok(itemService.getItemsbySearch(search));
   }
 
+  @PostMapping("/api/item/")
+  @CrossOrigin
+  public ResponseEntity<?> getStockInfo(@RequestBody int itemId) {
+
+  }
+
+
 }
