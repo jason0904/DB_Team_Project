@@ -203,7 +203,7 @@ DELIMITER ;
   - `uid`: integer (PK, FK: User.uid) - 인공키
   - `business_id_hash`: varchar - 암호화된 회사 고유 번호
 
-### Login
+### UserLogin
 - **계정 로그인 정보를 담은 테이블**
 - 필드:
   - `uid`: integer (PK, FK: User.uid) - 인공키
@@ -295,7 +295,7 @@ DELIMITER ;
   - `account_id`: integer (PK, FK: Account.account_id) - 인공키
   - `Available_offer_Type`: varchar - 주문 가능 타입
 
-### StockPortfolio
+### ItemPortfolio
 - **주식 포트폴리오 정보를 저장하는 테이블**
 - 필드:
   - `account_id`: integer (PK, FK: Account.account_id) - 인공키
