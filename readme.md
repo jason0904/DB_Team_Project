@@ -20,7 +20,7 @@
 
 ## 프로시저 명세
 - [ ] **ItemPriceInfo 내용 갱신**: ItemPriceInfo 테이블의 내용을 갱신하는데 사용됩니다.
-```
+```sql
 DELIMITER $$
 
 CREATE PROCEDURE UpdateItemPriceInfo(IN p_item_id INTEGER, IN p_closing_price DECIMAL(15,2), IN p_opening_price DECIMAL(15,2))
@@ -31,10 +31,9 @@ BEGIN
 END$$
 
 DELIMITER ;
-
 ```
 - [ ] **stockportfolio 테이블 total_purchase_price 갱신에 사용**: stockportfolio 테이블 내의 total_purchase_price를 갱신하는 데 사용됩니다.
-```
+```sql
 DELIMITER $$
 
 CREATE PROCEDURE UpdateStockPortfolioTotalPurchasePrice(IN p_account_id INTEGER, IN p_item_id INTEGER, IN p_total_purchase_price DECIMAL(15,2))
@@ -45,10 +44,9 @@ BEGIN
 END$$
 
 DELIMITER ;
-
 ```
 - [ ] **미체결을 체결로 만들어 주는 프로시저**: 미체결 주문을 체결 상태로 만드는 프로시저입니다.
-```
+```sql
 DELIMITER $$
 
 CREATE PROCEDURE FinalizeOrder(IN p_order_id INTEGER)
@@ -63,7 +61,7 @@ DELIMITER ;
 
 ## 트리거 명세
 - [ ] **AccountLogin 횟수 초기화**: AccountLogin의 로그인 시도 횟수를 초기화합니다.
-```
+```sql
 DELIMITER $$
 
 CREATE TRIGGER ResetAccountLoginAttempts AFTER UPDATE ON AccountLogin
@@ -75,10 +73,9 @@ BEGIN
 END$$
 
 DELIMITER ;
-
 ```
 - [ ] **AccountLogin 횟수 자동 증가**: 로그인 실패 시 AccountLogin의 시도 횟수를 자동으로 증가시킵니다.
-```
+```sql
 DELIMITER $$
 
 CREATE TRIGGER IncreaseAccountLoginAttempts AFTER INSERT ON AccountLoginLog
@@ -90,7 +87,6 @@ BEGIN
 END$$
 
 DELIMITER ;
-
 ```
 - [ ] **UserLogin 횟수 초기화**: UserLogin의 로그인 시도 횟수를 초기화합니다.
 - [ ] **UserLogin 횟수 자동증가**: 로그인 실패 시 UserLogin의 시도 횟수를 자동으로 증가시킵니다.
