@@ -1,4 +1,4 @@
-package com.caudbdesign.dbTeamProject.Item;
+package com.caudbdesign.dbTeamProject.Item.Stock;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,9 +17,11 @@ import java.math.BigInteger;
 public class StockData {
 
     private int item_id;
-    private BigInteger volume = new BigInteger("0");
-    private BigInteger market_cap = new BigInteger("0");
+    private BigInteger volume;
+    private BigInteger market_cap;
+    @JsonProperty("per")
     private float PER;
+    @JsonProperty("eps")
     private float EPS;
     private Timestamp created_at;
 

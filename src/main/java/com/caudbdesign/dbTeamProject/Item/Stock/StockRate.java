@@ -1,5 +1,4 @@
-package com.caudbdesign.dbTeamProject.Order;
-
+package com.caudbdesign.dbTeamProject.Item.Stock;
 
 import java.sql.Timestamp;
 import lombok.Getter;
@@ -8,17 +7,16 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-@Getter
-@Setter
 @RequiredArgsConstructor
-public class Order {
+@Setter
+@Getter
+public class StockRate {
 
-  private Integer order_id;
-  private Integer account_id;
+  private Integer stock_info_id;
   private Integer item_id;
-  private String purchase_type;
-  private String order_status;
+  private Integer analyst_id;
+  private String analyst_rating;
+  private float target_price;
   private Timestamp created_at;
-  private Timestamp success_at;
 
 }

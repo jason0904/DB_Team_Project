@@ -18,4 +18,9 @@ public class PortfolioRepository {
     return jdbcTemplate.queryForObject(sql, rowMapper, account_id);
   }
 
+  public void updatePortfolio(int item_id, int quantity, int account_id) {
+    String sql = "update StockPortfolio set quantity = ? where item_id = ? and account_id = ?";
+    jdbcTemplate.update(sql, quantity, item_id, account_id);
+  }
+
 }

@@ -3,7 +3,6 @@ package com.caudbdesign.dbTeamProject.User;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,7 +23,7 @@ public class UserRepository {
 
   public Optional<User> findUserByUID(int uid) {
     try {
-      String sql = "select * from user where Uid = ?";
+      String sql = "select * from user where uid = ?";
       RowMapper<User> rowMapper = BeanPropertyRowMapper.newInstance(User.class);
       User user = jdbcTemplate.queryForObject(sql, rowMapper, uid);
       return Optional.of(user);
@@ -37,7 +36,7 @@ public class UserRepository {
 
   public Optional<Login> findByUID(int uid) {
     try {
-      String sql = "select * from login where Uid = ?";
+      String sql = "select * from login where uid = ?";
       RowMapper<Login> rowMapper = BeanPropertyRowMapper.newInstance(Login.class);
       Login login = jdbcTemplate.queryForObject(sql, rowMapper, uid);
       return Optional.of(login);
@@ -48,7 +47,7 @@ public class UserRepository {
 
   public Integer findByID(String id) {
     try {
-      String sql = "select Uid from login where ID = ?";
+      String sql = "select uid from login where ID = ?";
       RowMapper<Login> rowMapper = BeanPropertyRowMapper.newInstance(Login.class);
       Login login = jdbcTemplate.queryForObject(sql, rowMapper, id);
       return login.getUid();
@@ -59,13 +58,18 @@ public class UserRepository {
 
   public void updateStatusByUID(int uid) {
     //account_status = 'inactive'로 변경
-    String sql = "update user set account_status = 'inactive' where Uid = ?";
+    String sql = "update user set account_status = 'inactive' where uid = ?";
     jdbcTemplate.update(sql, uid);
   }
 
   public void updateAttemptByUID(int uid, int login_attempt) {
     //login_attempt = login_attempt + 1
-    String sql = "update login set login_attempt = ? where Uid = ?";
+    String sql = "update login set login_attempt = ? where uid = ?";
     jdbcTemplate.update(sql, login_attempt, uid);
   }
+
+  public void updateUserSensitiveInfoByUID(int uid, SensitiveInfo sensitiveInfo) {
+
+  }
+
 }
