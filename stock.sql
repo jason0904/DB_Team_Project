@@ -17,16 +17,25 @@ CREATE TABLE `Organization` (
   `business_id_hash` varchar(255)
 );
 
-CREATE TABLE `Login` (
+CREATE TABLE `UserLoginMeta` (
   `uid` integer PRIMARY KEY,
-  `ID` varchar(255),
+  `login_id` varchar(255),
+  `login_attempt` integer
+);
+
+CREATE TABLE `UserLoginPasswWord` (
+  `uid` integer PRIMARY KEY,
   `password_hash` varchar(255),
-  `login_attempt` integer,
+  `updated_at` timestamp
+);
+
+CREATE TABLE `UserLoginQuestion` (
+  `uid` integer PRIMARY KEY,
   `security_question` varchar(255),
   `security_answer_hash` varchar(255)
 );
 
-CREATE TABLE `LoginLog` (
+CREATE TABLE `UserLoginLog` (
   `log_id` integer PRIMARY KEY AUTO_INCREMENT,
   `uid` integer,
   `login_time` timestamp,
@@ -67,11 +76,15 @@ CREATE TABLE `Account` (
   `updated_at` timestamp
 );
 
-CREATE TABLE `AccountLogin` (
+CREATE TABLE `AccountLoginPasswWord` (
   `account_id` integer PRIMARY KEY,
-  `password_attempt` integer,
   `password_hash` varchar(255),
   `updated_at` timestamp
+);
+
+CREATE TABLE `AccountLoginMeta` (
+  `account_id` integer PRIMARY KEY,
+  `login_attempt` integer
 );
 
 CREATE TABLE `AccountLoginLog` (
@@ -98,7 +111,7 @@ CREATE TABLE `GoldAccount` (
   `Available_offer_Type` varchar(255)
 );
 
-CREATE TABLE `StockPortfolio` (
+CREATE TABLE `ItemPortfolio` (
   `account_id` integer,
   `item_id` integer,
   `quantity` integer,
@@ -252,9 +265,13 @@ ALTER TABLE `Personal` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `Organization` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `Login` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+ALTER TABLE `UserLoginMeta` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `LoginLog` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+ALTER TABLE `UserLoginPasswWord` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+
+ALTER TABLE `UserLoginQuestion` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+
+ALTER TABLE `UserLoginLog` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `SensitiveInfo` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
@@ -264,7 +281,9 @@ ALTER TABLE `Address` ADD FOREIGN KEY (`uid`) REFERENCES `SensitiveInfo` (`uid`)
 
 ALTER TABLE `Account` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `AccountLogin` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+ALTER TABLE `AccountLoginPasswWord` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+
+ALTER TABLE `AccountLoginMeta` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
 ALTER TABLE `AccountLoginLog` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
@@ -274,9 +293,9 @@ ALTER TABLE `GeneralAccount` ADD FOREIGN KEY (`account_id`) REFERENCES `Account`
 
 ALTER TABLE `GoldAccount` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
-ALTER TABLE `StockPortfolio` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+ALTER TABLE `ItemPortfolio` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
-ALTER TABLE `StockPortfolio` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
+ALTER TABLE `ItemPortfolio` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
 
 ALTER TABLE `Order` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
