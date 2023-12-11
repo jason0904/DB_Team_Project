@@ -34,7 +34,7 @@ public class ExchangeController {
     float base_amount = currencyExchange.getBase_amount();
     String base_currency = currencyExchange.getBase_currency();
     String foreign_currency = currencyExchange.getForeign_currency();
-    boolean result = exchangeService.Exchange(account_id, base_amount, base_currency, foreign_currency);
+    boolean result = exchangeService.exchange(account_id, base_currency, foreign_currency, base_amount);
     if(result) {
       Balance balance = balanceService.selectBalance(account_id);
       return ResponseEntity.ok(balance);
@@ -44,4 +44,11 @@ public class ExchangeController {
     }
   }
 
+  //무조건 있는 걸로 가정.
+  @PostMapping("/api/exchange/rate")
+  @CrossOrigin
+  public ResponseEntity<?> gerRate(@RequestBody ExchangeRateHistory exchangeRateHistory) {
+    return ResponseEntity.ok(exchangeService.showExchangeRateByDay(exchangeRateHistory.getBase_currency(), exchangeRateHistory.getForeign_currency(),
+        String.valueOf(exchangeRateHistory.getCreated_at())));
+  }
 }

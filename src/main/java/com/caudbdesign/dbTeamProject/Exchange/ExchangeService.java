@@ -15,40 +15,8 @@ public class ExchangeService {
   private final AccountRepository accountRepository;
   private final BalanceRepository balanceRepository;
 
-  public boolean Exchange(int account_id, float base_amount, String base_currency, String foreign_currency) {
-    if(!accountRepository.isAccountExist(account_id)) {
-      return false;
-    }
-    Balance balance = balanceRepository.selectBalance(account_id);
-    if(base_currency.equals("KRW")) {
-      if(balance.getKRW_Balance() < base_amount) {
-        return false;
-      }
-    }
-    else if(base_currency.equals("USD")) {
-      if(balance.getUSD_Balance() < base_amount) {
-        return false;
-      }
-    }
-    CurrentExchangeRate currentExchangeRate = exchangeRepository.selectRate(base_currency, foreign_currency);
-    float foreign_amount = base_amount * currentExchangeRate.getCurrent_exchange_rate();
-    CurrencyExchange currencyExchange = new CurrencyExchange();
-    currencyExchange.setAccount_id(account_id);
-    currencyExchange.setBase_amount(base_amount);
-    currencyExchange.setBase_currency(base_currency);
-    currencyExchange.setForeign_currency(foreign_currency);
-    currencyExchange.setForeign_amount(foreign_amount);
-    exchangeRepository.save(currencyExchange);
-    if(base_currency.equals("KRW")) {
-      balance.setKRW_Balance(balance.getKRW_Balance() - base_amount);
-      balance.setUSD_Balance(balance.getUSD_Balance() + foreign_amount);
-    }
-    else if(base_currency.equals("USD")) {
-      balance.setUSD_Balance(balance.getUSD_Balance() - base_amount);
-      balance.setKRW_Balance(balance.getKRW_Balance() + foreign_amount);
-    }
-    balanceRepository.updateBalance(balance.getAccount_id(), balance.getTotal_Balance(), balance.getKRW_Balance(), balance.getUSD_Balance());
-    return true;
+  public boolean exchange(int account_id, String base_currency, String foreign_currency, float amount) {
+    return exchangeRepository.exchange(account_id, base_currency, foreign_currency, amount);
   }
 
   public ExchangeForm showExchangeForm(int account_id) {
@@ -63,5 +31,9 @@ public class ExchangeService {
 
   public CurrentExchangeRate showCurrentExchangeRate(String base_currency, String foreign_currency) {
     return exchangeRepository.selectRate(base_currency, foreign_currency);
+  }
+
+  public float showExchangeRateByDay(String base_currency, String foreign_currency, String day) {
+    return exchangeRepository.selectRateByDay(base_currency, foreign_currency, day);
   }
 }
