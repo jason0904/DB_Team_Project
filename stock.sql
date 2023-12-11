@@ -29,7 +29,7 @@ CREATE TABLE `UserLoginMeta` (
   `login_attempt` integer
 );
 
-CREATE TABLE `UserLoginPasswWord` (
+CREATE TABLE `UserLoginPassword` (
   `uid` integer PRIMARY KEY,
   `password_hash` varchar(255),
   `updated_at` timestamp
@@ -82,7 +82,7 @@ CREATE TABLE `Account` (
   `updated_at` timestamp
 );
 
-CREATE TABLE `AccountLoginPasswWord` (
+CREATE TABLE `AccountLoginPassword` (
   `account_id` integer PRIMARY KEY,
   `password_hash` varchar(255),
   `updated_at` timestamp
@@ -273,7 +273,7 @@ ALTER TABLE `Organization` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `UserLoginMeta` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `UserLoginPasswWord` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+ALTER TABLE `UserLoginPassword` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `UserLoginQuestion` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
@@ -287,7 +287,7 @@ ALTER TABLE `Address` ADD FOREIGN KEY (`uid`) REFERENCES `SensitiveInfo` (`uid`)
 
 ALTER TABLE `Account` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `AccountLoginPasswWord` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+ALTER TABLE `AccountLoginPassword` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
 ALTER TABLE `AccountLoginMeta` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
