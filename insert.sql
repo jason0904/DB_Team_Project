@@ -1,9 +1,9 @@
 INSERT INTO User (username, usertype, account_status, created_at, updated_at)
 VALUES 
     ('hong_gildong', 'personal', 'active', NOW(), NOW()),
-    ('kim_minsu', 'business', 'active', NOW(), NOW()),
+    ('kim_minsu', 'organization', 'active', NOW(), NOW()),
     ('lee_jieun', 'personal', 'inactive', NOW(), NOW()),
-    ('park_jisung', 'business', 'active', NOW(), NOW()),
+    ('park_jisung', 'organization', 'active', NOW(), NOW()),
     ('choi_yeojin', 'personal', 'active', NOW(), NOW());
 
 INSERT INTO Personal (uid, social_id_hash)
@@ -26,8 +26,8 @@ VALUES
     (4, 'login_id_4', 0),
     (5, 'login_id_5', 0);
 
--- UserLoginPasswWord 테이블에 레코드 삽입
-INSERT INTO UserLoginPasswWord (uid, password_hash, updated_at)
+-- UserLoginPassWord 테이블에 레코드 삽입
+INSERT INTO UserLoginPassWord (uid, password_hash, updated_at)
 VALUES 
     (1, 'password_hash_1', NOW()),
     (2, 'password_hash_2', NOW()),
@@ -38,7 +38,7 @@ VALUES
 -- UserLoginQuestion 테이블에 레코드 삽입
 INSERT INTO UserLoginQuestion (uid, security_question, security_answer_hash)
 VALUES 
-    (1, 'Your first pet’s name?', 'answer_hash_1'),
+    (1, 'Your first pets name?', 'answer_hash_1'),
     (2, 'Your favorite movie?', 'answer_hash_2'),
     (3, 'Your best friend’s name?', 'answer_hash_3'),
     (4, 'Your childhood nickname?', 'answer_hash_4'),
@@ -48,19 +48,19 @@ VALUES
 INSERT INTO UserLoginLog (uid, login_time, login_status)
 VALUES 
     (1, NOW(), 'success'),
-    (2, NOW(), 'failed'),
+    (2, NOW(), 'fail'),
     (3, NOW(), 'success'),
     (4, NOW(), 'success'),
-    (5, NOW(), 'failed');
+    (5, NOW(), 'fail');
 
 -- SensitiveInfo 테이블에 레코드 삽입
 INSERT INTO SensitiveInfo (uid, email, phone, age, sex)
 VALUES 
-    (1, 'john@example.com', '1234567890', 30, 'M'),
-    (2, 'kim@example.com', '2345678901', 40, 'M'),
-    (3, 'lee@example.com', '3456789012', 25, 'F'),
-    (4, 'park@example.com', '4567890123', 35, 'F'),
-    (5, 'choi@example.com', '5678901234', 28, 'M');
+    (1, 'john@example.com', '1234567890', 30, 'Male'),
+    (2, 'kim@example.com', '2345678901', -1, 'Organization'),
+    (3, 'lee@example.com', '3456789012', 25, 'Female'),
+    (4, 'park@example.com', '4567890123', -1, 'Organization'),
+    (5, 'choi@example.com', '5678901234', 28, 'Male');
 
 -- AdditionalContactInfo 테이블에 레코드 삽입
 INSERT INTO AdditionalContactInfo (uid, ContactType, ContactValue)
@@ -82,11 +82,11 @@ VALUES
 
 INSERT INTO Account (uid, account_number, account_type, stock_value, status, created_at, updated_at)
 VALUES 
-    (1, '00000000123', 'general', 10000.00, 'active', NOW(), NOW()),
-    (2, '00000000234', 'gold', 20000.00, 'active', NOW(), NOW()),
-    (3, '00000000345', 'general', 15000.00, 'active', NOW(), NOW()),
-    (4, '00000000456', 'gold', 30000.00, 'active', NOW(), NOW()),
-    (5, '00000000567', 'general', 5000.00, 'active', NOW(), NOW());
+    (1, '12300000000', 'general', 10000.00, 'active', NOW(), NOW()),
+    (2, '23400000000', 'gold', 20000.00, 'active', NOW(), NOW()),
+    (3, '34500000000', 'general', 15000.00, 'active', NOW(), NOW()),
+    (4, '45600000000', 'gold', 30000.00, 'active', NOW(), NOW()),
+    (5, '56700000000', 'general', 5000.00, 'active', NOW(), NOW());
 
 INSERT INTO AccountLoginPasswWord (account_id, password_hash, updated_at)
 VALUES 
@@ -149,8 +149,8 @@ VALUES
 -- Order, BuyOrder, SellOrder 테이블에 레코드 삽입 (가상의 데이터 사용)
 INSERT INTO `Order` (account_id, item_id, purchase_type, order_status, created_at, success_at)
 VALUES 
-    (1, 1, 'buy', 'pending', NOW(), NULL),
-    (2, 2, 'sell', 'complete', NOW(), NOW());
+    (1, 1, 'buyorder', 'pending', NOW(), NULL),
+    (2, 2, 'sellorder', 'success', NOW(), NOW());
 
 INSERT INTO BuyOrder (order_id, quantity, order_type, limit_price)
 VALUES 
@@ -212,7 +212,7 @@ VALUES
 -- Bond, Gold 테이블에 레코드 삽입 (가상의 데이터 사용)
 INSERT INTO Bond (item_id, bond_type, coupon_rate, coupon_payment_date, maturity_date, credit_rating)
 VALUES 
-    (2, 'Corporate', 4, NOW(), NOW() + INTERVAL 5 YEAR, 'AA');
+    (2, 'Corporate', 4, NOW(), NOW() + INTERVAL 5 YEAR, 'A');
 
 INSERT INTO Gold (item_id, weight)
 VALUES 
