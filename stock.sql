@@ -29,7 +29,7 @@ CREATE TABLE `UserLoginMeta` (
   `login_attempt` integer
 );
 
-CREATE TABLE `UserLoginPassword` (
+CREATE TABLE `UserLoginPassWord` (
   `uid` integer PRIMARY KEY,
   `password_hash` varchar(255),
   `updated_at` timestamp
@@ -76,13 +76,13 @@ CREATE TABLE `Account` (
   `uid` integer,
   `account_number` varchar(255),
   `account_type` varchar(255),
-  `stock_value` decimal,
+  `stock_value` decimal(20, 6),
   `status` varchar(255),
   `created_at` timestamp,
   `updated_at` timestamp
 );
 
-CREATE TABLE `AccountLoginPassword` (
+CREATE TABLE `AccountLoginPasswWord` (
   `account_id` integer PRIMARY KEY,
   `password_hash` varchar(255),
   `updated_at` timestamp
@@ -102,9 +102,9 @@ CREATE TABLE `AccountLoginLog` (
 
 CREATE TABLE `Balance` (
   `account_id` integer PRIMARY KEY,
-  `Total_balance` decimal,
-  `KRW_balance` decimal,
-  `USD_balance` decimal
+  `Total_balance` decimal(20, 6),
+  `KRW_balance` decimal(20, 6),
+  `USD_balance` decimal(20, 6)
 );
 
 CREATE TABLE `GeneralAccount` (
@@ -121,8 +121,8 @@ CREATE TABLE `ItemPortfolio` (
   `account_id` integer,
   `item_id` integer,
   `quantity` integer,
-  `total_purchase_price` decimal,
-  `current_price` decimal,
+  `total_purchase_price` decimal(20, 6),
+  `current_price` decimal(20, 6),
   `created_at` timestamp,
   PRIMARY KEY (`account_id`, `item_id`)
 );
@@ -141,14 +141,14 @@ CREATE TABLE `BuyOrder` (
   `order_id` integer PRIMARY KEY,
   `quantity` integer,
   `order_type` varchar(255),
-  `limit_price` decimal
+  `limit_price` decimal(20, 6)
 );
 
 CREATE TABLE `SellOrder` (
   `order_id` integer PRIMARY KEY,
   `quantity` integer,
   `order_type` varchar(255),
-  `limit_price` decimal
+  `limit_price` decimal(20, 6)
 );
 
 CREATE TABLE `CurrencyExchange` (
@@ -156,15 +156,15 @@ CREATE TABLE `CurrencyExchange` (
   `account_id` integer,
   `base_currency` varchar(255),
   `foreign_currency` varchar(255),
-  `base_amount` decimal,
-  `foreign_amount` decimal,
+  `base_amount` decimal(20, 6),
+  `foreign_amount` decimal(20, 6),
   `exchange_time` timestamp
 );
 
 CREATE TABLE `CurrentExchangeRate` (
   `base_currency` varchar(255),
   `foreign_currency` varchar(255),
-  `current_exchange_rate` decimal,
+  `current_exchange_rate` decimal(20, 6),
   `updated_at` timestamp,
   PRIMARY KEY (`base_currency`, `foreign_currency`)
 );
@@ -173,7 +173,7 @@ CREATE TABLE `ExchangeRateHistory` (
   `base_currency` varchar(255),
   `foreign_currency` varchar(255),
   `created_at` timestamp,
-  `exchange_rate` decimal,
+  `exchange_rate` decimal(20, 6),
   PRIMARY KEY (`base_currency`, `foreign_currency`, `created_at`)
 );
 
@@ -188,21 +188,21 @@ CREATE TABLE `Item` (
 
 CREATE TABLE `ItemPriceInfo` (
   `item_id` integer PRIMARY KEY,
-  `closing_price` decimal,
-  `opening_price` decimal,
-  `daily_high` decimal,
-  `daily_low` decimal,
-  `week_52_high` decimal,
-  `week_52_low` decimal,
-  `historical_high` decimal,
-  `historical_low` decimal,
+  `closing_price` decimal(20, 6),
+  `opening_price` decimal(20, 6),
+  `daily_high` decimal(20, 6),
+  `daily_low` decimal(20, 6),
+  `week_52_high` decimal(20, 6),
+  `week_52_low` decimal(20, 6),
+  `historical_high` decimal(20, 6),
+  `historical_low` decimal(20, 6),
   `updated_at` timestamp
 );
 
 CREATE TABLE `CurrentPrice` (
   `item_id` integer,
   `updated_at` timestamp,
-  `current_price` decimal,
+  `current_price` decimal(20, 6),
   PRIMARY KEY (`item_id`, `updated_at`)
 );
 
@@ -211,7 +211,7 @@ CREATE TABLE `Stock` (
   `CEO` varchar(255),
   `sector` varchar(255),
   `industry` varchar(255),
-  `dividend_yield` decimal,
+  `dividend_yield` decimal(20, 6),
   `dividend_payment_month` integer
 );
 
@@ -219,8 +219,8 @@ CREATE TABLE `StockData` (
   `item_id` integer,
   `volume` bigint,
   `market_cap` bigint,
-  `PER` decimal,
-  `EPS` decimal,
+  `PER` decimal(20, 6),
+  `EPS` decimal(20, 6),
   `updated_at` timestamp
 );
 
@@ -241,7 +241,7 @@ CREATE TABLE `StockRate` (
   `item_id` integer,
   `analyst_id` integer,
   `analyst_rating` varchar(255),
-  `target_price` decimal,
+  `target_price` decimal(20, 6),
   `updated_at` timestamp
 );
 
@@ -256,7 +256,7 @@ CREATE TABLE `AnalystInfo` (
 CREATE TABLE `Bond` (
   `item_id` integer PRIMARY KEY,
   `bond_type` varchar(255),
-  `coupon_rate` decimal,
+  `coupon_rate` decimal(20, 6),
   `coupon_payment_date` timestamp,
   `maturity_date` timestamp,
   `credit_rating` varchar(255)
@@ -273,7 +273,7 @@ ALTER TABLE `Organization` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `UserLoginMeta` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `UserLoginPassword` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
+ALTER TABLE `UserLoginPassWord` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
 ALTER TABLE `UserLoginQuestion` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
@@ -287,7 +287,7 @@ ALTER TABLE `Address` ADD FOREIGN KEY (`uid`) REFERENCES `SensitiveInfo` (`uid`)
 
 ALTER TABLE `Account` ADD FOREIGN KEY (`uid`) REFERENCES `User` (`uid`);
 
-ALTER TABLE `AccountLoginPassword` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
+ALTER TABLE `AccountLoginPasswWord` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
 ALTER TABLE `AccountLoginMeta` ADD FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`);
 
