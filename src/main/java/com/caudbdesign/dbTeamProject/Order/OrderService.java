@@ -42,8 +42,7 @@ public class OrderService {
 
   public boolean createOrder(Order order, OrderType orderType) {
     String market = itemRepository.getItemByItemId(order.getItem_id()).get().getMarket();
-    if(orderType.getQuantity() * orderType.getLimit_price() > balanceRepository.selectBalance(order.getAccount_id()).getKRW_Balance() && market.equals("KOSPI")) return false;
-    if(orderType.getQuantity() * orderType.getLimit_price() > balanceRepository.selectBalance(order.getAccount_id()).getUSD_Balance() && market.equals("NYSC")) return false;
+    if(!orderRepository.checkOrderValidity(order.getOrder_id(), order.getAccount_id())) return false;
     orderRepository.insertOrder(order, orderType);
     updateOrderStatus(order.getOrder_id(), orderType.getQuantity(), order.getItem_id(), order.getAccount_id(), order.getPurchase_type(), market, orderType.getLimit_price());
     return true;
