@@ -16,7 +16,6 @@ public class AccountRepository {
 
   private final JdbcTemplate jdbcTemplate;
 
-
   public ArrayList<String> getAccountNumbersByUID(int uid) {
     ArrayList<String> accountNumbers = new ArrayList<>();
     String sql = "select account_number from Account where uid = ?";

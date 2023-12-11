@@ -24,4 +24,12 @@ public class ExchangeRepository {
     RowMapper<CurrentExchangeRate> rowMapper = new BeanPropertyRowMapper<>(CurrentExchangeRate.class);
     return jdbcTemplate.queryForObject(sql, rowMapper, base_currency, foreign_currency);
   }
+
+  public float selectRateByDay(String base_currency, String foreign_currency, String day) {
+    String sql = "select * from ExchangeRateHistory where base_currency = ? and foreign_currency = ? and created_at = ?";
+    RowMapper<ExchangeRateHistory> rowMapper = new BeanPropertyRowMapper<>(ExchangeRateHistory.class);
+    ExchangeRateHistory exchangeRateHistory = jdbcTemplate.queryForObject(sql, rowMapper, base_currency, foreign_currency, day);
+    assert exchangeRateHistory != null;
+    return exchangeRateHistory.getExchange_rate();
+  }
 }

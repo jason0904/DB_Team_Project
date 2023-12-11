@@ -64,4 +64,8 @@ public class ExchangeService {
   public CurrentExchangeRate showCurrentExchangeRate(String base_currency, String foreign_currency) {
     return exchangeRepository.selectRate(base_currency, foreign_currency);
   }
+
+  public float showExchangeRateByDay(String base_currency, String foreign_currency, String day) {
+    return exchangeRepository.selectRateByDay(base_currency, foreign_currency, day);
+  }
 }

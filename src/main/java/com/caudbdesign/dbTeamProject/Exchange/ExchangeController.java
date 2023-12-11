@@ -44,4 +44,11 @@ public class ExchangeController {
     }
   }
 
+  //무조건 있는 걸로 가정.
+  @PostMapping("/api/exchange/rate")
+  @CrossOrigin
+  public ResponseEntity<?> gerRate(@RequestBody ExchangeRateHistory exchangeRateHistory) {
+    return ResponseEntity.ok(exchangeService.showExchangeRateByDay(exchangeRateHistory.getBase_currency(), exchangeRateHistory.getForeign_currency(),
+        String.valueOf(exchangeRateHistory.getCreated_at())));
+  }
 }
