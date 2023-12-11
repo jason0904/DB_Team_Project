@@ -51,7 +51,7 @@ DELIMITER $$
 
 CREATE PROCEDURE FinalizeOrder(IN p_order_id INTEGER)
 BEGIN
-    UPDATE Order
+    UPDATE `Order`
     SET order_status = 'success', success_at = NOW()
     WHERE order_id = p_order_id;
 END$$
@@ -197,7 +197,7 @@ DELIMITER ;
       - [x] 채결 기록 잔고확인 전환 버튼 
 <hr>
 
-## DB 설계(아직 미완성) ![DB](https://github.com/jason0904/DB_Team_Project/assets/37035547/9d4bdaa5-16fa-4b5f-bef5-96d61e4945a6)
+## Table-Diagram ![DB](https://github.com/jason0904/DB_Team_Project/assets/37035547/38e04f07-95a4-4fcf-bbec-728830312057)
 
 <br>
 <hr>
