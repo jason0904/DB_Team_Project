@@ -89,7 +89,33 @@ END$$
 DELIMITER ;
 ```
 - [ ] **UserLogin 횟수 초기화**: UserLogin의 로그인 시도 횟수를 초기화합니다.
+```sql
+DELIMITER $$
+
+CREATE TRIGGER ResetUserLoginAttempts AFTER UPDATE ON UserLoginPassword
+    FOR EACH ROW
+BEGIN
+    IF NEW.password_hash = OLD.password_hash THEN
+        UPDATE UserLoginMeta SET login_attempt = 0 WHERE uid = NEW.uid;
+    END IF;
+END$$
+
+DELIMITER ;
+```
 - [ ] **UserLogin 횟수 자동증가**: 로그인 실패 시 UserLogin의 시도 횟수를 자동으로 증가시킵니다.
+```sql
+DELIMITER $$
+
+CREATE TRIGGER IncreaseUserLoginAttempts AFTER INSERT ON UserLoginLog
+    FOR EACH ROW
+BEGIN
+    IF NEW.login_status = 'failed' THEN
+        UPDATE UserLoginMeta SET login_attempt = login_attempt + 1 WHERE uid = NEW.uid;
+    END IF;
+END$$
+
+DELIMITER ;
+```
 
   
 
