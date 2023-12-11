@@ -47,6 +47,12 @@ public class OrderRepository {
     jdbcTemplate.update(sql, order_id);
   }
 
+  public boolean checkOrderValidity(int order_id, int account_id) {
+    String sql = "CALL CheckOrderValidity(?, ?)";
+    return Boolean.TRUE.equals(
+        jdbcTemplate.queryForObject(sql, Boolean.class, order_id, account_id));
+  }
+
 
 
 
