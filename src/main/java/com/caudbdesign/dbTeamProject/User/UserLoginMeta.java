@@ -1,4 +1,5 @@
-package com.caudbdesign.dbTeamProject.Order;
+package com.caudbdesign.dbTeamProject.User;
+
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class SellOrder extends OrderType {
+public class UserLoginMeta {
+
+  private int uid;
+  private String login_id;
+  private int login_attempt;
 
 }

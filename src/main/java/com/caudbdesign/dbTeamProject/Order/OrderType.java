@@ -6,16 +6,15 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-@Setter
 @Getter
+@Setter
+@RequiredArgsConstructor
 
 public class OrderType {
 
-  private int order_id;
-  private int quantity;
-  private int left_quantity;
+  private Integer order_id;
+  private Integer quantity;
   private String order_type;
-  private float limit_price; //지정가.
+  private float limit_price;
 
 }

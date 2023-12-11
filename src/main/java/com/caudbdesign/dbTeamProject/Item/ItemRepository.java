@@ -1,6 +1,10 @@
 package com.caudbdesign.dbTeamProject.Item;
 
-import java.util.ArrayList;
+import com.caudbdesign.dbTeamProject.Item.Stock.AnalystInfo;
+import com.caudbdesign.dbTeamProject.Item.Stock.FinancialStatements;
+import com.caudbdesign.dbTeamProject.Item.Stock.ItemInfoForm;
+import com.caudbdesign.dbTeamProject.Item.Stock.StockData;
+import com.caudbdesign.dbTeamProject.Item.Stock.StockRate;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -33,11 +37,31 @@ public class ItemRepository {
     return Optional.of(item);
   }
 
-  public ItemPrice_Info getItemPriceInfoByItemId(int itemId) {
-    String sql = "SELECT * FROM ItemPrice_Info WHERE item_id = ?;";
-    RowMapper<ItemPrice_Info> rowMapper = new BeanPropertyRowMapper<>(ItemPrice_Info.class);
+  public ItemPriceInfo getItemPriceInfoByItemId(int itemId) {
+    String sql = "SELECT * FROM ItemPriceInfo WHERE item_id = ?;";
+    RowMapper<ItemPriceInfo> rowMapper = new BeanPropertyRowMapper<>(ItemPriceInfo.class);
     return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
   }
+
+  public StockRate getStockRateByItemId(int itemId) {
+    String sql = "SELECT * FROM StockRate WHERE item_id = ?;";
+    RowMapper<StockRate> rowMapper = new BeanPropertyRowMapper<>(StockRate.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
+
+  public FinancialStatements getFinancialStatementsByItemId(int itemId) {
+    String sql = "SELECT * FROM FinancialStatements WHERE item_id = ?;";
+    RowMapper<FinancialStatements> rowMapper = new BeanPropertyRowMapper<>(FinancialStatements.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
+
+  public AnalystInfo getAnalystInfoByAnalystId(int id) {
+    String sql = "SELECT * FROM AnalystInfo WHERE analyst_id= ?;";
+    RowMapper<AnalystInfo> rowMapper = new BeanPropertyRowMapper<>(AnalystInfo.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, id);
+  }
+
+
 
 
 

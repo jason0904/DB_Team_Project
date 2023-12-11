@@ -67,10 +67,37 @@ public class AccountRepository {
   }
 
   public boolean accountLogin (int account_id, String password) {
-    String sql = "select password_hash from AccountPassword where account_id = ?";
+    String sql = "select password_hash from AccountLoginPassword where account_id = ?";
     String password_hash = jdbcTemplate.queryForObject(sql, String.class, account_id);
     assert password_hash != null;
     return password_hash.equals(password);
+  }
+
+  public void updateLoginTime(int account_id) {
+    String sql = "update AccountLoginPassword set updated_at = now() where account_id = ?";
+    jdbcTemplate.update(sql, account_id);
+  }
+
+  public void insertLoginLog(int account_id, String status) {
+    String sql = "insert into AccountLoginLog(account_id, login_time, login_status) values(?, now(), ?)";
+    jdbcTemplate.update(sql, account_id, status);
+  }
+
+  public boolean isLoginLocked(int account_id) {
+    String sql = "select status from Account where account_id = ?";
+    String status = jdbcTemplate.queryForObject(sql, String.class, account_id);
+    assert status != null;
+    return status.equals("locked");
+  }
+
+  public Integer getLoginAttempt(int account_id) {
+    String sql = "select login_attempt from AccountLoginMeta where account_id = ?";
+    return jdbcTemplate.queryForObject(sql, Integer.class, account_id);
+  }
+
+  public void updateStatusByAccountId(int account_id, String status) {
+    String sql = "update Account set status = ? where account_id = ?";
+    jdbcTemplate.update(sql, status, account_id);
   }
 
 }

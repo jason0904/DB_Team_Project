@@ -1,3 +1,9 @@
+DROP DATABASE caudbdesign;
+
+CREATE DATABASE caudbdesign;
+
+use caudbdesign;
+
 CREATE TABLE `User` (
   `uid` integer PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(255),

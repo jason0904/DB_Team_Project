@@ -1,6 +1,5 @@
 package com.caudbdesign.dbTeamProject.Item;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ItemPrice_Info {
+public class ItemPriceInfo {
 
   private int item_id;
   private String currency;
