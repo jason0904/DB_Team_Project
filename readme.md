@@ -14,12 +14,126 @@
 - [ ] 입출금
 
 ## 함수 명세
-- [ ] **통화 변환**: 환율에 따라 통화를 변환하는 기능을 수행합니다.
-- [ ] **수익률 계산**: 투자 자산의 수익률을 계산합니다.
+- [X] **통화 변환**: 환율에 따라 통화를 변환하는 기능을 수행합니다.
+```sql
+DELIMITER $$
+
+CREATE FUNCTION ExchangeCurrency(
+    p_account_id INT, 
+    p_base_currency VARCHAR(3), 
+    p_foreign_currency VARCHAR(3), 
+    p_foreign_amount DECIMAL(65,7),
+    p_exchange_rate DECIMAL(65,7)
+) RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE v_base_balance DECIMAL(65,7);
+    DECLARE v_foreign_balance DECIMAL(65,7);
+    DECLARE v_required_base_amount DECIMAL(65,7);
+    DECLARE v_total_balance DECIMAL(65,7);
+    DECLARE v_success BOOLEAN;
+
+    -- 필요한 기본 통화량 계산
+    SET v_required_base_amount = p_foreign_amount * p_exchange_rate;
+
+    -- 잔액 확인
+    SELECT krw_balance, usd_balance, total_balance INTO v_base_balance, v_foreign_balance, v_total_balance
+    FROM Balance
+    WHERE account_id = p_account_id;
+
+    -- 잔액 확인 및 환전 처리
+    IF (p_base_currency = 'KRW' AND v_base_balance >= v_required_base_amount) OR
+       (p_base_currency = 'USD' AND v_foreign_balance >= v_required_base_amount) THEN
+
+        -- Balance 테이블 업데이트
+        UPDATE Balance
+        SET krw_balance = IF(p_base_currency = 'KRW', v_base_balance - v_required_base_amount, v_base_balance + (p_foreign_amount * p_exchange_rate)),
+            usd_balance = IF(p_base_currency = 'USD', v_foreign_balance - v_required_base_amount, v_foreign_balance + (p_foreign_amount / p_exchange_rate)),
+
+        -- CurrencyExchange 테이블 업데이트
+        INSERT INTO CurrencyExchange (account_id, base_currency, foreign_currency, base_amount, foreign_amount, exchange_time)
+        VALUES (p_account_id, p_base_currency, p_foreign_currency, v_required_base_amount, p_foreign_amount, NOW());
+
+        SET v_success = TRUE;
+    ELSE
+        SET v_success = FALSE;
+    END IF;
+
+    RETURN v_success;
+END $$
+
+DELIMITER ;
+```
+- [X] **수익률 계산**: 투자 자산의 수익률을 계산합니다.
+```sql
+DELIMITER //
+
+CREATE FUNCTION calculate_total_return_in_krw (accountId INT)
+    RETURNS DECIMAL(65,7)
+    DETERMINISTIC
+BEGIN
+    DECLARE finished INTEGER DEFAULT 0;
+    DECLARE item_id INT;
+    DECLARE purchase_price, current_price, quantity DECIMAL(65,7);
+    DECLARE total_investment, total_current_value DECIMAL(65,7) DEFAULT 0;
+    DECLARE market CHAR(1);
+    DECLARE exchange_rate DECIMAL(65,7);
+    DECLARE currency CHAR(3);
+    DECLARE item_cursor CURSOR FOR
+        SELECT sp.item_id, sp.total_purchase_price, sp.quantity, cp.current_price, LEFT(i.market, 1)
+        FROM ItemPortfolio sp
+                 JOIN CurrentPrice cp ON sp.item_id = cp.item_id
+                 JOIN Item i ON sp.item_id = i.item_id
+        WHERE sp.account_id = accountId;
+    DECLARE CONTINUE HANDLER
+        FOR NOT FOUND SET finished = 1;
+
+    -- 현재 환율 가져오기 (USD to KRW), 가장 최신 정보 사용
+    SELECT current_exchange_rate INTO exchange_rate
+    FROM CurrentExchangeRate
+    WHERE base_currency = 'USD' AND foreign_currency = 'KRW'
+    ORDER BY updated_at DESC
+    LIMIT 1;
+
+    OPEN item_cursor;
+
+    read_loop: LOOP
+        FETCH item_cursor INTO item_id, purchase_price, quantity, current_price, market;
+
+        IF finished = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- 통화 결정 및 환율 적용
+        IF UPPER(market) = 'K' THEN
+            SET currency = 'KRW';
+        ELSE
+            SET currency = 'USD';
+            SET current_price = current_price * exchange_rate;
+            SET purchase_price = purchase_price * exchange_rate;
+        END IF;
+
+        -- 총 투자액과 현재 가치 계산
+        SET total_investment = total_investment + (purchase_price * quantity);
+        SET total_current_value = total_current_value + (current_price * quantity);
+    END LOOP;
+
+    CLOSE item_cursor;
+
+    -- 총 수익률 계산
+    IF total_investment > 0 THEN
+        RETURN (total_current_value - total_investment) / total_investment * 100;
+    ELSE
+        RETURN 0;
+    END IF;
+END //
+
+DELIMITER ;
+
+```
 - [ ] **주문 유효성 검사**: 주문이 유효한지 검사하는 데 사용됩니다.
 
 ## 프로시저 명세
-- [ ] **ItemPriceInfo 내용 갱신**: ItemPriceInfo 테이블의 내용을 갱신하는데 사용됩니다.
+- [X] **ItemPriceInfo 내용 갱신**: ItemPriceInfo 테이블의 내용을 갱신하는데 사용됩니다.
 ```sql
 DELIMITER $$
 
@@ -32,7 +146,7 @@ END$$
 
 DELIMITER ;
 ```
-- [ ] **stockportfolio 테이블 total_purchase_price 갱신에 사용**: stockportfolio 테이블 내의 total_purchase_price를 갱신하는 데 사용됩니다.
+- [X] **stockportfolio 테이블 total_purchase_price 갱신에 사용**: stockportfolio 테이블 내의 total_purchase_price를 갱신하는 데 사용됩니다.
 ```sql
 DELIMITER $$
 
@@ -45,7 +159,7 @@ END$$
 
 DELIMITER ;
 ```
-- [ ] **미체결을 체결로 만들어 주는 프로시저**: 미체결 주문을 체결 상태로 만드는 프로시저입니다.
+- [X] **미체결을 체결로 만들어 주는 프로시저**: 미체결 주문을 체결 상태로 만드는 프로시저입니다.
 ```sql
 DELIMITER $$
 
@@ -60,7 +174,7 @@ DELIMITER ;
 ```
 
 ## 트리거 명세
-- [ ] **AccountLogin 횟수 초기화**: AccountLogin의 로그인 시도 횟수를 초기화합니다.
+- [X] **AccountLogin 횟수 초기화**: AccountLogin의 로그인 시도 횟수를 초기화합니다.
 ```sql
 DELIMITER $$
 
@@ -74,7 +188,7 @@ END$$
 
 DELIMITER ;
 ```
-- [ ] **AccountLogin 횟수 자동 증가**: 로그인 실패 시 AccountLogin의 시도 횟수를 자동으로 증가시킵니다.
+- [X] **AccountLogin 횟수 자동 증가**: 로그인 실패 시 AccountLogin의 시도 횟수를 자동으로 증가시킵니다.
 ```sql
 DELIMITER $$
 
@@ -88,7 +202,7 @@ END$$
 
 DELIMITER ;
 ```
-- [ ] **UserLogin 횟수 초기화**: UserLogin의 로그인 시도 횟수를 초기화합니다.
+- [X] **UserLogin 횟수 초기화**: UserLogin의 로그인 시도 횟수를 초기화합니다.
 ```sql
 DELIMITER $$
 
@@ -174,7 +288,7 @@ DELIMITER ;
                 "current_price": 40000 // 현재가 CurrentPrice
             }
           ``` 
-      - [ ] 환율 기록조회 - 시작 날짜, 종료날짜, from통화, to 통화 / 날짜, 환율
+      - [X] 환율 기록조회 - 시작 날짜, 종료날짜, from통화, to 통화 / 날짜, 환율
       - [X] 환전 - account_id / 원화, 달러 잔고, 현재 환율
       - [X] 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
       - [X] 기업 정보 - item_id/기업정보
