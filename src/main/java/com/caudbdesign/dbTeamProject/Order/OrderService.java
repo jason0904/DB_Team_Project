@@ -4,7 +4,7 @@ package com.caudbdesign.dbTeamProject.Order;
 import com.caudbdesign.dbTeamProject.Balance.BalanceRepository;
 import com.caudbdesign.dbTeamProject.Exchange.ExchangeRepository;
 import com.caudbdesign.dbTeamProject.Item.ItemRepository;
-import com.caudbdesign.dbTeamProject.StockPortfolio.PortfolioRepository;
+import com.caudbdesign.dbTeamProject.ItemPortfolio.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -29,9 +29,11 @@ public class OrderService {
       portfolioRepository.updatePortfolio(item_id, quantity, account_id);
       if(market.equals("KOSPI")) {
         balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * limit_price, balanceRepository.selectBalance(account_id).getKRW_Balance() + quantity * limit_price ,balanceRepository.selectBalance(account_id).getUSD_Balance());
+        portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfolio(account_id).getTotal_purchase_price() + quantity * limit_price);
       } else {
         float KRWExchange = limit_price * exchangeRepository.selectRate("USD", "KRW").getCurrent_exchange_rate();
         balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * KRWExchange, balanceRepository.selectBalance(account_id).getKRW_Balance(), balanceRepository.selectBalance(account_id).getUSD_Balance() + quantity * limit_price);
+        portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfolio(account_id).getTotal_purchase_price() + quantity * limit_price);
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -50,7 +52,7 @@ public class OrderService {
   public boolean deleteOrder(int order_id) {
     Order order = orderRepository.findOrderById(order_id);
     if(order.getOrder_status().equals("success")) return false;
-    orderRepository.deleteOrder(order_id, order.getPurchase_type());
+    orderRepository.deleteOrder(order_id);
     return true;
   }
 

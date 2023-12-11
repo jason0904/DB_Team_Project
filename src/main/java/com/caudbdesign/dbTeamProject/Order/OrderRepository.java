@@ -36,16 +36,9 @@ public class OrderRepository {
     return jdbcTemplate.queryForObject(sql, rowMapper, order_id);
   }
 
-  public void deleteOrder(Integer order_id, String Order_type) {
-    String sql = "DELETE FROM `Order` WHERE order_id = ?";
+  public void deleteOrder(Integer order_id) {
+    String sql = "Update `Order` SET order_status = 'cancelled' WHERE order_id = ?";
     jdbcTemplate.update(sql, order_id);
-    if(Order_type.equals("SellOrder")) {
-      String sql2 = "DELETE FROM SellOrder WHERE order_id = ?";
-      jdbcTemplate.update(sql2, order_id);
-    } else if(Order_type.equals("BuyOrder")) {
-      String sql2 = "DELETE FROM BuyOrder WHERE order_id = ?";
-      jdbcTemplate.update(sql2, order_id);
-    }
   }
 
 

@@ -1,10 +1,8 @@
 package com.caudbdesign.dbTeamProject.User;
 
-import java.lang.reflect.Member;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,23 +13,24 @@ public class UserService {
   private final UserRepository userRepository;
   public boolean validateLogin(String id, String pw) {
     Integer uid = userRepository.findByID(id);
-    if (uid == null) {
+    if(uid == null) {
       return false;
     }
-    Optional<Login> login = userRepository.findByUID(uid);
-    if(login.isPresent()) {
-      if(login.get().getLogin_attempt() >= 10) {
-        updateStatusByUID(uid);
+    String password = userRepository.findPasswordHashByUID(uid);
+    if(pw.equals(password)) {
+      if(userRepository.getStatusByUID(uid).equals("inactive")) {
         return false;
       }
-      if (login.get().getPassword_hash().equals(pw)) {
-        updateAttemptByUID(uid, 0);
-        return true;
+      userRepository.insertLoginLog(uid, "success");
+      userRepository.updateLoginTime(uid);
+      return true;
+    } else {
+      userRepository.insertLoginLog(uid, "fail");
+      if(userRepository.getLoginAttemptByUID(uid) >= 10) {
+        userRepository.updateStatusByUID(uid);
       }
+      return false;
     }
-
-    updateAttemptByUID(uid, login.get().getLogin_attempt() + 1);
-    return false;
   }
 
   public User getUserbyUID(int uid) {
@@ -39,15 +38,33 @@ public class UserService {
     return user.orElse(null);
   }
 
-  public void updateStatusByUID(int uid) {
-    userRepository.updateStatusByUID(uid);
-  }
-
-  public void updateAttemptByUID(int uid, int attempt) {
-    userRepository.updateAttemptByUID(uid, attempt);
-  }
 
   public Integer getUIDbyID(String id) {
     return userRepository.findByID(id);
   }
+
+  public UserinformationForm getUserInformation(int uid) {
+    Address address = userRepository.getAddressByUID(uid);
+    SensitiveInfo sensitiveInfo = userRepository.getSensitiveInfoByUID(uid);
+    AdditionalContactInfo additionalContactInfo = userRepository.getAdditionalContactInfoByUID(uid);
+    UserinformationForm userinformationForm = new UserinformationForm();
+    userinformationForm.setUid(uid);
+    userinformationForm.setAddress(address.getAddress());
+    userinformationForm.setPostal_code(address.getPostal_code());
+    userinformationForm.setCountry(address.getCountry());
+    userinformationForm.setEmail(sensitiveInfo.getEmail());
+    userinformationForm.setPhone(sensitiveInfo.getPhone());
+    userinformationForm.setAge(sensitiveInfo.getAge());
+    userinformationForm.setSex(sensitiveInfo.getSex());
+    userinformationForm.setContactType(additionalContactInfo.getContactType());
+    userinformationForm.setContactValue(additionalContactInfo.getContactValue());
+    return userinformationForm;
+  }
+
+  public void updateUserInformation(UserinformationForm userinformationForm) {
+    userRepository.updateAddressByUID(userinformationForm.getUid(), userinformationForm.getAddress(), userinformationForm.getPostal_code(), userinformationForm.getCountry());
+    userRepository.updateAdditionalContactInfoByUID(userinformationForm.getUid(), userinformationForm.getContactType(), userinformationForm.getContactValue());
+    userRepository.updateUserSensitiveInfoByUID(userinformationForm.getUid(), userinformationForm.getEmail(), userinformationForm.getPhone(), userinformationForm.getAge(), userinformationForm.getSex());
+  }
+
 }

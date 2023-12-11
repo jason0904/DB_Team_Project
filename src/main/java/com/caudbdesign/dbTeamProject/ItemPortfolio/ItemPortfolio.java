@@ -1,4 +1,4 @@
-package com.caudbdesign.dbTeamProject.StockPortfolio;
+package com.caudbdesign.dbTeamProject.ItemPortfolio;
 
 import java.sql.Timestamp;
 import lombok.Getter;
@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class StockPortfolio {
+public class ItemPortfolio {
 
   private Integer portfolio_id;
   private Integer account_id;
   private String stock_symbol;
   private int quantity;
-  private float average_purchase_price;
+  private double total_purchase_price;
   private float current_price;
   private Timestamp created_at;
 

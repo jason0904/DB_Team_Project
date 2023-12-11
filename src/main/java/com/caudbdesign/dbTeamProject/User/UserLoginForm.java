@@ -1,21 +1,20 @@
 package com.caudbdesign.dbTeamProject.User;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
 @Component
 @RequiredArgsConstructor
-public class Address {
+@Getter
+@Setter
+public class UserLoginForm {
 
-    private Integer address_id;
-    private Integer uid;
-    private String address;
-    private int postal_code;
-    private String country;
-
+  @JsonProperty("id")
+  private String ID;
+  private String password_hash;
 
 }

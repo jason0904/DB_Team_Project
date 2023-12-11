@@ -60,7 +60,19 @@ public class AccountService {
       return false;
     }
     int account_id = accountOptional.get().getAccount_id();
-    return accountRepository.accountLogin(account_id,password_hash);
+    if(accountRepository.accountLogin(account_id,password_hash)) {
+      accountRepository.updateLoginTime(account_id);
+      accountRepository.insertLoginLog(account_id, "success");
+      return !accountRepository.isLoginLocked(account_id);
+    }
+    else {
+      accountRepository.updateLoginTime(account_id);
+      accountRepository.insertLoginLog(account_id, "failed");
+      if(accountRepository.getLoginAttempt(account_id) >= 10) {
+        accountRepository.updateStatusByAccountId(account_id, "locked");
+      }
+      return false;
+    }
   }
 
   public Account getAccountByAccountId(int account_id) {
