@@ -130,7 +130,53 @@ END //
 DELIMITER ;
 
 ```
-- [ ] **주문 유효성 검사**: 주문이 유효한지 검사하는 데 사용됩니다.
+- [X] **주문 유효성 검사**: 주문이 유효한지 검사하는 데 사용됩니다.
+```sql
+DELIMITER $$
+
+CREATE FUNCTION CheckOrderValidity(input_order_id INT, input_account_id INT)
+RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE itemMarket CHAR(1);
+    DECLARE accountBalance DECIMAL(15, 2);
+    DECLARE orderAmount DECIMAL(15, 2);
+    DECLARE currencyType VARCHAR(3);
+    DECLARE purchaseType CHAR(1);
+
+    -- Order의 purchase_type과 Item의 market 정보를 가져옵니다.
+    SELECT `Order`.purchase_type, Item.market INTO purchaseType, itemMarket
+    FROM `Order` INNER JOIN Item ON `Order`.item_id = Item.item_id
+    WHERE `Order`.order_id = input_order_id LIMIT 1;
+
+    -- 화폐 타입 결정
+    IF LEFT(itemMarket, 1) = 'k' THEN
+        SET currencyType = 'KRW';
+    ELSE
+        SET currencyType = 'USD';
+    END IF;
+
+    -- 계정의 잔액을 가져옵니다.
+    SELECT IF(currencyType = 'KRW', krw_balance, usd_balance) INTO accountBalance
+    FROM Balance
+    WHERE account_id = input_account_id LIMIT 1;
+
+    -- 주문 금액 계산
+    IF LEFT(purchaseType, 1) = 'B' THEN
+        SELECT quantity * limit_price INTO orderAmount
+        FROM `BuyOrder`
+        WHERE order_id = input_order_id LIMIT 1;
+    ELSE
+        SELECT quantity * limit_price INTO orderAmount
+        FROM `SellOrder`
+        WHERE order_id = input_order_id LIMIT 1;
+    END IF;
+
+    -- 잔액과 주문 금액 비교
+    RETURN accountBalance >= orderAmount;
+END$$
+
+DELIMITER ;
+```
 
 ## 프로시저 명세
 - [X] **ItemPriceInfo 내용 갱신**: ItemPriceInfo 테이블의 내용을 갱신하는데 사용됩니다.
