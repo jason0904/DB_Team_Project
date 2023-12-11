@@ -14,9 +14,12 @@ public class ExchangeRepository {
 
   private final JdbcTemplate jdbcTemplate;
 
-  public void save(CurrencyExchange currencyExchange) {
-    jdbcTemplate.update("INSERT INTO CurrencyExchange (account_id, base_currency, foreign_currency, base_amount, foreign_amount, exchange_time) VALUES (?, ?, ?, ?, ?, ?)",
-        currencyExchange.getAccount_id(), currencyExchange.getBase_currency(), currencyExchange.getForeign_currency(), currencyExchange.getBase_amount(), currencyExchange.getForeign_amount(), currencyExchange.getExchange_time());
+  public boolean exchange(int account_id, String base_currency, String foreign_currency, float amount) {
+    float exchange_rate = selectRate(base_currency, foreign_currency).getCurrent_exchange_rate();
+    String sql = "CALL ExchangeCurrency(?, ?, ?, ?, ?)";
+    return Boolean.TRUE.equals(
+        jdbcTemplate.queryForObject(sql, boolean.class, account_id, base_currency, foreign_currency,
+            amount, exchange_rate));
   }
 
   public CurrentExchangeRate selectRate(String base_currency, String foreign_currency) {

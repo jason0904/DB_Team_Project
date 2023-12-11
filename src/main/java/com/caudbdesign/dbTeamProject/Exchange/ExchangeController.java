@@ -34,7 +34,7 @@ public class ExchangeController {
     float base_amount = currencyExchange.getBase_amount();
     String base_currency = currencyExchange.getBase_currency();
     String foreign_currency = currencyExchange.getForeign_currency();
-    boolean result = exchangeService.Exchange(account_id, base_amount, base_currency, foreign_currency);
+    boolean result = exchangeService.exchange(account_id, base_currency, foreign_currency, base_amount);
     if(result) {
       Balance balance = balanceService.selectBalance(account_id);
       return ResponseEntity.ok(balance);
