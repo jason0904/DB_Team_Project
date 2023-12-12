@@ -16,5 +16,5 @@ public class ExchangeRateHistory {
   private String base_currency;
   private String foreign_currency;
   private float exchange_rate;
-  private Timestamp created_at; // 기록
+  private String created_at; // 기록
 }

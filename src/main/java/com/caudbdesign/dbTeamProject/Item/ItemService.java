@@ -23,20 +23,24 @@ public class ItemService {
     List<Item> items = itemRepository.getItemsbySearch(search);
     ArrayList<ItemForm> itemForms = new ArrayList<>();
     for (Item item : items) {
-      ItemPriceInfo itemPrice_info = itemRepository.getItemPriceInfoByItemId(item.getItem_id());
+      CurrentPrice currentPrice = itemRepository.getCurrentPriceByItemId(item.getItem_id());
       ItemForm itemForm = new ItemForm();
       itemForm.setItem_id(item.getItem_id());
       itemForm.setName(item.getName());
       itemForm.setMarket_name(item.getMarket());
-      itemForm.setPrice(itemPrice_info.getCurrent_price());
+      itemForm.setPrice(currentPrice.getCurrent_price());
       itemForms.add(itemForm);
     }
     return itemForms;
   }
 
-  public ItemInfoForm getItemInfoFormbyItemid(int Itemid) {
+  public float getCurrentPriceByItemId(int itemId) {
+    return itemRepository.getCurrentPriceByItemId(itemId).getCurrent_price();
+  }
+
+  public ItemInfoForm getItemInfoFormbyItemid(int Itemid, String report_period) {
     StockRate stockRate = itemRepository.getStockRateByItemId(Itemid);
-    FinancialStatements financialStatements = itemRepository.getFinancialStatementsByItemId(Itemid);
+    FinancialStatements financialStatements = itemRepository.getFinancialStatementsByItemId(Itemid, report_period);
     AnalystInfo analystInfo = itemRepository.getAnalystInfoByAnalystId(stockRate.getAnalyst_id());
     ItemInfoForm itemInfoForm = new ItemInfoForm();
     itemInfoForm.setItem_id(stockRate.getItem_id());
@@ -55,6 +59,10 @@ public class ItemService {
     itemInfoForm.setReport_date(financialStatements.getReport_date());
     itemInfoForm.setReport_period(financialStatements.getReport_period());
     return itemInfoForm;
+  }
+
+  public String getmarketByItemId(int itemId) {
+    return itemRepository.getmarketByItemId(itemId);
   }
 
 

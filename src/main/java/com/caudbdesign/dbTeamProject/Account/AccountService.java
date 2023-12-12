@@ -67,7 +67,7 @@ public class AccountService {
     }
     else {
       accountRepository.updateLoginTime(account_id);
-      accountRepository.insertLoginLog(account_id, "failed");
+      accountRepository.insertLoginLog(account_id, "fail");
       if(accountRepository.getLoginAttempt(account_id) >= 10) {
         accountRepository.updateStatusByAccountId(account_id, "locked");
       }

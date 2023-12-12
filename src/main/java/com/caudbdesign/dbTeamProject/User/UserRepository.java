@@ -17,13 +17,13 @@ public class UserRepository {
 
   @Transactional
   public void save(User user) {
-    String sql = "insert into user (uid, username, usertype, account_status, created_at) values (?, ?, ?, ?, ?, ?)";
+    String sql = "insert into User (uid, username, usertype, account_status, created_at) values (?, ?, ?, ?, ?, ?)";
     jdbcTemplate.update(sql, user.getUid(), user.getUsername(), user.getUsertype(), user.getAccount_status(), user.getCreated_at());
   }
 
   public Optional<User> findUserByUID(int uid) {
     try {
-      String sql = "select * from user where uid = ?";
+      String sql = "select * from User where uid = ?";
       RowMapper<User> rowMapper = BeanPropertyRowMapper.newInstance(User.class);
       User user = jdbcTemplate.queryForObject(sql, rowMapper, uid);
       return Optional.of(user);
@@ -55,7 +55,7 @@ public class UserRepository {
 
   public void updateStatusByUID(int uid) {
     //account_status = 'inactive'로 변경
-    String sql = "update user set account_status = 'inactive' where uid = ?";
+    String sql = "update User set account_status = 'inactive' where uid = ?";
     jdbcTemplate.update(sql, uid);
   }
 
@@ -71,7 +71,7 @@ public class UserRepository {
   }
 
   public String getStatusByUID(int uid) {
-    String sql = "select account_status from user where uid = ?";
+    String sql = "select account_status from User where uid = ?";
     return jdbcTemplate.queryForObject(sql, String.class, uid);
   }
 
@@ -81,7 +81,7 @@ public class UserRepository {
   }
 
   public void updateUserSensitiveInfoByUID(int uid, String email, String phone, int age, String sex) {
-    String sql = "update UserSensitiveInfo set email = ?, phone = ?, age = ?, sex = ? where uid = ?";
+    String sql = "update SensitiveInfo set email = ?, phone = ?, age = ?, sex = ? where uid = ?";
     jdbcTemplate.update(sql, email, phone, age, sex, uid);
   }
 
@@ -108,7 +108,7 @@ public class UserRepository {
   }
 
   public SensitiveInfo getSensitiveInfoByUID(int uid) {
-    String sql = "select * from UserSensitiveInfo where uid = ?";
+    String sql = "select * from SensitiveInfo where uid = ?";
     RowMapper<SensitiveInfo> rowMapper = BeanPropertyRowMapper.newInstance(SensitiveInfo.class);
     return jdbcTemplate.queryForObject(sql, rowMapper, uid);
   }
