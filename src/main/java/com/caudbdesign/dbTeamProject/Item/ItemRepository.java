@@ -73,6 +73,23 @@ public class ItemRepository {
     return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
   }
 
+  public String getNameByItemId(int itemId) {
+    String sql = "select name from Item where item_id = ?;";
+    RowMapper<String> rowMapper = new BeanPropertyRowMapper<>(String.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
+
+//  public CurrentPrice getCurrentPriceByItemId(int itemId) {
+//    String sql = "SELECT * FROM CurrentPrice WHERE item_id = ?;";
+//    RowMapper<CurrentPrice> rowMapper = new BeanPropertyRowMapper<>(CurrentPrice.class);
+//    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+//  }
+
+  public float getOnlyCurrentPriceByItemId(int itemId) {
+    String sql = "select current_price from CurrentPrice where item_id = ?";
+    float currentPrice = jdbcTemplate.queryForObject(sql, Float.class, itemId);
+    return currentPrice;
+  }
 
 
 
