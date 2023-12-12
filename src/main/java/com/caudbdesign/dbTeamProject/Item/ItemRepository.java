@@ -49,10 +49,10 @@ public class ItemRepository {
     return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
   }
 
-  public FinancialStatements getFinancialStatementsByItemId(int itemId) {
-    String sql = "SELECT * FROM FinancialStatements WHERE item_id = ?;";
+  public FinancialStatements getFinancialStatementsByItemId(int itemId, String report_period) {
+    String sql = "SELECT * FROM FinancialStatements WHERE item_id = ? and report_period = ?;";
     RowMapper<FinancialStatements> rowMapper = new BeanPropertyRowMapper<>(FinancialStatements.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId, report_period);
   }
 
   public AnalystInfo getAnalystInfoByAnalystId(int id) {
@@ -61,6 +61,17 @@ public class ItemRepository {
     return jdbcTemplate.queryForObject(sql, rowMapper, id);
   }
 
+  public CurrentPrice getCurrentPriceByItemId(int itemId) {
+    String sql = "SELECT * FROM CurrentPrice WHERE item_id = ?;";
+    RowMapper<CurrentPrice> rowMapper = new BeanPropertyRowMapper<>(CurrentPrice.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
+
+  public String getmarketByItemId(int itemId) {
+    String sql = "SELECT market FROM Item WHERE item_id = ?;";
+    RowMapper<String> rowMapper = new BeanPropertyRowMapper<>(String.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+  }
 
 
 

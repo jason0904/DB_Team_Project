@@ -15,14 +15,14 @@ public class ItemController {
 
   @PostMapping("/api/item")
   @CrossOrigin
-  public ResponseEntity<?> getItems(@RequestBody String search) {
-    return ResponseEntity.ok(itemService.getItemsbySearch(search));
+  public ResponseEntity<?> getItems(@RequestBody ItemInputForm item) {
+    return ResponseEntity.ok(itemService.getItemsbySearch(item.getSearch()));
   }
 
   @PostMapping("/api/item/info")
   @CrossOrigin
-  public ResponseEntity<?> getStockInfo(@RequestBody Item item) {
-    return ResponseEntity.ok(itemService.getItemInfoFormbyItemid(item.getItem_id()));
+  public ResponseEntity<?> getStockInfo(@RequestBody ItemInputForm item) {
+    return ResponseEntity.ok(itemService.getItemInfoFormbyItemid(item.getItem_id(), item.getReport_period()));
   }
 
 

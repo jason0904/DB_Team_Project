@@ -35,8 +35,8 @@ public class UserController {
 
   @PostMapping("/api/info")
   @CrossOrigin
-  public ResponseEntity<?> info(@RequestBody int uid) {
-    UserinformationForm userinformationForm = userService.getUserInformation(uid);
+  public ResponseEntity<?> info(@RequestBody UserinformationForm informationForm) {
+    UserinformationForm userinformationForm = userService.getUserInformation(informationForm.getUid());
     return ResponseEntity.ok(userinformationForm);
   }
 

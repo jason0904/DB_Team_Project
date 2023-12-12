@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class ExchangeService {
 
   private final ExchangeRepository exchangeRepository;
-  private final AccountRepository accountRepository;
   private final BalanceRepository balanceRepository;
 
   public boolean exchange(int account_id, String base_currency, String foreign_currency, float amount) {

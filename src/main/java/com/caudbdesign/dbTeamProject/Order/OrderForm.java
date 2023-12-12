@@ -20,8 +20,10 @@ public class OrderForm {
   private String order_status;
   private Timestamp created_at;
   private Timestamp success_at;
+  private String date;
   private Integer quantity;
   private String order_type;
   private float limit_price;
+
 
 }

@@ -1,12 +1,10 @@
 package com.caudbdesign.dbTeamProject.Order;
 
 
-import com.caudbdesign.dbTeamProject.Balance.BalanceRepository;
-import com.caudbdesign.dbTeamProject.Exchange.ExchangeRepository;
 import com.caudbdesign.dbTeamProject.Item.ItemRepository;
-import com.caudbdesign.dbTeamProject.ItemPortfolio.PortfolioRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,37 +12,11 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
   private final OrderRepository orderRepository;
-  private final PortfolioRepository portfolioRepository;
-  private final BalanceRepository balanceRepository;
-  private final ItemRepository itemRepository;
-  private final ExchangeRepository exchangeRepository;
-
-  //1분뒤 업데이트
-  @Async
-  public void updateOrderStatus(int order_id, int quantity, int item_id, int account_id, String purchase_type, String market, float limit_price) {
-    try {
-      Thread.sleep(60000);
-      orderRepository.updateOrderStatus(order_id);
-      if(purchase_type.equals("SellOrder")) quantity = -quantity;
-      portfolioRepository.updatePortfolio(item_id, quantity, account_id);
-      if(market.equals("KOSPI")) {
-        balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * limit_price, balanceRepository.selectBalance(account_id).getKRW_Balance() + quantity * limit_price ,balanceRepository.selectBalance(account_id).getUSD_Balance());
-        portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfolio(account_id).getTotal_purchase_price() + quantity * limit_price);
-      } else {
-        float KRWExchange = limit_price * exchangeRepository.selectRate("USD", "KRW").getCurrent_exchange_rate();
-        balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * KRWExchange, balanceRepository.selectBalance(account_id).getKRW_Balance(), balanceRepository.selectBalance(account_id).getUSD_Balance() + quantity * limit_price);
-        portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfolio(account_id).getTotal_purchase_price() + quantity * limit_price);
-      }
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
 
   public boolean createOrder(Order order, OrderType orderType) {
-    String market = itemRepository.getItemByItemId(order.getItem_id()).get().getMarket();
-    if(!orderRepository.checkOrderValidity(order.getOrder_id(), order.getAccount_id())) return false;
-    orderRepository.insertOrder(order, orderType);
-    updateOrderStatus(order.getOrder_id(), orderType.getQuantity(), order.getItem_id(), order.getAccount_id(), order.getPurchase_type(), market, orderType.getLimit_price());
+    if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())) return false;
+    int order_id = orderRepository.insertOrder(order, orderType);
+    order.setOrder_id(order_id);
     return true;
   }
 
@@ -55,14 +27,44 @@ public class OrderService {
     return true;
   }
 
-  public boolean amendOrder(int order_id, int quantity) {
+  public int amendOrder(int order_id, int quantity) {
     Order order = orderRepository.findOrderById(order_id);
     OrderType orderType = orderRepository.findOrderTypeById(order_id);
-    if(order.getOrder_status().equals("success")) return false;
+    if(order.getOrder_status().equals("success") || order.getOrder_status().equals("cancelled")) return -1;
     deleteOrder(order_id);
     orderType.setQuantity(quantity);
-    createOrder(order, orderType);
-    return true;
+    return orderRepository.insertOrder(order, orderType);
+  }
+
+  public List<Order> getOrdersByDate(int account_id, String date) {
+    return orderRepository.getOrdersByDate(account_id, date);
+  }
+
+  public Order getOrderById(int order_id) {
+    return orderRepository.findOrderById(order_id);
+  }
+
+  public OrderType getOrderTypeById(int order_id) {
+    return orderRepository.findOrderTypeById(order_id);
+  }
+
+  public List<OrderForm> getPendingOrders(int account_id) {
+    List<Order> orders = orderRepository.getPendingOrders(account_id);
+    List<OrderForm> orderForms = new ArrayList<>();
+    for(Order order : orders) {
+      OrderForm orderForm = new OrderForm();
+      orderForm.setOrder_id(order.getOrder_id());
+      orderForm.setAccount_id(order.getAccount_id());
+      orderForm.setItem_id(order.getItem_id());
+      orderForm.setPurchase_type(order.getPurchase_type());
+      orderForm.setOrder_status(order.getOrder_status());
+      orderForm.setCreated_at(order.getCreated_at());
+      orderForm.setQuantity(orderRepository.findOrderTypeById(order.getOrder_id()).getQuantity());
+      orderForm.setOrder_type(orderRepository.findOrderTypeById(order.getOrder_id()).getOrder_type());
+      orderForm.setLimit_price(orderRepository.findOrderTypeById(order.getOrder_id()).getLimit_price());
+      orderForms.add(orderForm);
+    }
+    return orderForms;
   }
 
 }
