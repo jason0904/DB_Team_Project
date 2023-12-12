@@ -1,6 +1,7 @@
 use caudbdesign;
 
-truncate Account;
+SET FOREIGN_KEY_CHECKS = 0;
+truncate Account ;
 truncate AccountLoginLog;
 truncate AccountLoginPassword;
 truncate AdditionalContactInfo;
@@ -32,3 +33,4 @@ truncate UserLoginLog;
 truncate UserLoginMeta;
 truncate UserLoginPassword;
 truncate UserLoginQuestion;
+SET FOREIGN_KEY_CHECKS = 1;
