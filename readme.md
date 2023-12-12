@@ -262,7 +262,7 @@ END$$
 
 DELIMITER ;
 ```
-- [ ] **UserLogin 횟수 자동증가**: 로그인 실패 시 UserLogin의 시도 횟수를 자동으로 증가시킵니다.
+- [X] **UserLogin 횟수 자동증가**: 로그인 실패 시 UserLogin의 시도 횟수를 자동으로 증가시킵니다.
 ```sql
 DELIMITER $$
 
@@ -304,8 +304,29 @@ DELIMITER ;
                   ]
                 }
           ```
-      - [X] 계좌 로그인 - accountNumber(account), password_hash(accountPassword) / ok, bad request
+      - [X] 계좌 로그인(/api/account/login)
+         - input
+          ```json
+            {
+                "account_number" : "12300000000",
+                "password_hash" : "26795f6e81e330d69174f2cfad2e7f21"
+            }
+          ```
+          - output
+          ```json
+              {
+                "account_id": 1,
+                "uid": 1,
+                "account_number": "12300000000",
+                "account_type": "general",
+                "stock_value": 10000.0,
+                "status": "active",
+                "created_at": "2023-12-12 04:32:35.0",
+                "available_offer_Type": "Offer_Type_1"
+            }
+          ```
       - [X] 종목검색 - 검색어 / itemid, name, market_name, price
+   
       - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
       - [X] 주문 창 - itemid, account_id, 시장가 여부, 지정가, 매수 매도 여부, 수량 / 주문 신청 성공여부
       - [X] 주문 창(미채결 주문) - itemid, account_id / 종목명, 매매구분(매수 매도),주문단가, 미채결량,현재가, 원주문번호
@@ -334,12 +355,48 @@ DELIMITER ;
                 "current_price": 40000 // 현재가 CurrentPrice
             }
           ``` 
-      - [X] 환율 기록조회 - 시작 날짜, 종료날짜, from통화, to 통화 / 날짜, 환율
-      - [X] 환전 - account_id / 원화, 달러 잔고, 현재 환율
+      - [X] 환율 기록조회(/api/exchange/rate)
+      - [X] 환전(/api/exchange)
+            - input
+          ```json
+          {
+            "account_id" : 1
+            }
+          ```
+          - output
+          ```json
+          {
+            "current_exchange_rate": 0.0,
+            "krw_Balance": 8000.0,
+            "usd_Balance": 2.0
+            }
+          ```
       - [X] 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
       - [X] 기업 정보 - item_id/기업정보
       - [X] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
       - [X] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
+        - input
+         ```json
+         {
+            "uid" : 1
+           }
+      
+         ```
+        - output
+         ```json
+         {
+             "uid": 1,
+             "address": "123 Main St",
+             "postal_code": 12345,
+             "country": "Korea",
+             "email": "john@example.com",
+             "phone": "010-1234-5679",
+             "age": 30,
+             "sex": "Male",
+             "contactValue": "john.secondary@example.com",
+             "contactType": "secondary_email"
+         }
+         ```
 9. Front
       - [x] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
       - [x] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
