@@ -236,26 +236,26 @@ VALUES
 -- AccountLoginPasswWord 테이블에 레코드 삽입
 INSERT INTO AccountLoginPassword (account_id, password_hash, updated_at)
 VALUES
-    (1, MD5(CONCAT('account_password_hash_1', 'abc')), NOW()),
-    (2, MD5(CONCAT('account_password_hash_2', 'abc')), NOW()),
-    (3, MD5(CONCAT('account_password_hash_3', 'abc')), NOW()),
-    (4, MD5(CONCAT('account_password_hash_4', 'abc')), NOW()),
-    (5, MD5(CONCAT('account_password_hash_5', 'abc')), NOW()),
-    (6, MD5(CONCAT('account_password_hash_6', 'abc')), NOW()),
-    (7, MD5(CONCAT('account_password_hash_7', 'abc')), NOW()),
-    (8, MD5(CONCAT('account_password_hash_8', 'abc')), NOW()),
-    (9, MD5(CONCAT('account_password_hash_9', 'abc')), NOW()),
-    (10, MD5(CONCAT('account_password_hash_10', 'abc')), NOW()),
-    (11, MD5(CONCAT('account_password_hash_11', 'abc')), NOW()),
-    (12, MD5(CONCAT('account_password_hash_12', 'abc')), NOW()),
-    (13, MD5(CONCAT('account_password_hash_13', 'abc')), NOW()),
-    (14, MD5(CONCAT('account_password_hash_14', 'abc')), NOW()),
-    (15, MD5(CONCAT('account_password_hash_15', 'abc')), NOW()),
-    (16, MD5(CONCAT('account_password_hash_16', 'abc')), NOW()),
-    (17, MD5(CONCAT('account_password_hash_17', 'abc')), NOW()),
-    (18, MD5(CONCAT('account_password_hash_18', 'abc')), NOW()),
-    (19, MD5(CONCAT('account_password_hash_19', 'abc')), NOW()),
-    (20, MD5(CONCAT('account_password_hash_20', 'abc')), NOW());
+    (1, MD5(CONCAT('1111', 'abc')), NOW()),
+    (2, MD5(CONCAT('2222', 'abc')), NOW()),
+    (3, MD5(CONCAT('3333', 'abc')), NOW()),
+    (4, MD5(CONCAT('4444', 'abc')), NOW()),
+    (5, MD5(CONCAT('5555', 'abc')), NOW()),
+    (6, MD5(CONCAT('6666', 'abc')), NOW()),
+    (7, MD5(CONCAT('7777', 'abc')), NOW()),
+    (8, MD5(CONCAT('8888', 'abc')), NOW()),
+    (9, MD5(CONCAT('9999', 'abc')), NOW()),
+    (10, MD5(CONCAT('1010', 'abc')), NOW()),
+    (11, MD5(CONCAT('1111', 'abc')), NOW()),
+    (12, MD5(CONCAT('1212', 'abc')), NOW()),
+    (13, MD5(CONCAT('1313', 'abc')), NOW()),
+    (14, MD5(CONCAT('1414', 'abc')), NOW()),
+    (15, MD5(CONCAT('1515', 'abc')), NOW()),
+    (16, MD5(CONCAT('1616', 'abc')), NOW()),
+    (17, MD5(CONCAT('1717', 'abc')), NOW()),
+    (18, MD5(CONCAT('1818', 'abc')), NOW()),
+    (19, MD5(CONCAT('1919', 'abc')), NOW()),
+    (20, MD5(CONCAT('2020', 'abc')), NOW());
 
 INSERT INTO AccountLoginMeta (account_id, login_attempt)
 VALUES
