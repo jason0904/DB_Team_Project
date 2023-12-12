@@ -17,6 +17,14 @@ public class OrderController {
   private final ItemService itemService;
   private final OrderSuccess orderSuccess;
 
+  @PostMapping("/api/order")
+  @CrossOrigin
+  public ResponseEntity<?> orderPage(@RequestBody Order order) {
+    OrderPageForm orderPageForm = orderService.orderPage(order.getAccount_id(), order.getItem_id());
+    return ResponseEntity.ok(orderPageForm);
+  }
+
+
   @PostMapping("api/order/order")
   @CrossOrigin
   public ResponseEntity<?> order(@RequestBody OrderForm orderForm) {

@@ -66,6 +66,15 @@ public class PortfolioRepository {
     return totalValue;
   }
 
+  public float calculateTotalReturnInKrw(Integer account_id) {
+    String sql = "select calculate_total_return_in_krw(?);";
+    float v = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).floatValue();
+    return v;
+  }
 
+  public void updatequantity(int account_id, int item_id, int quantity) {
+    String sql = "update ItemPortfolio set quantity = ? where account_id = ? and item_id = ?";
+    jdbcTemplate.update(sql, quantity, account_id, item_id);
+  }
 
 }

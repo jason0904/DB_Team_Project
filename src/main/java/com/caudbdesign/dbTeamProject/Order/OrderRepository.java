@@ -77,6 +77,16 @@ public class OrderRepository {
     return jdbcTemplate.query(sql, rowMapper, account_id);
   }
 
+  public List<Integer> getOrderId(int item_id) {
+    String sql = "select order_id from `Order` where item_id = ? and order_status = 'pending' and purchase_type = 'sellorder';";
+    return jdbcTemplate.queryForList(sql, Integer.class, item_id);
+
+  }
+
+//  public void getQuantityAndLimitprice(int order_id) {
+//    String sql = "select * from SellOrder where order_id = ?";
+//    jdbcTemplate.queryForObject(sql, )
+//  }
 
 
 

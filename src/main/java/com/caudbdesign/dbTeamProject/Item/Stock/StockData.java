@@ -26,11 +26,4 @@ public class StockData {
     private Timestamp created_at;
 
 
-
-//    @JsonProperty("ceo")
-//    String CEO;
-//    String sector;
-//    String industry;
-//    Float dividend_yield;
-//    Integer dividend_payment_month;
 }

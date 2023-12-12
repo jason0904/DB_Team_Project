@@ -1,6 +1,8 @@
 package com.caudbdesign.dbTeamProject.Order;
 
 
+import com.caudbdesign.dbTeamProject.Balance.BalanceRepository;
+import com.caudbdesign.dbTeamProject.Item.ItemRepository;
 import com.caudbdesign.dbTeamProject.ItemPortfolio.PortfolioRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,8 @@ public class OrderService {
 
   private final OrderRepository orderRepository;
   private final PortfolioRepository portfolioRepository;
+  private final BalanceRepository balanceRepository;
+  private final ItemRepository itemRepository;
 
   public boolean createOrder(Order order, OrderType orderType) {
     if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())
@@ -76,5 +80,25 @@ public class OrderService {
     }
     return orderForms;
   }
+
+
+  public OrderPageForm orderPage(Integer account_id, Integer item_id){
+    OrderPageForm orderPageForm = new OrderPageForm();
+    List<OrderLeftForm> orderLeftForms = new ArrayList<>();
+    List<Integer> order_ids = orderRepository.getOrderId(item_id);
+    for(Integer order_id : order_ids) {
+      OrderLeftForm orderLeftForm = new OrderLeftForm();
+      orderLeftForm.setQuantity(orderRepository.findOrderTypeById(order_id).getQuantity());
+      orderLeftForm.setLimit_price(orderRepository.findOrderTypeById(order_id).getLimit_price());
+      orderLeftForms.add(orderLeftForm);
+    }
+    orderPageForm.setBalance(balanceRepository.selectOnlyBalance(account_id));
+    orderPageForm.setName(itemRepository.getNameByItemId(item_id));
+    orderPageForm.setCurrent_price(itemRepository.getOnlyCurrentPriceByItemId(item_id));
+    orderPageForm.setStart_price(itemRepository.getOnlyStartpriceByItemId(item_id));
+    orderPageForm.setOrder_left_form(orderLeftForms);
+    return orderPageForm;
+  }
+
 
 }
