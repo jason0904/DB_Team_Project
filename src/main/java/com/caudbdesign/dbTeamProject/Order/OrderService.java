@@ -1,7 +1,7 @@
 package com.caudbdesign.dbTeamProject.Order;
 
 
-import com.caudbdesign.dbTeamProject.Item.ItemRepository;
+import com.caudbdesign.dbTeamProject.ItemPortfolio.PortfolioRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,14 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
   private final OrderRepository orderRepository;
+  private final PortfolioRepository portfolioRepository;
 
   public boolean createOrder(Order order, OrderType orderType) {
-    if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())) return false;
+    if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())
+    && order.getPurchase_type().equalsIgnoreCase("buyorder")) return false;
+    else if(order.getPurchase_type().equalsIgnoreCase("sellorder")) {
+      if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return false;
+    }
     int order_id = orderRepository.insertOrder(order, orderType);
     order.setOrder_id(order_id);
     return true;
@@ -33,6 +38,11 @@ public class OrderService {
     if(order.getOrder_status().equals("success") || order.getOrder_status().equals("cancelled")) return -1;
     deleteOrder(order_id);
     orderType.setQuantity(quantity);
+    if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())
+        && order.getPurchase_type().equalsIgnoreCase("buyorder")) return -1;
+    else if(order.getPurchase_type().equalsIgnoreCase("sellorder")) {
+      if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return -1;
+    }
     return orderRepository.insertOrder(order, orderType);
   }
 
