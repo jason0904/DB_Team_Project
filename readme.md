@@ -16,24 +16,22 @@
 ## 함수 명세
 - [X] **통화 변환**: 환율에 따라 통화를 변환하는 기능을 수행합니다.
 ```sql
-DELIMITER $$
-
 CREATE FUNCTION ExchangeCurrency(
-    p_account_id INT, 
-    p_base_currency VARCHAR(3), 
-    p_foreign_currency VARCHAR(3), 
-    p_foreign_amount DECIMAL(65,7),
+    p_account_id INT,
+    p_base_currency VARCHAR(3),
+    p_foreign_currency VARCHAR(3),
+    p_base_amount DECIMAL(65,7),
     p_exchange_rate DECIMAL(65,7)
 ) RETURNS BOOLEAN DETERMINISTIC
 BEGIN
     DECLARE v_base_balance DECIMAL(65,7);
     DECLARE v_foreign_balance DECIMAL(65,7);
-    DECLARE v_required_base_amount DECIMAL(65,7);
+    DECLARE v_required_foreign_amount DECIMAL(65,7);
     DECLARE v_total_balance DECIMAL(65,7);
     DECLARE v_success BOOLEAN;
 
     -- 필요한 기본 통화량 계산
-    SET v_required_base_amount = p_foreign_amount * p_exchange_rate;
+    SET v_required_foreign_amount = p_base_amount * p_exchange_rate;
 
     -- 잔액 확인
     SELECT krw_balance, usd_balance, total_balance INTO v_base_balance, v_foreign_balance, v_total_balance
@@ -41,17 +39,18 @@ BEGIN
     WHERE account_id = p_account_id;
 
     -- 잔액 확인 및 환전 처리
-    IF (p_base_currency = 'KRW' AND v_base_balance >= v_required_base_amount) OR
-       (p_base_currency = 'USD' AND v_foreign_balance >= v_required_base_amount) THEN
+    IF (p_base_currency = 'KRW' AND v_base_balance >= p_base_amount) OR
+       (p_base_currency = 'USD' AND v_foreign_balance >= p_base_amount) THEN
 
         -- Balance 테이블 업데이트
         UPDATE Balance
-        SET krw_balance = IF(p_base_currency = 'KRW', v_base_balance - v_required_base_amount, v_base_balance + (p_foreign_amount * p_exchange_rate)),
-            usd_balance = IF(p_base_currency = 'USD', v_foreign_balance - v_required_base_amount, v_foreign_balance + (p_foreign_amount / p_exchange_rate));
+        SET krw_balance = IF(p_base_currency = 'KRW', v_base_balance - p_base_amount, v_base_balance + v_required_foreign_amount),
+            usd_balance = IF(p_base_currency = 'USD', v_foreign_balance - p_base_amount, v_foreign_balance + v_required_foreign_amount)
+        WHERE account_id = p_account_id;
 
-        -- CurrencyExchange 테이블 업데이트
-        INSERT INTO CurrencyExchange (account_id, base_currency, foreign_currency, base_amount, foreign_amount, exchange_time)
-        VALUES (p_account_id, p_base_currency, p_foreign_currency, v_required_base_amount, p_foreign_amount, NOW());
+            -- CurrencyExchange 테이블 업데이트
+            INSERT INTO CurrencyExchange (account_id, base_currency, foreign_currency, base_amount, foreign_amount, exchange_time)
+        VALUES (p_account_id, p_base_currency, p_foreign_currency, p_base_amount, v_required_foreign_amount, NOW());
 
         SET v_success = TRUE;
     ELSE
@@ -326,12 +325,60 @@ DELIMITER ;
             }
           ```
       - [X] 종목검색 - 검색어 / itemid, name, market_name, price
-   
+          - input
+          ```json
+            {
+              "search" : "Apple"
+            }
+          ```
+          - output
+          ```json
+            [
+                {
+                    "item_id": 1,
+                    "name": "Apple Inc.",
+                    "market_name": "NYSE",
+                    "price": 149.0
+                }
+            ]
+          ```   
       - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
-      - [X] 주문 창 - itemid, account_id, 시장가 여부, 지정가, 매수 매도 여부, 수량 / 주문 신청 성공여부
-      - [X] 주문 창(미채결 주문) - itemid, account_id / 종목명, 매매구분(매수 매도),주문단가, 미채결량,현재가, 원주문번호
-      - [X] 주문 창(정정) - itemid, account_id, 정정 가격, 원주문번호/ 정정주문번호, 정정주문 신청 성공여부
-      - [X] 주문 창(취소) - itemid, account_id, 원주문번호/ 정정(취소)주문 신청 성공여부
+      - [X] 주문 창 - (/api/order/order)
+        - input
+         ```json
+             {
+                "account_id" : 1,
+                "item_id" : 1,
+                "purchase_type" : "buyorder",
+                "quantity" : 1,
+                "order_type" : "limit"
+                "limit_price" : 450.00
+            }
+         ```
+        - output : OK or BadRequest
+      - [X] 주문 창(미채결 주문) - (/api/order/pendings) -> 지금 data가 이상한 상황이라 테스트 보류.
+        - input
+         ```json
+         {
+             "account_id" : 1
+           }  
+      - [X] 주문 창(정정) - (/api/order/amend)
+        - input
+         ```json
+         {
+             "order_id" : 5,
+             "quantity" : 10
+           }
+         ```
+        - output : OK or BadRequest
+      - [X] 주문 창(취소) - (/api/order/cancel)
+        - input
+         ```json
+         {
+             "order_id" : 5
+           }
+         ```
+        - output : OK or BadRequest
       - [ ] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
          - input
           ```json
@@ -371,7 +418,7 @@ DELIMITER ;
             }
           ```
       - [X] 환전(/api/exchange)
-            - input
+           - input
           ```json
           {
             "account_id" : 1
@@ -385,11 +432,98 @@ DELIMITER ;
             "usd_Balance": 2.0
             }
           ```
-      - [X] 환전 신청 - account_id, from통화, to 통화, to 통화기준 금액/ 성공여부, 환전후 원화잔고, 달러잔고
-      - [X] 기업 정보 - item_id/기업정보
-      - [X] 채결 기록 - 날짜(하루), account_id/ stockTradinglog
-      - [X] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
+      - [X] 환전 신청(/api/exchange/exchange)
+          - input
+          ```json
+            {
+              "account_id" : 1,
+              "base_amount" : 2000,
+              "base_currency" : "KRW",
+              "foreign_currency" : "USD"
+            }
+          ```
+          - output
+          ```json
+              {
+              "account_id": 1,
+              "usd_Balance": 4.0,
+              "krw_Balance": 6000.0,
+              "total_Balance": 10000.0
+            }
+          ```
+      - [X] 기업 정보(/api/item/info)
         - input
+         ```json
+         {
+                "item_id" : 1,
+                "report_period" : "2022-Q4"
+           }
+      
+         ```
+        - output
+         ```json
+         {
+            "analyst_id": 1,
+            "name": "Analyst 1",
+            "firm": "Firm 1",
+            "expertise_area": "Technology",
+            "contact_info": "analyst1@firm.com",
+            "item_id": 1,
+            "analyst_rating": "A",
+            "target_price": 160.0,
+            "statement_id": null,
+            "report_period": "2022-Q4",
+            "revenue": 100000000,
+            "net_income": 20000000,
+            "total_assets": 500000000,
+            "total_liabilities": 300000000,
+            "equity": 200000000,
+            "report_date": "2023-12-11T22:44:40.000+00:00"
+         }
+         ```
+      - [X] 채결 기록 - (/api/order/log)
+        - input
+         ```json
+         {
+             "account_id" : 1,
+             "date" : "2023-12-12"
+           }
+      
+         ```
+        - output
+         ```json
+         [
+            {
+                "order_id": 1,
+                "account_id": 1,
+                "item_id": 1,
+                "purchase_type": "buyorder",
+                "order_status": "cancelled",
+                "created_at": "2023-12-11T22:44:16.000+00:00",
+                "success_at": null
+            },
+            {
+                "order_id": 25,
+                "account_id": 1,
+                "item_id": 2,
+                "purchase_type": "BuyOrder",
+                "order_status": "success",
+                "created_at": "2023-12-12T00:35:47.000+00:00",
+                "success_at": "2023-12-12T00:36:47.000+00:00"
+            },
+            {
+                "order_id": 26,
+                "account_id": 1,
+                "item_id": 1,
+                "purchase_type": "buyorder",
+                "order_status": "cancelled",
+                "created_at": "2023-12-12T01:08:12.000+00:00",
+                "success_at": null
+            }
+        ]
+        ```
+      - [X] 개인 정보 확인 (수정) - userid/ user, username, email, phone, street_address, city, state, country, ..
+        - input(확인일때, /api/info)
          ```json
          {
             "uid" : 1
@@ -411,7 +545,7 @@ DELIMITER ;
              "contactType": "secondary_email"
          }
          ```
-9. Front
+10. Front
       - [x] 주문 정정창에 등락 없애기, 취소 누르기, 정정에서 수량 칸 구매가능 주수 없애기
       - [x] 로그인 후 창에 계좌 선택 넣고 계좌를 선택해야 주문하기, 잔고확인 버튼 생기게
       - [x] vuex에 account 정보, 현재 선택된 account
