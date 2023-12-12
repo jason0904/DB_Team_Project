@@ -22,7 +22,7 @@ public class OrderSuccess {
     try {
       Thread.sleep(60000);
       orderRepository.updateOrderStatus(order_id);
-      if(purchase_type.equals("SellOrder")) quantity = -quantity;
+      if(purchase_type.equalsIgnoreCase("SellOrder")) quantity = -quantity;
       portfolioRepository.updatePortfolio(item_id, quantity, account_id);
       if(market.equals("KOSPI")) {
         balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * limit_price, balanceRepository.selectBalance(account_id).getKRW_Balance() + quantity * limit_price ,balanceRepository.selectBalance(account_id).getUSD_Balance());
@@ -34,6 +34,7 @@ public class OrderSuccess {
         portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getTotal_purchase_price()
             + quantity * limit_price);
       }
+      portfolioRepository.updatePortfolio(item_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getQuantity() + quantity, account_id);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
