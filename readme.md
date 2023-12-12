@@ -47,7 +47,7 @@ BEGIN
         -- Balance 테이블 업데이트
         UPDATE Balance
         SET krw_balance = IF(p_base_currency = 'KRW', v_base_balance - v_required_base_amount, v_base_balance + (p_foreign_amount * p_exchange_rate)),
-            usd_balance = IF(p_base_currency = 'USD', v_foreign_balance - v_required_base_amount, v_foreign_balance + (p_foreign_amount / p_exchange_rate)),
+            usd_balance = IF(p_base_currency = 'USD', v_foreign_balance - v_required_base_amount, v_foreign_balance + (p_foreign_amount / p_exchange_rate));
 
         -- CurrencyExchange 테이블 업데이트
         INSERT INTO CurrencyExchange (account_id, base_currency, foreign_currency, base_amount, foreign_amount, exchange_time)
@@ -128,7 +128,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
 ```
 - [X] **주문 유효성 검사**: 주문이 유효한지 검사하는 데 사용됩니다.
 ```sql
@@ -138,8 +137,8 @@ CREATE FUNCTION CheckOrderValidity(input_order_id INT, input_account_id INT)
 RETURNS BOOLEAN DETERMINISTIC
 BEGIN
     DECLARE itemMarket CHAR(1);
-    DECLARE accountBalance DECIMAL(15, 2);
-    DECLARE orderAmount DECIMAL(15, 2);
+    DECLARE accountBalance DECIMAL(65, 7);
+    DECLARE orderAmount DECIMAL(65, 7);
     DECLARE currencyType VARCHAR(3);
     DECLARE purchaseType CHAR(1);
 
@@ -183,11 +182,12 @@ DELIMITER ;
 ```sql
 DELIMITER $$
 
-CREATE PROCEDURE UpdateItemPriceInfo(IN p_item_id INTEGER, IN p_closing_price DECIMAL(15,2), IN p_opening_price DECIMAL(15,2))
+CREATE TRIGGER ResetAccountLoginAttempts AFTER UPDATE ON AccountLoginPassword
+    FOR EACH ROW
 BEGIN
-    UPDATE ItemPriceInfo
-    SET closing_price = p_closing_price, opening_price = p_opening_price, updated_at = NOW()
-    WHERE item_id = p_item_id;
+    IF NEW.password_hash = OLD.password_hash THEN
+        UPDATE AccountLoginMeta SET login_attempt = 0 WHERE account_id = NEW.account_id;
+    END IF;
 END$$
 
 DELIMITER ;
@@ -196,7 +196,7 @@ DELIMITER ;
 ```sql
 DELIMITER $$
 
-CREATE PROCEDURE UpdateStockPortfolioTotalPurchasePrice(IN p_account_id INTEGER, IN p_item_id INTEGER, IN p_total_purchase_price DECIMAL(15,2))
+CREATE PROCEDURE UpdateStockPortfolioTotalPurchasePrice(IN p_account_id INTEGER, IN p_item_id INTEGER, IN p_total_purchase_price DECIMAL(65,7))
 BEGIN
     UPDATE ItemPortfolio
     SET total_purchase_price = p_total_purchase_price
@@ -224,11 +224,11 @@ DELIMITER ;
 ```sql
 DELIMITER $$
 
-CREATE TRIGGER ResetAccountLoginAttempts AFTER UPDATE ON AccountLogin
+CREATE TRIGGER ResetAccountLoginAttempts AFTER UPDATE ON AccountLoginPassword
 FOR EACH ROW
 BEGIN
     IF NEW.password_hash = OLD.password_hash THEN
-        UPDATE AccountLogin SET password_attempt = 0 WHERE account_id = NEW.account_id;
+        UPDATE AccountLoginMeta SET login_attempt = 0 WHERE account_id = NEW.account_id;
     END IF;
 END$$
 
@@ -241,8 +241,8 @@ DELIMITER $$
 CREATE TRIGGER IncreaseAccountLoginAttempts AFTER INSERT ON AccountLoginLog
 FOR EACH ROW
 BEGIN
-    IF NEW.login_status = 'failed' THEN
-        UPDATE AccountLogin SET password_attempt = password_attempt + 1 WHERE account_id = NEW.account_id;
+    IF NEW.login_status = 'fail' THEN
+        UPDATE AccountLoginMeta SET login_attempt = login_attempt + 1 WHERE account_id = NEW.account_id;
     END IF;
 END$$
 
@@ -269,7 +269,7 @@ DELIMITER $$
 CREATE TRIGGER IncreaseUserLoginAttempts AFTER INSERT ON UserLoginLog
     FOR EACH ROW
 BEGIN
-    IF NEW.login_status = 'failed' THEN
+    IF NEW.login_status = 'fail' THEN
         UPDATE UserLoginMeta SET login_attempt = login_attempt + 1 WHERE uid = NEW.uid;
     END IF;
 END$$
@@ -305,7 +305,7 @@ DELIMITER ;
                 }
           ```
       - [X] 계좌 로그인(/api/account/login)
-         - input
+          - input
           ```json
             {
                 "account_number" : "12300000000",
@@ -356,6 +356,20 @@ DELIMITER ;
             }
           ``` 
       - [X] 환율 기록조회(/api/exchange/rate)
+          - input
+          ```json
+            {
+              "base_currency" : "USD",
+              "foreign_currency" : "KRW", 
+              "created_at" : "2023-12-05"
+            }
+          ```
+          - output
+          ```json
+              {
+                1000.0
+            }
+          ```
       - [X] 환전(/api/exchange)
             - input
           ```json
