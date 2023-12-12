@@ -23,29 +23,29 @@ VALUES
 
 INSERT INTO Personal (uid, social_id_hash)
 VALUES 
-    (1, 'hash_value_1'),
-    (3, 'hash_value_3'),
-    (5, 'hash_value_5'),
-    (6, 'hash_value_6'),
-    (8, 'hash_value_8'),
-    (10, 'hash_value_10'),
-    (11, 'hash_value_11'),
-    (13, 'hash_value_13'),
-    (15, 'hash_value_15'),
-    (18, 'hash_value_18');
+    (1, MD5('social_id_1'+'abc')),
+    (3, MD5('social_id_3'+'abc')),
+    (5, MD5('social_id_5'+'abc')),
+    (6, MD5('social_id_6'+'abc')),
+    (8, MD5('social_id_8'+'abc')),
+    (10, MD5('social_id_10'+'abc')),
+    (11, MD5('social_id_11'+'abc')),
+    (13, MD5('social_id_13'+'abc')),
+    (15, MD5('social_id_15'+'abc')),
+    (18, MD5('social_id_18'+'abc'));
 
 INSERT INTO Organization (uid, business_id_hash)
 VALUES 
-    (2, 'business_hash_value_2'),
-    (4, 'business_hash_value_4'),
-    (7, 'business_hash_value_7'),
-    (9, 'business_hash_value_9'),
-    (12, 'business_hash_value_12'),
-    (14, 'business_hash_value_14'),
-    (16, 'business_hash_value_16'),
-    (17, 'business_hash_value_17'),
-    (19, 'business_hash_value_19'),
-    (20, 'business_hash_value_20');
+    (2, MD5('business_id_2'+'abc')),
+    (4, MD5('business_id_4'+'abc')),
+    (7, MD5('business_id_7'+'abc')),
+    (9, MD5('business_id_9'+'abc')),
+    (12, MD5('business_id_12'+'abc')),
+    (14, MD5('business_id_14'+'abc')),
+    (16, MD5('business_id_16'+'abc')),
+    (17, MD5('business_id_17'+'abc')),
+    (19, MD5('business_id_19'+'abc')),
+    (20, MD5('business_id_20'+'abc'));
 
 -- UserLoginMeta 테이블에 레코드 삽입
 INSERT INTO UserLoginMeta (uid, login_id, login_attempt)
@@ -74,50 +74,50 @@ VALUES
 -- UserLoginPassWord 테이블에 레코드 삽입
 INSERT INTO UserLoginPassWord (uid, password_hash, updated_at)
 VALUES 
-    (1, 'password_hash_1', NOW()),
-    (2, 'password_hash_2', NOW()),
-    (3, 'password_hash_3', NOW()),
-    (4, 'password_hash_4', NOW()),
-    (5, 'password_hash_5', NOW()),
-    (6, 'password_hash_6', NOW()),
-    (7, 'password_hash_7', NOW()),
-    (8, 'password_hash_8', NOW()),
-    (9, 'password_hash_9', NOW()),
-    (10, 'password_hash_10', NOW()),
-    (11, 'password_hash_11', NOW()),
-    (12, 'password_hash_12', NOW()),
-    (13, 'password_hash_13', NOW()),
-    (14, 'password_hash_14', NOW()),
-    (15, 'password_hash_15', NOW()),
-    (16, 'password_hash_16', NOW()),
-    (17, 'password_hash_17', NOW()),
-    (18, 'password_hash_18', NOW()),
-    (19, 'password_hash_19', NOW()),
-    (20, 'password_hash_20', NOW());
+    (1, MD5('password_hash_1'+'abc'), NOW()),
+    (2, MD5('password_hash_2'+'abc'), NOW())),
+    (3, MD5('password_hash_3'+'abc'), NOW()),
+    (4, MD5('password_hash_4'+'abc'), NOW()),
+    (5, MD5('password_hash_5'+'abc'), NOW()),
+    (6, MD5('password_hash_6'+'abc'), NOW()),
+    (7, MD5('password_hash_7'+'abc'), NOW()),
+    (8, MD5('password_hash_8'+'abc'), NOW()),
+    (9, MD5('password_hash_9'+'abc'), NOW()),
+    (10, MD5('password_hash_10'+'abc'), NOW()),
+    (11, MD5('password_hash_11'+'abc'), NOW()),
+    (12, MD5('password_hash_12'+'abc'), NOW()),
+    (13, MD5('password_hash_13'+'abc'), NOW()),
+    (14, MD5('password_hash_14'+'abc'), NOW()),
+    (15, MD5('password_hash_15'+'abc'), NOW()),
+    (16, MD5('password_hash_16'+'abc'), NOW()),
+    (17, MD5('password_hash_17'+'abc'), NOW()),
+    (18, MD5('password_hash_18'+'abc'), NOW()),
+    (19, MD5('password_hash_19'+'abc'), NOW()),
+    (20, MD5('password_hash_20'+'abc'), NOW());
 
 -- UserLoginQuestion 테이블에 레코드 삽입
 INSERT INTO UserLoginQuestion (uid, security_question, security_answer_hash)
 VALUES 
-    (1, 'Your first pets name?', 'answer_hash_1'),
-    (2, 'Your favorite movie?', 'answer_hash_2'),
-    (3, 'Your best friend''s name?', 'answer_hash_3'),
-    (4, 'Your childhood nickname?', 'answer_hash_4'),
-    (5, 'The name of your first school?', 'answer_hash_5'),
-    (6, 'Your favorite food?', 'answer_hash_6'),
-    (7, 'Your favorite color?', 'answer_hash_7'),
-    (8, 'Your favorite book?', 'answer_hash_8'),
-    (9, 'Your favorite song?', 'answer_hash_9'),
-    (10, 'Your favorite animal?', 'answer_hash_10'),
-    (11, 'Your favorite movie?', 'answer_hash_11'),
-    (12, 'Your favorite movie?', 'answer_hash_12'),
-    (13, 'Your favorite movie?', 'answer_hash_13'),
-    (14, 'Your favorite movie?', 'answer_hash_14'),
-    (15, 'Your favorite movie?', 'answer_hash_15'),
-    (16, 'Your favorite movie?', 'answer_hash_16'),
-    (17, 'Your favorite movie?', 'answer_hash_17'),
-    (18, 'Your favorite movie?', 'answer_hash_18'),
-    (19, 'Your favorite movie?', 'answer_hash_19'),
-    (20, 'Your favorite movie?', 'answer_hash_20');
+    (1, 'Your first pets name?', MD5('answer_hash_1'+'abc')),
+    (2, 'Your favorite movie?', MD5('answer_hash_2'+'abc')),
+    (3, 'Your best friend''s name?', MD5('answer_hash_3'+'abc')),
+    (4, 'Your childhood nickname?', MD5('answer_hash_4'+'abc')),
+    (5, 'The name of your first school?', MD5('answer_hash_5'+'abc')),
+    (6, 'Your favorite food?', MD5('answer_hash_6'+'abc')),
+    (7, 'Your favorite color?', MD5('answer_hash_7'+'abc')),
+    (8, 'Your favorite book?', MD5('answer_hash_8'+'abc')),
+    (9, 'Your favorite song?', MD5('answer_hash_9'+'abc')),
+    (10, 'Your favorite animal?', MD5('answer_hash_10'+'abc')),
+    (11, 'Your favorite movie?', MD5('answer_hash_11'+'abc')),
+    (12, 'Your favorite movie?', MD5('answer_hash_12'+'abc')),
+    (13, 'Your favorite movie?', MD5('answer_hash_13'+'abc')),
+    (14, 'Your favorite movie?', MD5('answer_hash_14'+'abc')),
+    (15, 'Your favorite movie?', MD5('answer_hash_15'+'abc')),
+    (16, 'Your favorite movie?', MD5('answer_hash_16'+'abc')),
+    (17, 'Your favorite movie?', MD5('answer_hash_17'+'abc')),
+    (18, 'Your favorite movie?', MD5('answer_hash_18'+'abc')),
+    (19, 'Your favorite movie?', MD5('answer_hash_19'+'abc')),
+    (20, 'Your favorite movie?', MD5('answer_hash_20'+'abc'));
 
 -- UserLoginLog 테이블에 레코드 삽입
 INSERT INTO UserLoginLog (uid, login_time, login_status)
@@ -234,26 +234,26 @@ VALUES
 
 INSERT INTO AccountLoginPasswWord (account_id, password_hash, updated_at)
 VALUES 
-    (1, 'account_password_hash_1', NOW()),
-    (2, 'account_password_hash_2', NOW()),
-    (3, 'account_password_hash_3', NOW()),
-    (4, 'account_password_hash_4', NOW()),
-    (5, 'account_password_hash_5', NOW()),
-    (6, 'account_password_hash_6', NOW()),
-    (7, 'account_password_hash_7', NOW()),
-    (8, 'account_password_hash_8', NOW()),
-    (9, 'account_password_hash_9', NOW()),
-    (10, 'account_password_hash_10', NOW()),
-    (11, 'account_password_hash_11', NOW()),
-    (12, 'account_password_hash_12', NOW()),
-    (13, 'account_password_hash_13', NOW()),
-    (14, 'account_password_hash_14', NOW()),
-    (15, 'account_password_hash_15', NOW()),
-    (16, 'account_password_hash_16', NOW()),
-    (17, 'account_password_hash_17', NOW()),
-    (18, 'account_password_hash_18', NOW()),
-    (19, 'account_password_hash_19', NOW()),
-    (20, 'account_password_hash_20', NOW());
+    (1, MD5('account_password_hash_1'+'abc'), NOW()),
+    (2, MD5('account_password_hash_2'+'abc'), NOW()),
+    (3, MD5('account_password_hash_3'+'abc'), NOW()),
+    (4, MD5('account_password_hash_4'+'abc'), NOW()),
+    (5, MD5('account_password_hash_5'+'abc'), NOW()),
+    (6, MD5('account_password_hash_6'+'abc'), NOW()),
+    (7, MD5('account_password_hash_7'+'abc'), NOW()),
+    (8, MD5('account_password_hash_8'+'abc'), NOW()),
+    (9, MD5('account_password_hash_9'+'abc'), NOW()),
+    (10, MD5('account_password_hash_10'+'abc'), NOW()),
+    (11, MD5('account_password_hash_11'+'abc'), NOW()),
+    (12, MD5('account_password_hash_12'+'abc'), NOW()),
+    (13, MD5('account_password_hash_13'+'abc'), NOW()),
+    (14, MD5('account_password_hash_14'+'abc'), NOW()),
+    (15, MD5('account_password_hash_15'+'abc'), NOW()),
+    (16, MD5('account_password_hash_16'+'abc'), NOW()),
+    (17, MD5('account_password_hash_17'+'abc'), NOW()),
+    (18, MD5('account_password_hash_18'+'abc'), NOW()),
+    (19, MD5('account_password_hash_19'+'abc'), NOW()),
+    (20, MD5('account_password_hash_20'+'abc'), NOW());
 
 INSERT INTO AccountLoginMeta (account_id, login_attempt)
 VALUES 
@@ -455,6 +455,7 @@ VALUES
 INSERT INTO CurrentExchangeRate (base_currency, foreign_currency, current_exchange_rate, updated_at)
 VALUES 
     ('USD', 'KRW', 1000.00, NOW()),
+    ('KRW', 'USD', 0.001, NOW()),
     -- 아래는 안쓸꺼
     ('USD', 'JPY', 100.00, NOW()),
     ('USD', 'EUR', 1.00, NOW()),
