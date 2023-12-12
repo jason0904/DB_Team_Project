@@ -1,7 +1,11 @@
 package com.caudbdesign.dbTeamProject.ItemPortfolio;
 
 import com.caudbdesign.dbTeamProject.Item.Item;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +18,16 @@ public class PortfolioRepository {
 
   private final JdbcTemplate jdbcTemplate;
 
-  public ItemPortfolio selectPortfolio(Integer account_id) {
+  public List<ItemPortfolio> selectPortfolio(Integer account_id) {
     String sql = "select * from ItemPortfolio where account_id = ?";
     RowMapper<ItemPortfolio> rowMapper = new BeanPropertyRowMapper<>(ItemPortfolio.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, account_id);
+    return jdbcTemplate.query(sql, rowMapper, account_id);
+  }
+
+  public ItemPortfolio selectPortfoliobyItemId(Integer account_id, Integer item_id) {
+    String sql = "select * from ItemPortfolio where account_id = ? and item_id = ?";
+    RowMapper<ItemPortfolio> rowMapper = new BeanPropertyRowMapper<>(ItemPortfolio.class);
+    return jdbcTemplate.queryForObject(sql, rowMapper, account_id, item_id);
   }
 
 
@@ -30,5 +40,32 @@ public class PortfolioRepository {
     String sql = "CALL UpdateStockPortfolioTotalPurchasePrice(?, ?, ?)";
     jdbcTemplate.update(sql, account_id, item_id, totalPurchasePrice);
   }
+
+  public Integer countPortfolio(Integer account_id) {
+    String sql = "select count(account_id) from ItemPortfolio where account_id = ?";
+    return jdbcTemplate.queryForObject(sql, Integer.class, account_id);
+  }
+
+  public Integer totalPriceSum(Integer account_id) {
+    String sql = "select sum(total_purchase_price*quantity) from ItemPortfolio where account_id = ?;";
+    BigDecimal bigDecimal = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id);
+    Integer totalPriceSum = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).intValue();
+    return totalPriceSum;
+  }
+
+  public Integer currentPriceSum(Integer account_id) {
+    String sql = "select sum(current_price*quantity) from ItemPortfolio where account_id = ?;";
+    BigDecimal bigDecimal = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id);
+    Integer currentPriceSum = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).intValue();
+    return currentPriceSum;
+  }
+
+  public float totalValue(Integer account_id) {
+    String sql = "select sum(current_price*quantity) from ItemPortfolio where account_id = ?;";
+    float totalValue = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).floatValue();
+    return totalValue;
+  }
+
+
 
 }
