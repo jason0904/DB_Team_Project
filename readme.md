@@ -342,7 +342,29 @@ DELIMITER ;
                 }
             ]
           ```   
-      - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
+      - [X] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
+            - input
+          ```json
+            {
+               "account_id" : 1,
+               "item_id" : 1
+            }
+          ```
+          - output
+          ```json
+            {
+                "balance": 10000.0,
+                "name": "Apple Inc.",
+                "current_price": 149.0,
+                "start_price": 145.0,
+                "order_left_form": [
+                    {
+                        "quantity": 1,
+                        "limit_price": 450.0
+                    }
+                ]
+            }
+          ```   
       - [X] 주문 창 - (/api/order/order)
         - input
          ```json
