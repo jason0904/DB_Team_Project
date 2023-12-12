@@ -357,7 +357,8 @@ DELIMITER ;
       - [x] 채결 기록 잔고확인 전환 버튼 
 <hr>
 
-## Table-Diagram ![DB](https://github.com/jason0904/DB_Team_Project/assets/37035547/38e04f07-95a4-4fcf-bbec-728830312057)
+## Table-Diagram
+<img src="dbdiagram_stock.png" alt="DB Diagram" width="100%">
 
 <br>
 <hr>
@@ -389,18 +390,29 @@ DELIMITER ;
   - `uid`: integer (PK, FK: User.uid) - 인공키
   - `business_id_hash`: varchar - 암호화된 회사 고유 번호
 
-### UserLogin
-- **계정 로그인 정보를 담은 테이블**
+# 데이터베이스 테이블 명세
+
+### UserLoginPassWord
+- **사용자 계정 로그인을 위한 비밀번호 테이블**
 - 필드:
   - `uid`: integer (PK, FK: User.uid) - 인공키
-  - `ID`: varchar - 로그인 시 사용하는 아이디
-  - `password_hash`: varchar - 암호화된 비밀번호
-  - `login_attempt`: integer - 로그인 시도 횟수
+  - `password_hash`: varchar - 암호화된 비밀번호, 특수문자 "!","@","#","$"만 허용
+  - `updated_at`: timestamp - 레코드 갱신일
+
+### UserLoginMeta
+- **계정 로그인 시도 횟수 테이블**
+- 필드:
+  - `login_id`: varchar - 로그인 시 사용하는 아이디, 특수문자 제한
+  - `login_attempt`: integer - 로그인 시도 횟수, 성공시 초기화
+
+### UserLoginQuestion
+- **계정 로그인하기 위한 비밀번호 찾기 질문 테이블**
+- 필드:
   - `security_question`: varchar - 보안 질문
   - `security_answer_hash`: varchar - 암호화된 보안 질문 답
 
-### LoginLog
-- **로그인 로그 기록을 위한 테이블**
+### UserLoginLog
+- **로그인 로그를 기록하기 위한 테이블**
 - 필드:
   - `log_id`: integer (PK, Auto-increment) - 인공키
   - `uid`: integer (FK: User.uid) - 인공키
@@ -445,21 +457,25 @@ DELIMITER ;
   - `created_at`: timestamp - 계좌 생성 시간
   - `updated_at`: timestamp - 상태 갱신 시간
 
-### AccountLogin
-- **계좌 로그인 정보를 담은 테이블**
+### AccountLoginPasswWord
+- **계정 로그인 후 계좌에 로그인하기 위한 테이블**
 - 필드:
   - `account_id`: integer (PK, FK: Account.account_id) - 인공키
-  - `password_attempt`: integer - 계좌 비밀번호 시도 횟수
-  - `password_hash`: varchar - 암호화된 계좌 비밀번호
+  - `password_hash`: varchar - 암호화된 계좌 비밀번호, 비밀번호 숫자 4자리로 고정
   - `updated_at`: timestamp - 비밀번호 최종 수정 날짜
 
+### AccountLoginMeta
+- **계좌 로그인 시도 횟수를 저장하는 테이블**
+- 필드:
+  - `password_attempt`: integer - 계좌 비밀번호 시도 횟수
+
 ### AccountLoginLog
-- **계좌 로그인 기록을 담은 테이블**
+- **계좌에 로그인한 기록을 담은 테이블**
 - 필드:
   - `log_id`: integer (PK, Auto-increment) - 인공키
   - `account_id`: integer (FK: Account.account_id) - 인공키
   - `login_time`: timestamp - 로그인 시도 시간
-  - `login_status`: varchar - 로그인 성공/실패 여부
+  - `login_status`: varchar - 로그인 성공 실패 여부 ("success", "fail")
 
 ### Balance
 - **계좌의 잔액 정보를 저장하는 테이블**
@@ -651,7 +667,6 @@ DELIMITER ;
 
 <br>
 <hr>
-<br>
 
 # Stock DataBase 기능 명세서
 
