@@ -380,6 +380,7 @@ DELIMITER ;
          ```
         - output : OK or BadRequest
       - [X] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
+
          - input
           ```json
           {

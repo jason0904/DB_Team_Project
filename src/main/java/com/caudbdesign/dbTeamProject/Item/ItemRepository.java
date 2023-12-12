@@ -5,6 +5,8 @@ import com.caudbdesign.dbTeamProject.Item.Stock.FinancialStatements;
 import com.caudbdesign.dbTeamProject.Item.Stock.ItemInfoForm;
 import com.caudbdesign.dbTeamProject.Item.Stock.StockData;
 import com.caudbdesign.dbTeamProject.Item.Stock.StockRate;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -69,11 +71,24 @@ public class ItemRepository {
 
   public String getmarketByItemId(int itemId) {
     String sql = "SELECT market FROM Item WHERE item_id = ?;";
-    RowMapper<String> rowMapper = new BeanPropertyRowMapper<>(String.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+    return jdbcTemplate.queryForObject(sql, String.class, itemId);
+  }
+
+  public String getNameByItemId(int itemId) {
+    String sql = "select name from Item where item_id = ?;";
+    return jdbcTemplate.queryForObject(sql, String.class, itemId);
   }
 
 
+  public float getOnlyCurrentPriceByItemId(int itemId) {
+    String sql = "select current_price from CurrentPrice where item_id = ?";
+    return jdbcTemplate.queryForObject(sql, Float.class, itemId);
+  }
+
+  public float getOnlyStartpriceByItemId(int itemId) {
+    String sql = "select opening_price from ItemPriceInfo where item_id = ?;";
+    return jdbcTemplate.queryForObject(sql, BigDecimal.class, itemId).floatValue();
+  }
 
 
 }

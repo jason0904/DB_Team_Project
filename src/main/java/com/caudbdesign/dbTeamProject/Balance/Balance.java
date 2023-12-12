@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class Balance {
 
   private Integer account_id;
-  private float Total_Balance;
+  private float Total_Balance;  // 총 금액  KRW 기준 // 잔고
   private float KRW_Balance;
   private float USD_Balance;
   

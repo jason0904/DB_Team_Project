@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class ItemPriceInfo {
 
   private int item_id;
-  private String currency;
-  private float current_price;
+//  private String currency;
+//  private float current_price;
   private float closing_price;
   private float opening_price;
   private float daily_high;

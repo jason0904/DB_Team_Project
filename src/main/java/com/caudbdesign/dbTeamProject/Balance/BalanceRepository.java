@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 @Repository
 @RequiredArgsConstructor
 public class BalanceRepository {
@@ -23,6 +25,12 @@ public class BalanceRepository {
     jdbcTemplate.update("UPDATE Balance SET Total_Balance = ?, KRW_Balance = ?, USD_Balance = ? WHERE account_id = ?",
         Total_Balance, KRW_Balance, USD_Balance, account_id);
   }
+
+  public float selectOnlyBalance(Integer account_id) {
+    String sql = "select Total_balance from Balance where account_id = ?;";
+    return jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).floatValue();
+  }
+
 
 
 }
