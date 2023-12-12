@@ -40,15 +40,13 @@ public class BalanceService {
 
       balanceForm.setItem_id(itemPortfolio.getItem_id());
       balanceForm.setName(itemRepository.getNameByItemId(itemPortfolio.getItem_id()));
-      balanceForm.setProfit_loss(profitLoss);
-      //          profitLoss: 20000,        평가손익      // current_value - total_purchase_price
+      balanceForm.setProfit_loss(profitLoss); // current_value - total_purchase_price
       balanceForm.setReturn_rate(portfolioRepository.calculateTotalReturnInKrw(account_id));     // 수익률
       balanceForm.setQuantity(itemPortfolio.getQuantity());
       balanceForm.setCurrent_value(currentValue);
       balanceForm.setWeight(currentValue/totalValue);  // ( currentValue/totalValue)
       balanceForm.setPurchase_price(purchasePrice);
       balanceForm.setPurchase_amount(itemPortfolio.getTotal_purchase_price());
-//      balanceForm.setTotal_purchase_price(itemPortfolio.getTotal_purchase_price());
       balanceForm.setCurrent_price(itemRepository.getOnlyCurrentPriceByItemId(itemPortfolio.getItem_id()));
 
       balanceForms.add(balanceForm);
