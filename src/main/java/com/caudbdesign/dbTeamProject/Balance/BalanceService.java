@@ -28,7 +28,7 @@ public class BalanceService {
     List<ItemPortfolio> itemPortfolios = portfolioRepository.selectPortfolio(account_id);
     List<BalanceForm> balanceForms = new ArrayList<>();
 
-    Float totalValue = portfolioRepository.totalValue(account_id);
+    float totalValue = portfolioRepository.totalValue(account_id);
 
     for(ItemPortfolio itemPortfolio : itemPortfolios) {
 
@@ -42,10 +42,10 @@ public class BalanceService {
       balanceForm.setName(itemRepository.getNameByItemId(itemPortfolio.getItem_id()));
       balanceForm.setProfit_loss(profitLoss);
       //          profitLoss: 20000,        평가손익      // current_value - total_purchase_price
-        balanceForm.setReturn_rate(portfolioRepository.calculateTotalReturnInKrw(account_id));     // 수익률
+      balanceForm.setReturn_rate(portfolioRepository.calculateTotalReturnInKrw(account_id));     // 수익률
       balanceForm.setQuantity(itemPortfolio.getQuantity());
       balanceForm.setCurrent_value(currentValue);
-        balanceForm.setWeight(currentValue/totalValue);  // ( currentValue/totalValue)
+      balanceForm.setWeight(currentValue/totalValue);  // ( currentValue/totalValue)
       balanceForm.setPurchase_price(purchasePrice);
       balanceForm.setPurchase_amount(itemPortfolio.getTotal_purchase_price());
 //      balanceForm.setTotal_purchase_price(itemPortfolio.getTotal_purchase_price());

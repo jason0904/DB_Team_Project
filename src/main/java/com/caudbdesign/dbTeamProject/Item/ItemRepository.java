@@ -69,14 +69,12 @@ public class ItemRepository {
 
   public String getmarketByItemId(int itemId) {
     String sql = "SELECT market FROM Item WHERE item_id = ?;";
-    RowMapper<String> rowMapper = new BeanPropertyRowMapper<>(String.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+    return jdbcTemplate.queryForObject(sql, String.class, itemId);
   }
 
   public String getNameByItemId(int itemId) {
     String sql = "select name from Item where item_id = ?;";
-    RowMapper<String> rowMapper = new BeanPropertyRowMapper<>(String.class);
-    return jdbcTemplate.queryForObject(sql, rowMapper, itemId);
+    return jdbcTemplate.queryForObject(sql, String.class, itemId);
   }
 
 //  public CurrentPrice getCurrentPriceByItemId(int itemId) {
@@ -87,8 +85,7 @@ public class ItemRepository {
 
   public float getOnlyCurrentPriceByItemId(int itemId) {
     String sql = "select current_price from CurrentPrice where item_id = ?";
-    float currentPrice = jdbcTemplate.queryForObject(sql, Float.class, itemId);
-    return currentPrice;
+    return jdbcTemplate.queryForObject(sql, Float.class, itemId);
   }
 
 
