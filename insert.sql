@@ -429,29 +429,29 @@ VALUES
 
 INSERT INTO BuyOrder (order_id, quantity, order_type, limit_price)
 VALUES
-    (1, 10, 'market', NULL),
+    (1, 10, 'market', 100.00),
     (3, 20, 'limit', 100.00),
-    (5, 30, 'market', NULL),
+    (5, 30, 'market', 100.00),
     (7, 40, 'limit', 100.00),
-    (9, 50, 'market', NULL),
+    (9, 50, 'market', 100.00),
     (11, 60, 'limit', 100.00),
-    (13, 70, 'market', NULL),
+    (13, 70, 'market', 100.00),
     (15, 80, 'limit', 100.00),
-    (17, 90, 'market', NULL),
+    (17, 90, 'market', 100.00),
     (19, 100, 'limit', 100.00);
 
 INSERT INTO SellOrder (order_id, quantity, order_type, limit_price)
 VALUES
     (2, 20, 'limit', 105.00),
-    (4, 30, 'market', NULL),
+    (4, 30, 'market', 105.00),
     (6, 40, 'limit', 105.00),
-    (8, 50, 'market', NULL),
+    (8, 50, 'market', 105.00),
     (10, 60, 'limit', 105.00),
-    (12, 70, 'market', NULL),
+    (12, 70, 'market', 105.00),
     (14, 80, 'limit', 105.00),
-    (16, 90, 'market', NULL),
+    (16, 90, 'market', 105.00),
     (18, 100, 'limit', 105.00),
-    (20, 110, 'market', NULL);
+    (20, 110, 'market', 105.00);
 
 -- CurrentExchangeRate 테이블에 레코드 삽입 (가상의 데이터 사용)
 INSERT INTO CurrentExchangeRate (base_currency, foreign_currency, current_exchange_rate, updated_at)
