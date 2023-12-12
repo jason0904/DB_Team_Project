@@ -254,7 +254,7 @@ export default {
         console.log(accountData);
 
 
-        if(accountData.status === 'activate') {
+        if(accountData.status === 'active') {
           this.accountLogginError = false;
           this.accountLoggined = true;
 
