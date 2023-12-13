@@ -1,9 +1,8 @@
 <template>
-  <div class="stock-detail-container">
+  <div v-if="stockData.name" class="stock-detail-container">
     <!-- 종목 기본 정보 -->
     <div class="stock-name">
-      <h1 v-if="stockData.name">{{ stockData.name }}의 {{ this.$route.query.itemName }}({{ stockData.item_id }})에 대한 평가입니다.</h1>
-      <div v-else>조회할 수 없습니다.</div>
+      <h1>{{ stockData.name }}의 {{ this.$route.query.itemName }}({{ stockData.item_id }})에 대한 평가입니다.</h1>
     </div>
 
     <!-- 재무제표 -->
@@ -85,7 +84,14 @@
       </div>
     </div>
   </div>
+
+  <div v-else>
+    <div class="stock-name">
+      <div>시스템에서 정보가 지워진 애널리스트의 평가이므로 숨김 처리되었습니다.</div>
+    </div>
+  </div>
 </template>
+
 
 <script>
 export default {
