@@ -67,23 +67,19 @@ DELIMITER ;
 DELIMITER $$
 
 create
-    definer = root@`%` function CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
+    unction CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
     deterministic
 BEGIN
     DECLARE investmentReturn DECIMAL(20, 6);
     DECLARE currentPrice DECIMAL(20, 6);
-    DECLARE quantity INT;
+    DECLARE p_quantity INT;
     DECLARE totalInvestment DECIMAL(20, 6);
 
-    SELECT quantity INTO quantity FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
-    -- 수량이 NULL인 경우 함수 종료
-    IF quantity IS NULL THEN
-        RETURN 1234;
-    END IF;
+    SELECT quantity INTO p_quantity FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
     SELECT current_price INTO currentPrice FROM CurrentPrice WHERE item_id = p_item_id ORDER BY updated_at DESC LIMIT 1;
     SELECT total_purchase_price INTO totalInvestment FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
 
-    SET investmentReturn = currentPrice * quantity - totalInvestment;
+    SET investmentReturn = currentPrice * p_quantity - totalInvestment;
     RETURN investmentReturn;
 END$$
 
