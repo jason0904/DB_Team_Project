@@ -31,18 +31,45 @@ export default {
     this.accountType = this.$store.state.typeAccount;
   },
   methods: {
-    fetchItems() {
-      // API 호출 로직
-      // 여기에 실제 API 호출 코드를 추가합니다. 아래는 예시 데이터입니다.
-      this.items = [
-        { id: 1, name: '아이템1', category: '카테고리1', price: '1000' },
-        { id: 2, name: '아이템2', category: '카테고리2', price: '2000' },
-        // 추가 데이터...
-      ];
+    async fetchItems() {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/item', {
+          search: this.searchQuery,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 응답 처리
+        const accountData = response.data;
+        console.log(accountData);
+        // accountData에서 데이터를 꺼내 items에 할당 item.id, item.name, item.category, item.price
+        // 반복문 사용
+        for (let i = 0; i < accountData.length; i++) {
+          this.items.push({
+            id: accountData[i].item_id,
+            name: accountData[i].name,
+            category: accountData[i].market_name,
+            price: accountData[i].price,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
     goToTrading(item) {
-      // 'trading' 페이지로 이동하는 로직
-      this.$router.push({ name: 'trading', query: { itemId: item.id } });
+      // 'trading' 페이지로 이동하는 로직 - item.id와 item.name을 query로 넘겨줌
+      this.$router.push({
+        name: 'trading',
+        query: {
+          itemId: item.id,
+          itemName: item.name,
+        }
+      });
     }
   }
 };

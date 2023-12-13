@@ -2,12 +2,9 @@
   <div class="account-container">
     <!-- 조회 기간 선택 섹션 -->
     <div class="date-selector">
-      <h2>조회 기간 선택</h2>
-      <label for="start-date">시작일:</label>
+      <h2>조회 일 선택</h2>
+      <label for="start-date">조회일:</label>
       <input type="date" id="start-date" v-model="startDate" @change="checkDate">
-
-      <label>조회 범위:</label>
-      <button v-for="range in dateRanges" :key="range" @click="setEndDate(range)">{{ range }}</button>
 
       <p v-if="dateError" class="error-message">{{ dateError }}</p>
     </div>
@@ -16,7 +13,7 @@
     <div class="account-info">
       <h2>계좌 정보</h2>
       <p>계좌 번호: {{ accountNumber }}</p>
-      <p>계좌 타입: {{ accountType }}</p>
+      <p>계좌 유형: {{ accountType }}</p>
     </div>
 
     <!-- 체결 기록 섹션 -->
@@ -26,18 +23,18 @@
         <thead>
         <tr>
           <th>주문번호</th>
+          <th>종목코드</th>
           <th>체결유형</th>
-          <th>체결수량</th>
-          <th>체결가</th>
+          <th>주문상태</th>
           <th>체결일시</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="record in transactionRecords" :key="record.orderNumber">
           <td>{{ record.orderNumber }}</td>
+          <td>{{ record.itemCode }}</td>
           <td>{{ record.transactionType }}</td>
-          <td>{{ record.quantity }}</td>
-          <td>{{ record.price }}</td>
+          <td>{{ record.orderStatus }}</td>
           <td>{{ record.date }}</td>
         </tr>
         </tbody>
@@ -51,28 +48,64 @@ export default {
   data() {
     return {
       startDate: '',
-      endDate: '',
       dateError: '',
-      dateRanges: ['1일', '1주', '2주', '1달'],
-      accountNumber: '123456789',
-      accountType: '저축 계좌',
+      accountNumber: '',
+      accountType: '',
       transactionRecords: [
-        { orderNumber: '001', transactionType: '매수', quantity: '100', price: '50000', date: '2023-12-01' },
-        { orderNumber: '002', transactionType: '매도', quantity: '50', price: '52000', date: '2023-12-02' },
-        // 추가 더미 데이터...
       ],
     };
+  },
+  mounted() {
+    this.accountNumber = this.$store.state.storedAccount;
+    this.accountType = this.$store.state.typeAccount;
   },
   computed: {
   },
   methods: {
-    //api 호출
-    checkDate() {
-      // 날짜 유효성 검사 로직...
+    async fetchRecords() {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/order/log', {
+          account_id: this.$store.state.account_id,
+          date: this.startDate
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 응답 처리
+        const accountData = response.data;
+        console.log(accountData);
+        // accountData에서 데이터를 꺼내 transactionRecords에 할당 transactionRecords.orderNumber, transactionRecords.transactionType, transactionRecords.date
+        // 반복문 사용
+        for (let i = 0; i < accountData.length; i++) {
+          this.transactionRecords.push({
+            orderNumber: accountData[i].order_id,
+            itemCode: accountData[i].item_id,
+            transactionType: accountData[i].purchase_type,
+            orderStatus: accountData[i].order_status,
+            date: accountData[i].success_at.slice(0,10)||"미체결",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
-    setEndDate(range) {
-      // 날짜 설정 로직...
-    }
+    checkDate() {
+      // 날짜 유효성 검사 로직 - startDate가 오늘 날짜보다 미래인지 확인
+      const today = new Date();
+      const selectedDate = new Date(this.startDate);
+      if (selectedDate > today) {
+        this.dateError = '오늘 날짜보다 미래일 수 없습니다.';
+
+      } else {
+        this.dateError = '';
+        this.fetchRecords();
+      }
+    },
   }
 };
 </script>
