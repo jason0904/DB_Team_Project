@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @Slf4j
@@ -16,7 +17,7 @@ public class PriceController {
 
   @PostMapping("/admin/updatePrice")
   @CrossOrigin
-  public ResponseEntity<?> updatePrice(PriceForm form) {
+  public ResponseEntity<?> updatePrice(@RequestBody PriceForm form) {
     priceService.updatePrice(form);
     return ResponseEntity.ok().build();
   }
