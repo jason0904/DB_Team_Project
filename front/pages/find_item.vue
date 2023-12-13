@@ -54,13 +54,18 @@ export default {
         // accountData에서 데이터를 꺼내 items에 할당 item.id, item.name, item.category, item.price
         // 반복문 사용
         for (let i = 0; i < accountData.length; i++) {
-          this.items.push({
-            id: accountData[i].item_id,
-            name: accountData[i].name,
-            category: accountData[i].market_name,
-            price: accountData[i].price,
-          });
+          // 'Gold'인 경우만 추가하거나, 'Gold'가 아닌 경우만 추가
+          if ((this.$store.state.typeAccount === 'gold' && accountData[i].market_name === 'Gold') ||
+              (this.$store.state.typeAccount !== 'gold' && accountData[i].market_name !== 'Gold')) {
+            this.items.push({
+              id: accountData[i].item_id,
+              name: accountData[i].name,
+              category: accountData[i].market_name,
+              price: accountData[i].price,
+            });
+          }
         }
+
       } catch (error) {
         console.error(error);
       }
