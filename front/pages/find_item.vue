@@ -11,8 +11,12 @@
         <li v-for="item in items" :key="item.id" @click="goToTrading(item)">
           <span>{{ item.name }}</span>
           <span>{{ item.category }}</span>
-          <span>{{ item.price }}원</span>
+          <!-- item.category가 'K'로 시작하는 경우 -->
+          <span v-if="item.category.startsWith('K')">{{ item.price }} 원</span>
+          <!-- 그렇지 않은 경우 -->
+          <span v-else>{{ item.price }} 달러</span>
         </li>
+
       </ul>
     </div>
   </div>
