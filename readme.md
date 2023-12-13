@@ -133,15 +133,16 @@ DELIMITER ;
 ```sql
 DELIMITER $$
 
-CREATE TRIGGER ResetAccountLoginAttempts AFTER UPDATE ON AccountLoginPassword
-    FOR EACH ROW
+CREATE PROCEDURE UpdateItemPriceInfo(IN p_item_id INTEGER, IN p_closing_price DECIMAL(65,7), IN p_opening_price DECIMAL(15,2))
 BEGIN
-    IF NEW.password_hash = OLD.password_hash THEN
-        UPDATE AccountLoginMeta SET login_attempt = 0 WHERE account_id = NEW.account_id;
-    END IF;
+    UPDATE ItemPriceInfo
+    SET closing_price = p_closing_price, opening_price = p_opening_price, updated_at = NOW()
+    WHERE item_id = p_item_id;
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
 ```
 - [X] **stockportfolio 테이블 total_purchase_price 갱신에 사용**: stockportfolio 테이블 내의 total_purchase_price를 갱신하는 데 사용됩니다.
 ```sql
