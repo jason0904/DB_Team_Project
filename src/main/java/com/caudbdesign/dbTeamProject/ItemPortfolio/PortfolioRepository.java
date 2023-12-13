@@ -60,8 +60,7 @@ public class PortfolioRepository {
 
   public List<Integer> selectAllItemIdInPortfolio() {
     String sql = "select item_id from ItemPortfolio";
-    RowMapper<Integer> rowMapper = new BeanPropertyRowMapper<>(Integer.class);
-    return jdbcTemplate.query(sql, rowMapper);
+    return jdbcTemplate.queryForList(sql, Integer.class);
   }
   public void updateCurrentPrice(int item_id, float current_price) {
     String sql = "update ItemPortfolio set current_price = ? where item_id = ?";
@@ -70,8 +69,7 @@ public class PortfolioRepository {
 
   public List<Integer> selectItemIdInPortfolioByAccountId(Integer account_id) {
     String sql = "select item_id from ItemPortfolio where account_id = ?";
-    RowMapper<Integer> rowMapper = new BeanPropertyRowMapper<>(Integer.class);
-    return jdbcTemplate.query(sql, rowMapper, account_id);
+    return jdbcTemplate.queryForList(sql, Integer.class, account_id);
   }
 
 }
