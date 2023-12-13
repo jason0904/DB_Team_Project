@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -73,8 +74,13 @@ public class PortfolioRepository {
   }
 
   public void makePortfolio(Integer account_id, Integer item_id, int quantity, double total_purchase_price, float current_price) {
-    String sql = "insert into ItemPortfolio(account_id, item_id, quantity, total_purchase_price, current_price) values(?, ?, ?, ?, ?)";
+    String sql = "insert into ItemPortfolio(account_id, item_id, quantity, total_purchase_price, current_price, created_at) values(?, ?, ?, ?, ?, NOW())";
     jdbcTemplate.update(sql, account_id, item_id, quantity, total_purchase_price, current_price);
+  }
+
+  public boolean checkPortfolioPresent(Integer account_id, Integer item_id) {
+    String sql = "select count(*) from ItemPortfolio where account_id = ? and item_id = ?";
+    return jdbcTemplate.queryForObject(sql, Integer.class, account_id, item_id) > 0;
   }
 
 }
