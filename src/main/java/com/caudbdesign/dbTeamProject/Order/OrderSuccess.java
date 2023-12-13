@@ -35,7 +35,7 @@ public class OrderSuccess {
         portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getTotal_purchase_price()
             + quantity * limit_price);
       }
-      portfolioRepository.updatePortfolio(item_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getQuantity() + quantity, account_id);
+      portfolioRepository.updatePortfolio(item_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getQuantity() + quantity * -1, account_id);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
