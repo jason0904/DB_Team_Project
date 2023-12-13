@@ -1,4 +1,4 @@
-package com.caudbdesign.dbTeamProject.Analystinfo;
+package com.caudbdesign.dbTeamProject.Admin.Analystinfo;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

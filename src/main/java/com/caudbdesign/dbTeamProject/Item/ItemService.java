@@ -41,6 +41,17 @@ public class ItemService {
   public ItemInfoForm getItemInfoFormbyItemid(int Itemid, String report_period) {
     StockRate stockRate = itemRepository.getStockRateByItemId(Itemid);
     FinancialStatements financialStatements = itemRepository.getFinancialStatementsByItemId(Itemid, report_period);
+    if(stockRate.getAnalyst_id() == null) {
+      //FinancialStatments정보만 삽입
+      ItemInfoForm itemInfoForm = new ItemInfoForm();
+      itemInfoForm.setItem_id(stockRate.getItem_id());
+      itemInfoForm.setAnalyst_id(stockRate.getAnalyst_id());
+      itemInfoForm.setAnalyst_rating(stockRate.getAnalyst_rating());
+      itemInfoForm.setTarget_price(stockRate.getTarget_price());
+      itemInfoForm.setReport_date(financialStatements.getReport_date());
+      itemInfoForm.setReport_period(financialStatements.getReport_period());
+      return itemInfoForm;
+    }
     AnalystInfo analystInfo = itemRepository.getAnalystInfoByAnalystId(stockRate.getAnalyst_id());
     ItemInfoForm itemInfoForm = new ItemInfoForm();
     itemInfoForm.setItem_id(stockRate.getItem_id());
