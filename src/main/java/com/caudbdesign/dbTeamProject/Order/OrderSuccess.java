@@ -20,10 +20,10 @@ public class OrderSuccess {
   @Async
   public void updateOrderStatus(int order_id, int quantity, int item_id, int account_id, String purchase_type, String market, float limit_price) {
     try {
-      Thread.sleep(60000);
+      Thread.sleep(120000);
       if(orderRepository.findOrderById(order_id).getOrder_status().equalsIgnoreCase("cancelled")) return;
       orderRepository.updateOrderStatus(order_id);
-      if(purchase_type.equalsIgnoreCase("SellOrder")) quantity = -quantity;
+      if(purchase_type.equalsIgnoreCase("BuyOrder")) quantity = quantity * -1;
       portfolioRepository.updatePortfolio(item_id, quantity, account_id);
       if(market.equals("KOSPI")) {
         balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * limit_price, balanceRepository.selectBalance(account_id).getKRW_Balance() + quantity * limit_price ,balanceRepository.selectBalance(account_id).getUSD_Balance());
