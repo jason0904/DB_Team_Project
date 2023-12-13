@@ -41,23 +41,10 @@ public class PortfolioRepository {
     jdbcTemplate.update(sql, account_id, item_id, totalPurchasePrice);
   }
 
-  public Integer countPortfolio(Integer account_id) {
-    String sql = "select count(account_id) from ItemPortfolio where account_id = ?";
-    return jdbcTemplate.queryForObject(sql, Integer.class, account_id);
-  }
-
-  public Integer totalPriceSum(Integer account_id) {
+  public float totalPriceSum(Integer account_id) {
     String sql = "select sum(total_purchase_price*quantity) from ItemPortfolio where account_id = ?;";
-    BigDecimal bigDecimal = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id);
-    Integer totalPriceSum = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).intValue();
+    float totalPriceSum = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).floatValue();
     return totalPriceSum;
-  }
-
-  public Integer currentPriceSum(Integer account_id) {
-    String sql = "select sum(current_price*quantity) from ItemPortfolio where account_id = ?;";
-    BigDecimal bigDecimal = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id);
-    Integer currentPriceSum = jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id).intValue();
-    return currentPriceSum;
   }
 
   public float totalValue(Integer account_id) {
@@ -66,9 +53,9 @@ public class PortfolioRepository {
     return totalValue;
   }
 
-  public float calculateTotalReturnInKrw(Integer account_id) {
-    String sql = "select calculate_total_return_in_krw(?);";
-    return jdbcTemplate.queryForObject(sql, float.class, account_id);
+  public float calculateTotalReturnInKrw(Integer account_id, Integer item_id) {
+    String sql = "select CalculateInvestmentReturn(?, ?)";
+    return jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id, item_id).floatValue();
   }
 
   public List<Integer> selectAllItemIdInPortfolio() {
@@ -79,6 +66,12 @@ public class PortfolioRepository {
   public void updateCurrentPrice(int item_id, float current_price) {
     String sql = "update ItemPortfolio set current_price = ? where item_id = ?";
     jdbcTemplate.update(sql, current_price, item_id);
+  }
+
+  public List<Integer> selectItemIdInPortfolioByAccountId(Integer account_id) {
+    String sql = "select item_id from ItemPortfolio where account_id = ?";
+    RowMapper<Integer> rowMapper = new BeanPropertyRowMapper<>(Integer.class);
+    return jdbcTemplate.query(sql, rowMapper, account_id);
   }
 
 }
