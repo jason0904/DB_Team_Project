@@ -22,7 +22,7 @@ public class OrderSuccess {
   @Async
   public void updateOrderStatus(int order_id, int quantity, int item_id, int account_id, String purchase_type, String market, float limit_price) {
     try {
-      Thread.sleep(60000);
+      Thread.sleep(90000);
       if(orderRepository.findOrderById(order_id).getOrder_status().equalsIgnoreCase("cancelled")) return;
       orderRepository.updateOrderStatus(order_id);
       if(purchase_type.equalsIgnoreCase("buyorder")) quantity = quantity * -1;
