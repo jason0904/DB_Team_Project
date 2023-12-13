@@ -62,69 +62,30 @@ END $$
 
 DELIMITER ;
 ```
-- [X] **수익률 계산**: 투자 자산의 수익률을 계산합니다.
+- [X] **수익 계산**: 투자 자산의 수익을 계산합니다.
 ```sql
-DELIMITER //
+DELIMITER $$
 
-CREATE FUNCTION calculate_total_return_in_krw (accountId INT)
-    RETURNS DECIMAL(65,7)
-    DETERMINISTIC
+create
+    definer = root@`%` function CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
+    deterministic
 BEGIN
-    DECLARE finished INTEGER DEFAULT 0;
-    DECLARE item_id INT;
-    DECLARE purchase_price, current_price, quantity DECIMAL(65,7);
-    DECLARE total_investment, total_current_value DECIMAL(65,7) DEFAULT 0;
-    DECLARE market CHAR(1);
-    DECLARE exchange_rate DECIMAL(65,7);
-    DECLARE currency CHAR(3);
-    DECLARE item_cursor CURSOR FOR
-        SELECT sp.item_id, sp.total_purchase_price, sp.quantity, cp.current_price, LEFT(i.market, 1)
-        FROM ItemPortfolio sp
-                 JOIN CurrentPrice cp ON sp.item_id = cp.item_id
-                 JOIN Item i ON sp.item_id = i.item_id
-        WHERE sp.account_id = accountId;
-    DECLARE CONTINUE HANDLER
-        FOR NOT FOUND SET finished = 1;
+    DECLARE investmentReturn DECIMAL(20, 6);
+    DECLARE currentPrice DECIMAL(20, 6);
+    DECLARE quantity INT;
+    DECLARE totalInvestment DECIMAL(20, 6);
 
-    -- 현재 환율 가져오기 (USD to KRW), 가장 최신 정보 사용
-    SELECT current_exchange_rate INTO exchange_rate
-    FROM CurrentExchangeRate
-    WHERE base_currency = 'USD' AND foreign_currency = 'KRW'
-    ORDER BY updated_at DESC
-    LIMIT 1;
-
-    OPEN item_cursor;
-
-    read_loop: LOOP
-        FETCH item_cursor INTO item_id, purchase_price, quantity, current_price, market;
-
-        IF finished = 1 THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- 통화 결정 및 환율 적용
-        IF UPPER(market) = 'K' THEN
-            SET currency = 'KRW';
-        ELSE
-            SET currency = 'USD';
-            SET current_price = current_price * exchange_rate;
-            SET purchase_price = purchase_price * exchange_rate;
-        END IF;
-
-        -- 총 투자액과 현재 가치 계산
-        SET total_investment = total_investment + (purchase_price * quantity);
-        SET total_current_value = total_current_value + (current_price * quantity);
-    END LOOP;
-
-    CLOSE item_cursor;
-
-    -- 총 수익률 계산
-    IF total_investment > 0 THEN
-        RETURN (total_current_value - total_investment) / total_investment * 100;
-    ELSE
-        RETURN 0;
+    SELECT quantity INTO quantity FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
+    -- 수량이 NULL인 경우 함수 종료
+    IF quantity IS NULL THEN
+        RETURN 1234;
     END IF;
-END //
+    SELECT current_price INTO currentPrice FROM CurrentPrice WHERE item_id = p_item_id ORDER BY updated_at DESC LIMIT 1;
+    SELECT total_purchase_price INTO totalInvestment FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
+
+    SET investmentReturn = currentPrice * quantity - totalInvestment;
+    RETURN investmentReturn;
+END$$
 
 DELIMITER ;
 ```
