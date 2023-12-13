@@ -2,11 +2,8 @@
   <div class="exchange-rate-container">
     <div class="controls">
       <div class="date-selector">
-        <label for="start-date">Start Date:</label>
+        <label for="start-date">Date:</label>
         <input type="date" id="start-date" v-model="startDate" min="2010-01-01">
-
-        <label for="end-date">End Date:</label>
-        <input type="date" id="end-date" v-model="endDate" min="2010-01-01">
       </div>
 
       <div class="currency-selector">
@@ -24,71 +21,153 @@
       </div>
 
       <button @click="fetchRates">조회</button>
+      <h2>환율: {{ rate }}</h2>
     </div>
 
-    <div class="daily-rates" v-if="showRates">
-      <h2>일별시세</h2>
-      <div class="rates-header">
-        <span>Date</span>
-        <span>Standard Rate</span>
-        <span>Change</span>
-        <span>Change Rate</span>
+    <div class="balance-section">
+      <h2>잔고 확인</h2>
+      <div class="balance">
+        <p>현재 환율(KRW->USD): {{ currentRate }}</p>
+        <p>KRW 잔고: {{ krwBalance }}원</p>
+        <p>USD 잔고: {{ usdBalance }}$</p>
       </div>
-      <ul>
-        <li v-for="rate in rates" :key="rate.date">
-          <span>{{ rate.date }}</span>
-          <span>{{ rate.standardRate }}</span>
-          <span :class="rate.change.startsWith('+') ? 'up' : 'down'">{{ rate.change }}</span>
-          <span :class="rate.change.startsWith('+') ? 'up' : 'down'">{{ rate.changeRate }}%</span>
-        </li>
-      </ul>
+    </div>
+
+    <div class="exchange-section">
+      <h2>환전 신청</h2>
+      <div class="exchange-controls">
+        <div class="amount-selector">
+          <label for="exchange-amount">금액:</label>
+          <input type="number" id="exchange-amount" v-model="exchangeAmount">
+        </div>
+
+        <div class="currency-selector">
+          <label for="base-currency">기준 통화:</label>
+          <select id="base-currency" v-model="baseCurrency">
+            <option value="KRW">KRW</option>
+            <option value="USD">USD</option>
+          </select>
+
+          <label for="target-currency">대상 통화:</label>
+          <select id="target-currency" v-model="targetCurrency">
+            <option value="KRW">KRW</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+
+        <button @click="exchangeCurrency">환전 신청</button>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 export default {
   data() {
     return {
       startDate: '',
-      endDate: '',
       fromCurrency: 'KRW',
       toCurrency: 'USD',
-      rates: [],
-      showRates: false,
+      rate: '조회 후 표시됩니다',
+      useToKrwRate: '조회 후 표시됩니다',
+      currentRate: 0,       // 현재 환율
+      krwBalance: 1000000,  // KRW 잔고 (임시 값)
+      usdBalance: 1000,     // USD 잔고 (임시 값)
+      exchangeAmount: 0,    // 환전 금액
+      baseCurrency: 'KRW',  // 기준 통화
+      targetCurrency: 'USD' // 대상 통화
     };
   },
+  mounted() {
+    this.fetchRates();
+    this.fetchBalance();
+  },
   methods: {
-    fetchRates() {
-      // 여기에 API 호출 또는 데이터 로딩 로직을 추가합니다.
-      // 예시를 위해 임시 데이터를 사용합니다.
-      this.rates = [
-        // 임시 데이터
-        { date: '2023-11-27', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-26', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-25', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-24', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-23', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-22', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-21', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-20', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-19', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-18', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-17', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-16', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-15', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-14', standardRate: '1,295', change: '-5', changeRate: -0.4 },
-        { date: '2023-11-13', standardRate: '1,300', change: '+5', changeRate: 0.4 },
-        { date: '2023-11-12', standardRate: '1,295', change: '-5', changeRate: -0.4 },
+    async fetchRates() {
+      this.rate = "조회불가";
+      this.useToKrwRate = "조회불가";
 
-        // 추가 데이터...
-      ];
-      this.showRates = true;
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/exchange/rate', {
+          base_currency: this.fromCurrency,
+          foreign_currency: this.toCurrency,
+          created_at: this.startDate,
+        });
+
+        const accountData = response.data;
+        console.log(accountData);
+
+        this.rate = accountData;
+
+        if (this.fromCurrency === 'KRW' && this.toCurrency === 'USD') {
+          this.useToKrwRate = accountData;
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+
+    },
+    async fetchBalance(){
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/exchange', {
+          account_id: this.$store.state.account_id,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 응답 처리
+        const accountData = response.data;
+        console.log(accountData);
+
+        this.currentRate = accountData.current_exchange_rate;
+        this.krwBalance = accountData.krw_Balance;
+        this.usdBalance = accountData.usd_Balance;
+
+      } catch (error) {
+        console.error(error);
+      }
+
+    },
+    async exchangeCurrency() {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/exchange/exchange', {
+          account_id: this.$store.state.account_id,
+          base_amount: this.exchangeAmount,
+          base_currency: this.baseCurrency,
+          foreign_currency: this.targetCurrency,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // 응답 처리
+        const accountData = response.data;
+        console.log(accountData);
+
+        await this.fetchBalance();
+        alert("환전 신청이 완료되었습니다!");
+
+      } catch (error) {
+        console.error(error);
+        alert("환전 신청이 실패하었습니다!");
+      }
+
     }
   }
 };
 </script>
-
 <style>
 body {
   background-color: #000000;
@@ -105,23 +184,23 @@ body {
   border-radius: 10px;
 }
 
-.controls, .daily-rates {
-  background-color: #333; /* 박스의 배경색 */
-  border-radius: 10px; /* 둥근 모서리 */
-  padding: 15px; /* 안쪽 여백 */
-  margin-bottom: 20px; /* 박스 간 간격 */
-}
-
-.date-selector, .currency-selector {
+.controls, .balance-section, .exchange-section {
+  background-color: #333;
+  border-radius: 10px;
+  padding: 15px;
   margin-bottom: 20px;
 }
 
-.date-selector label, .currency-selector label {
+.date-selector, .currency-selector, .amount-selector {
+  margin-bottom: 20px;
+}
+
+.date-selector label, .currency-selector label, .amount-selector label {
   margin-right: 10px;
   color: white;
 }
 
-.date-selector input, .currency-selector select, button {
+.date-selector input, .currency-selector select, .amount-selector input, button {
   color: black;
   background-color: white;
   border: 1px solid grey;
@@ -134,38 +213,6 @@ button:hover {
   color: white;
 }
 
-.daily-rates h2 {
-  margin-bottom: 10px;
-}
-
-.rates-header {
-  display: flex;
-  font-weight: bold;
-}
-
-.daily-rates ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.daily-rates li {
-  display: flex;
-  margin-bottom: 5px;
-}
-
-.daily-rates span {
-  margin-right: 10px;
-  min-width: 100px;
-}
-
-.up {
-  color: red;
-}
-
-.down {
-  color: blue;
-}
-
 @media (min-width: 768px) {
   .exchange-rate-container {
     width: 50%;
@@ -173,4 +220,3 @@ button:hover {
   }
 }
 </style>
-

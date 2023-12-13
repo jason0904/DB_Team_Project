@@ -72,9 +72,8 @@ export default {
       stockData: null,
     };
   },
-  created() {
-    this.fetchAccountData();
-    this.fetchStockData();
+  mounted() {
+    this.fetchData();
   },
   methods: {
     fetchAccountData() {
@@ -138,6 +137,9 @@ export default {
           currentPrice: 20000,
         },
       ];
+    },
+    async fetchData() {
+
     },
     formatCurrency(value, currencyType) {
       let formattedValue;

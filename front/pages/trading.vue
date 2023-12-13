@@ -13,9 +13,9 @@
         <div class="price-level" v-for="level in fullOrderBook" :key="level.price" :class="{'upper-limit': level.price === upperLimit, 'lower-limit': level.price === lowerLimit}">
           <div class="price-quantity">
             <div
-              class="price"
-              :style="{ color: level.price > currentPrice ? 'red' : (level.price < currentPrice ? 'blue' : 'white') }"
-              @click="updateDesiredPrice(level.price)"
+                class="price"
+                :style="{ color: level.price > currentPrice ? 'red' : (level.price < currentPrice ? 'blue' : 'white') }"
+                @click="updateDesiredPrice(level.price)"
             >
               {{ level.price }}
             </div>
@@ -34,7 +34,7 @@
         </div>
 
         <!-- 지정가/시장가 선택 -->
-        <div class="price-type">
+        <div class="price-type" v-if="tradeType !== 'modify'">
           <button :class="{ active: priceType === 'limit' }" @click="togglePriceType('limit')">지정가</button>
           <button :class="{ active: priceType === 'market' }" @click="togglePriceType('market')">시장가</button>
         </div>
@@ -45,12 +45,12 @@
         </div>
 
         <!-- 지정가 입력 -->
-        <div v-if="priceType === 'limit'">
+        <div v-if="priceType === 'limit' && tradeType !== 'modify'">
           <input type="number" v-model="limitPrice" placeholder="가격을 입력하세요">
         </div>
 
         <!-- 주문 물량 입력 -->
-        <div v-if="tradeType !== 'modify'">
+        <div>
           <input type="number" v-model="orderQuantity" placeholder="물량을 입력하세요">
         </div>
 
@@ -68,7 +68,7 @@
             <span>매매구분</span>
             <span>주문단가</span>
             <span>미채결량</span>
-            <span>현재가</span>
+            <span>주문시간</span>
             <span>원주문번호</span>
           </div>
           <div class="modify-items">
@@ -77,74 +77,35 @@
               <span>{{ stock.orderType }}</span>
               <span>{{ stock.orderPrice }}</span>
               <span>{{ stock.orderQuantity }}</span>
-              <span>{{ stock.currentPrice }}</span>
+              <span>{{ stock.time }}</span>
               <span>{{ stock.orderNumber }}</span>
             </div>
           </div>
         </div>
 
-        <!-- 구매하기 버튼 -->
+        <!-- 주문 버튼 -->
         <div>
           <button v-if="tradeType !== 'modify'" @click="placeOrder">구매하기</button>
           <button v-if="tradeType === 'modify'" @click="placeModify('modify')">정정하기</button>
           <button v-if="tradeType === 'modify'" @click="placeModify('cancel')">취소하기</button>
         </div>
 
+        <!-- 주문 상태 메시지 -->
+        <div v-if="orderStatus === 'error'" :class="`order-status ${orderStatus}`">
+          {{ orderStatusMessage }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script>
 export default {
   data() {
     return {
-      fullOrderBook: [
-        { price: 125000, quantity: 50 }, // 상한가
-        { price: 124500, quantity: 100 },
-        { price: 124000, quantity: 200 },
-        { price: 123500, quantity: 300 },
-        { price: 123000, quantity: 400 },
-        { price: 122500, quantity: 500 },
-        { price: 122000, quantity: 600 },
-        { price: 121500, quantity: 700 },
-        { price: 121000, quantity: 800 },
-        { price: 120500, quantity: 900 },
-        { price: 120000, quantity: 1000 },
-        { price: 119500, quantity: 1100 },
-        { price: 119000, quantity: 1200 },
-        { price: 118500, quantity: 1300 },
-        { price: 118000, quantity: 1400 },
-        { price: 117500, quantity: 1500 },
-        { price: 117000, quantity: 1600 },
-        { price: 116500, quantity: 1700 },
-        { price: 116000, quantity: 1800 },
-        { price: 115500, quantity: 1900 },
-        { price: 115000, quantity: 2000 },
-        { price: 114500, quantity: 2100 },
-        { price: 114000, quantity: 2200 },
-        { price: 113500, quantity: 2300 },
-        { price: 113000, quantity: 2400 },
-        { price: 112500, quantity: 2500 },
-        { price: 112000, quantity: 2600 },
-        { price: 111500, quantity: 2700 },
-        { price: 111000, quantity: 2800 },
-        { price: 110500, quantity: 2900 },
-        { price: 110000, quantity: 3000 },
-        { price: 109500, quantity: 3100 },
-        { price: 109000, quantity: 3200 },
-        { price: 108500, quantity: 3300 },
-        { price: 108000, quantity: 3400 },
-        { price: 107500, quantity: 3500 },
-        { price: 107000, quantity: 3600 },
-        { price: 106500, quantity: 3700 },
-        // ... 중간 호가들 ...
-        { price: 75000, quantity: 400 }  // 하한가
-      ],
-      modifyData: [
-        {name: '제이슨전자', orderType: '매수', orderPrice: '14000', orderQuantity: '100', currentPrice: '1000', orderNumber: '123456'},
-        {name: '제이슨전자', orderType: '매도', orderPrice: '14000', orderQuantity: '100', currentPrice: '1000', orderNumber: '123457'},
-      ],
+      fullOrderBook: [],
+      modifyData: [],
       upperLimit: 125000, // 상한가
       lowerLimit: 75000,  // 하한가
       tradeType: 'buy', // 매수 or 매도
@@ -158,13 +119,17 @@ export default {
       itemName: "null", // 종목명
       itemID: 0, // 종목 ID
       originalOrderNumber: '', // 원 주문 번호
+      orderStatus: false, // 주문 상태 (성공, 실패)
+      orderStatusMessage: '', // 주문 상태 메시지
     };
   },
   created() {
     // URL 쿼리 파라미터에서 itemId 값을 추출하여 itemID에 할당
     this.itemID = this.$route.query.itemId || this.itemID;
-    this.originalOrderNumber = ''
+    this.itemName = this.$route.query.itemName || this.itemName;
+    this.originalOrderNumber = '';
     // API 호출 로직 - 종목명, 현재가
+    this.fetchItemInfo();
   },
   computed: {
     roundedTotalPrice() {
@@ -177,11 +142,25 @@ export default {
     }
   },
   methods: {
-    fetchItemInfo() {
-      // 종목 정보 가져오기 로직 (여기에 백엔드 통신 코드 작성)
-    },
-    fetchOrderBook() {
-      // 호가 정보 가져오기 로직 (여기에 백엔드 통신 코드 작성)
+    async fetchItemInfo() {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/order', {
+          account_id: this.$store.state.account_id,
+          item_id: this.itemID,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const accountData = response.data;
+        console.log(accountData);
+      } catch (error) {
+        console.error(error);
+      }
     },
     calculateTotalPrice() {
       if (this.priceType === 'limit') {
@@ -190,33 +169,118 @@ export default {
         // 시장가 로직 (여기에 구현)
       }
     },
-    placeOrder() {
-      // 주문 로직 (여기에 백엔드 통신 코드 작성)
+    async placeOrder() {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/order/order', {
+          account_id: this.$store.state.account_id,
+          item_id: this.itemID,
+          purchase_type: this.tradeType+'order',
+          quantity: this.orderQuantity,
+          order_type: "limit",
+          limit_price: this.limitPrice,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        this.orderStatus = 'success';
+        this.orderStatusMessage = '주문이 성공적으로 처리되었습니다.';
+
+      } catch (error) {
+        console.error(error);
+        this.orderStatus = 'error';
+        this.orderStatusMessage = '주문 처리 중 오류가 발생했습니다.';
+      }
     },
-    placeModify(type) {
-      // 정정/취소 주문 로직 (여기에 백엔드 통신 코드 작성)
+    async placeModify(type) {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+      const url = type === 'modify' ? 'https://dbspring.dongwoo.win/api/order/amend' : 'https://dbspring.dongwoo.win/api/order/cancel';
+      let payload = {};
+
+      if (type === 'modify') {
+        payload = {
+          order_id: this.originalOrderNumber,
+          quantity: this.orderQuantity
+        };
+      }else {
+        payload = {
+          order_id: this.originalOrderNumber,
+        };
+      }
+
+      try {
+        const response = await axios.post(url, payload, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(response.data);
+        this.orderStatusMessage = type === 'modify' ? '정정 주문이 성공적으로 처리되었습니다.' : '취소 주문이 성공적으로 처리되었습니다.';
+        await this.fetchModifyData();
+      } catch (error) {
+        console.error(error);
+        this.orderStatus = 'error';
+        this.orderStatusMessage = type === 'modify' ? '정정 주문 처리 중 오류가 발생했습니다.' : '취소 주문 처리 중 오류가 발생했습니다.';
+      }
     },
     toggleTradeType(type) {
       this.tradeType = type;
+      if(type === 'modify') {
+        this.fetchModifyData();
+      }
     },
     togglePriceType(type) {
       this.priceType = type;
     },
     updateDesiredPrice(price) {
-      // 지정가가 선택되어 있을 경우, 지정가 입력란에 가격 설정
       if (this.priceType === 'limit') {
         this.limitPrice = price;
       }
       this.desiredPrice = price;
     },
     goToStockDetail() {
-      this.$router.push({ name: 'stock_detail',  query: { itemId: this.itemID }});
+      this.$router.push({ name: 'stock_detail',  query: { itemId: this.itemID, itemName: this.itemName }});
       console.log('Redirecting to stock_detail page');
     },
     modifyClick(stock) {
       this.limitPrice = stock.orderPrice;
       this.orderQuantity = stock.orderQuantity;
       this.originalOrderNumber = stock.orderNumber;
+    },
+    async fetchModifyData() {
+      this.modifyData = [];
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/order/pendings', {
+          account_id: this.$store.state.account_id,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const accountData = response.data;
+        console.log(accountData);
+        for (let i = 0; i < accountData.length; i++) {
+          this.modifyData.push({
+            name: this.itemName,
+            orderType: accountData[i].purchase_type === 'buyorder' ? '매수' : '매도',
+            orderPrice: accountData[i].limit_price,
+            orderQuantity: accountData[i].quantity,
+            time: accountData[i].created_at.slice(0, 10),
+            orderNumber: accountData[i].order_id,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   },
   watch: {
@@ -228,10 +292,11 @@ export default {
     }
   },
   mounted() {
-    this.fetchOrderBook();
+    this.fetchItemInfo();
   }
 };
 </script>
+
 
 <style>
 body {
