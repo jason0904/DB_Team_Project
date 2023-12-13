@@ -68,6 +68,7 @@ export default {
         query: {
           itemId: item.id,
           itemName: item.name,
+          marketName: item.category,
         }
       });
     }
