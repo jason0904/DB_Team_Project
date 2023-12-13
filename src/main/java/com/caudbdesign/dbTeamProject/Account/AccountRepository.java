@@ -57,7 +57,7 @@ public class AccountRepository {
 
   public AccountType getGeneralAccountByAccountIdAndAccountType(int account_id, String account_type) {
     String sql;
-    if(account_type.equals("general")) {
+    if(account_type.equalsIgnoreCase("general")) {
       sql = "select * from GeneralAccount where account_id = ?";
     }
     else sql = "select * from GoldAccount where account_id = ?";

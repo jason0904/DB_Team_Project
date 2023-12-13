@@ -21,6 +21,7 @@ public class OrderSuccess {
   public void updateOrderStatus(int order_id, int quantity, int item_id, int account_id, String purchase_type, String market, float limit_price) {
     try {
       Thread.sleep(60000);
+      if(orderRepository.findOrderById(order_id).getOrder_status().equalsIgnoreCase("cancelled")) return;
       orderRepository.updateOrderStatus(order_id);
       if(purchase_type.equalsIgnoreCase("SellOrder")) quantity = -quantity;
       portfolioRepository.updatePortfolio(item_id, quantity, account_id);
