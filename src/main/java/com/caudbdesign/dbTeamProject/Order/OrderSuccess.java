@@ -26,7 +26,10 @@ public class OrderSuccess {
       if(orderRepository.findOrderById(order_id).getOrder_status().equalsIgnoreCase("cancelled")) return;
       orderRepository.updateOrderStatus(order_id);
       if(purchase_type.equalsIgnoreCase("BuyOrder")) quantity = quantity * -1;
-      portfolioRepository.updatePortfolio(item_id, quantity, account_id);
+      if(portfolioRepository.selectPortfoliobyItemId(account_id, item_id) == null) {
+        portfolioRepository.makePortfolio(account_id, item_id, quantity, 0, 0);
+      }
+      else portfolioRepository.updatePortfolio(item_id, quantity, account_id);
       if(market.equals("KOSPI")) {
         balanceRepository.updateBalance(account_id, balanceRepository.selectBalance(account_id).getTotal_Balance() + quantity * limit_price, balanceRepository.selectBalance(account_id).getKRW_Balance() + quantity * limit_price ,balanceRepository.selectBalance(account_id).getUSD_Balance());
         portfolioRepository.updateStockPortfolioTotalPurchasePrice(item_id, account_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getTotal_purchase_price()

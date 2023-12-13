@@ -22,7 +22,8 @@ public class OrderService {
     if(!orderRepository.checkOrderValidity(order.getItem_id(), orderType.getQuantity(), order.getAccount_id())
     && order.getPurchase_type().equalsIgnoreCase("buyorder")) return false;
     else if(order.getPurchase_type().equalsIgnoreCase("sellorder")) {
-      if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return false;
+      if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()) == null) return false;
+      else if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return false;
     }
     int order_id = orderRepository.insertOrder(order, orderType);
     portfolioRepository.updateCurrentPrice(order.getItem_id(), itemRepository.getCurrentPriceByItemId(order.getItem_id()).getCurrent_price());
