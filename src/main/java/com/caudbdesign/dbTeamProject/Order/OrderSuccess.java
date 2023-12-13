@@ -2,6 +2,7 @@ package com.caudbdesign.dbTeamProject.Order;
 
 import com.caudbdesign.dbTeamProject.Balance.BalanceRepository;
 import com.caudbdesign.dbTeamProject.Exchange.ExchangeRepository;
+import com.caudbdesign.dbTeamProject.Item.ItemRepository;
 import com.caudbdesign.dbTeamProject.ItemPortfolio.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +17,7 @@ public class OrderSuccess {
   private final PortfolioRepository portfolioRepository;
   private final BalanceRepository balanceRepository;
   private final ExchangeRepository exchangeRepository;
+  private final ItemRepository itemRepository;
 
   @Async
   public void updateOrderStatus(int order_id, int quantity, int item_id, int account_id, String purchase_type, String market, float limit_price) {
@@ -36,6 +38,7 @@ public class OrderSuccess {
             + quantity * limit_price);
       }
       portfolioRepository.updatePortfolio(item_id, portfolioRepository.selectPortfoliobyItemId(account_id, item_id).getQuantity() + quantity * -1, account_id);
+      portfolioRepository.updateCurrentPrice(item_id,itemRepository.getCurrentPriceByItemId(item_id).getCurrent_price());
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

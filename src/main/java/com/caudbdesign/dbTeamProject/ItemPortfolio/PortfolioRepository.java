@@ -71,9 +71,14 @@ public class PortfolioRepository {
     return jdbcTemplate.queryForObject(sql, float.class, account_id);
   }
 
-  public void updatequantity(int account_id, int item_id, int quantity) {
-    String sql = "update ItemPortfolio set quantity = ? where account_id = ? and item_id = ?";
-    jdbcTemplate.update(sql, quantity, account_id, item_id);
+  public List<Integer> selectAllItemIdInPortfolio() {
+    String sql = "select item_id from ItemPortfolio";
+    RowMapper<Integer> rowMapper = new BeanPropertyRowMapper<>(Integer.class);
+    return jdbcTemplate.query(sql, rowMapper);
+  }
+  public void updateCurrentPrice(int item_id, float current_price) {
+    String sql = "update ItemPortfolio set current_price = ? where item_id = ?";
+    jdbcTemplate.update(sql, current_price, item_id);
   }
 
 }
