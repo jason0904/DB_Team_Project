@@ -41,7 +41,6 @@ public class BalanceService {
       balanceForm.setItem_id(itemPortfolio.getItem_id());
       balanceForm.setName(itemRepository.getNameByItemId(itemPortfolio.getItem_id()));
       balanceForm.setProfit_loss(profitLoss); // current_value - total_purchase_price
-      balanceForm.setReturn_rate(portfolioRepository.calculateTotalReturnInKrw(account_id));     // 수익률
       balanceForm.setQuantity(itemPortfolio.getQuantity());
       balanceForm.setCurrent_value(currentValue);
       balanceForm.setWeight(currentValue/totalValue);  // ( currentValue/totalValue)
@@ -54,6 +53,10 @@ public class BalanceService {
     return balanceForms;
 
 
+  }
+
+  public float returnRate(Integer account_id) {
+    return portfolioRepository.calculateTotalReturnInKrw(account_id);
   }
 
 }

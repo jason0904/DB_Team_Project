@@ -18,5 +18,6 @@ public class BalanceOutputForm {
     private float Total_Balance;  // 총 금액  KRW 기준 // 잔고
     private float KRW_Balance;
     private float USD_Balance;
+    private float return_rate;
     List<BalanceForm> ItemPortfolios;
 }

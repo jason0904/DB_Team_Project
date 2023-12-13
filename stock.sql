@@ -325,7 +325,7 @@ ALTER TABLE `FinancialStatements` ADD FOREIGN KEY (`item_id`) REFERENCES `Stock`
 
 ALTER TABLE `StockRate` ADD FOREIGN KEY (`item_id`) REFERENCES `Stock` (`item_id`);
 
-ALTER TABLE `StockRate` ADD FOREIGN KEY (`analyst_id`) REFERENCES `AnalystInfo` (`analyst_id`);
+ALTER TABLE `StockRate` ADD FOREIGN KEY (`analyst_id`) REFERENCES `AnalystInfo` (`analyst_id`) ON DELETE SET NULL;
 
 ALTER TABLE `Bond` ADD FOREIGN KEY (`item_id`) REFERENCES `Item` (`item_id`);
 
