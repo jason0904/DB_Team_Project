@@ -87,7 +87,7 @@ export default {
             itemCode: accountData[i].item_id,
             transactionType: accountData[i].purchase_type,
             orderStatus: accountData[i].order_status,
-            date: accountData[i].success_at.slice(0,10)||"미체결",
+            date: accountData[i].success_at ? accountData[i].success_at.substring(0, 10) : "미체결",
           });
         }
       } catch (error) {
