@@ -14,4 +14,13 @@ public class AnalystRepository {
     String sql = "delete from AnalystInfo where analyst_id = ?";
     jdbcTemplate.update(sql, analyst_id);
   }
+
+  public boolean isAnalystExist(int analyst_id) {
+    String sql = "select count(*) from AnalystInfo where analyst_id = ?";
+    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, analyst_id);
+    if(count == null) {
+      return false;
+    }
+    return count != 0;
+  }
 }

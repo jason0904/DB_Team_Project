@@ -13,4 +13,8 @@ public class AnalystService {
     analystRepository.deleteAnalyst(analyst_id);
   }
 
+  public boolean isAnalystExist(int analyst_id) {
+    return analystRepository.isAnalystExist(analyst_id);
+  }
+
 }
