@@ -51,7 +51,7 @@
     <div v-if="isLoggedIn && accountLoggined" class="text-center mt-5">
       <button @click="goToOrder" class="bg-red-500 text-white p-2">주문하기</button>
       <button @click="checkBalance" class="bg-green-500 text-white p-2">잔고 확인</button>
-      <button @click="checkTrade" class="bg-blue-500 text-white p-2">채결 확인</button>
+      <button @click="checkTrade" class="bg-blue-500 text-white p-2">체결 확인</button>
       <button @click="checkExchangeRate" class="bg-yellow-500 text-white p-2">환전</button>
     </div>
   </div>
