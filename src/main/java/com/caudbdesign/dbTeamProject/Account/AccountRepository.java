@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Repository
@@ -77,6 +78,7 @@ public class AccountRepository {
     jdbcTemplate.update(sql, account_id);
   }
 
+  @Transactional
   public void insertLoginLog(int account_id, String status) {
     String sql = "insert into AccountLoginLog(account_id, login_time, login_status) values(?, now(), ?)";
     jdbcTemplate.update(sql, account_id, status);
