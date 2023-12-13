@@ -72,4 +72,9 @@ public class PortfolioRepository {
     return jdbcTemplate.queryForList(sql, Integer.class, account_id);
   }
 
+  public void makePortfolio(Integer account_id, Integer item_id, int quantity, double total_purchase_price, float current_price) {
+    String sql = "insert into ItemPortfolio(account_id, item_id, quantity, total_purchase_price, current_price) values(?, ?, ?, ?, ?)";
+    jdbcTemplate.update(sql, account_id, item_id, quantity, total_purchase_price, current_price);
+  }
+
 }
