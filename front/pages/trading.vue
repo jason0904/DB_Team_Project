@@ -56,7 +56,7 @@
 
         <!-- 구매 가능 주수 및 총 주문 금액 표시 -->
         <div >
-          <div v-if="tradeType !== 'modify'">구매 가능 주수: {{ availableShares }}주</div>
+          <div v-if="tradeType !== 'modify'">구매 가능 주수(현재가 기준): {{ availableShares }}주</div>
           <div v-if="priceType === 'limit' && tradeType !== 'modify'">총 주문 금액: {{ roundedTotalPrice }}원</div>
           <div v-if="priceType === 'market' && tradeType !== 'modify'">최대 주문 금액: {{ roundedTotalPrice }}원</div>
         </div>
@@ -274,8 +274,7 @@ export default {
 
         alert("주문이 성공적으로 처리되었습니다.");
 
-        await this.fetchItemInfo();
-
+        this.availableShares = this.availableShares - this.orderQuantity;
 
       } catch (error) {
         console.error(error);

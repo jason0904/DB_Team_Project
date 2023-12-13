@@ -2,7 +2,8 @@
   <div class="stock-detail-container">
     <!-- 종목 기본 정보 -->
     <div class="stock-name">
-      <h1>{{ stockData.name }}의 {{ this.$route.query.itemName }}({{ stockData.item_id }})에 대한 평가입니다.</h1>
+      <h1 v-if="stockData.name">{{ stockData.name }}의 {{ this.$route.query.itemName }}({{ stockData.item_id }})에 대한 평가입니다.</h1>
+      <div v-else>조회할 수 없습니다.</div>
     </div>
 
     <!-- 재무제표 -->

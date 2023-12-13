@@ -306,7 +306,7 @@ VALUES
 -- Balance 테이블에 레코드 삽입
 INSERT INTO Balance (account_id, Total_balance, KRW_balance, USD_balance)
 VALUES
-    (1, 10000.00, 8000.00, 2.00),
+    (1, 2008000.00, 8000.00, 2000.00),
     (2, 20000.00, 15000.00, 5.00),
     (3, 15000.00, 10000.00, 5.00),
     (4, 30000.00, 25000.00, 5.00),

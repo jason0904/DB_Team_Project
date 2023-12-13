@@ -22,7 +22,7 @@
       <h2>보유 종목</h2>
       <div v-if="stockData" class="stock-list">
         <div class="stock-header">
-          <span>종목명</span>
+          <span>종목id</span>
           <span>평가손익</span>
           <span>수량</span>
           <span>평가금액</span>
@@ -74,13 +74,14 @@ export default {
         };
 
         this.stockData = data.itemPortfolios.map(item => ({
-          id: 'stock' + item.item_id,
+          id: item.item_id,
           name: item.name,
-          profit_loss: item.profit_loss,
+          profit_loss: item.current_price * item.quantity- item.purchase_price * item.quantity,
           quantity: item.quantity,
           current_value: item.current_price * item.quantity,
           current_price: item.current_price // 추가된 현재가격 필드
         }));
+
         this.returnRate = data.return_rate;
       } catch (error) {
         console.error(error);
