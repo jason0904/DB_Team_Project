@@ -6,7 +6,7 @@
         <h2 class="opacity-itemname" @click="goToStockDetail">
           {{itemName}}({{ itemID }})
         </h2>
-        <p>현재가격: {{ currentPrice }}원</p>
+        <p>현재가격: {{ currentPrice }}</p>
       </div>
       <!-- 호가창 -->
       <div class="order-book">
@@ -91,7 +91,7 @@
         </div>
 
         <!-- 주문 상태 메시지 -->
-        <div v-if="orderStatus === 'error'" :class="`order-status ${orderStatus}`">
+        <div v-if="orderStatus" :class="`order-status ${orderStatus}`">
           {{ orderStatusMessage }}
         </div>
       </div>
@@ -121,6 +121,7 @@ export default {
       originalOrderNumber: '', // 원 주문 번호
       orderStatus: false, // 주문 상태 (성공, 실패)
       orderStatusMessage: '', // 주문 상태 메시지
+      balance: 0,
     };
   },
   created() {
@@ -158,9 +159,73 @@ export default {
 
         const accountData = response.data;
         console.log(accountData);
+
+        this.currentPrice = accountData.current_price;
+
+        // this.$router에서 marketName을 추출하여 첫글자가 K면 한국, U면 미국으로 분기
+        if (this.$route.query.marketName[0] === 'K') {
+          let startprice = accountData.start_price;
+          this.upperLimit = startprice * 1.15;
+          this.lowerLimit = startprice * 0.85;
+          //상하한가 100단위 이하 버림
+          this.upperLimit = Math.floor(this.upperLimit / 100) * 100;
+          this.lowerLimit = Math.floor(this.lowerLimit / 100) * 100;
+          //상하한가 사이 랜덤 가격 생성, 100 단위 까지만 반복문 이용 - fullOrderBook에 추가
+          this.fullOrderBook = [];
+          for (let i = this.lowerLimit; i <= this.upperLimit; i += 100) {
+            this.fullOrderBook.push({
+              price: i,
+              quantity: Math.floor(Math.random() * 1000),
+            });
+          }
+        } else {
+          let startprice = accountData.start_price;
+          this.upperLimit = startprice * 1.15;
+          this.lowerLimit = startprice * 0.85;
+          //상하한가 소수점 아예 버림
+          this.upperLimit = Math.floor(this.upperLimit);
+          this.lowerLimit = Math.floor(this.lowerLimit);
+          //상하한가 사이 랜덤 가격 생성, 5 단위 까지만 반복문 이용 - fullOrderBook에 추가
+          this.fullOrderBook = [];
+          for (let i = this.lowerLimit; i <= this.upperLimit; i += 5) {
+            this.fullOrderBook.push({
+              price: i,
+              quantity: Math.floor(Math.random() * 1000),
+            });
+          }
+        }
+
+        console.log(this.currentPrice, startprice, this.upperLimit, this.lowerLimit);
+
+        console.log(this.fullOrderBook);
+
       } catch (error) {
         console.error(error);
       }
+      /////////////////////////////////
+      try {
+        const response = await axios.post('https://dbspring.dongwoo.win/api/balance', {
+          account_id: this.$store.state.account_id,
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const accountData = response.data;
+        console.log(accountData);
+        // this.$router에서 marketName을 가져와서 첫글자가 K면 krw_balance, 아니면 usd_balance
+        if (this.$route.query.marketName[0] === 'K') {
+          this.balance = accountData.krw_Balance;
+        } else {
+          this.balance = accountData.usd_Balance;
+        }
+        this.availableShares = Math.floor(this.balance / this.currentPrice);
+        console.log(this.availableShares, this.balance, this.currentPrice)
+      } catch (error) {
+        console.error(error);
+      }
+
     },
     calculateTotalPrice() {
       if (this.priceType === 'limit') {
@@ -172,14 +237,34 @@ export default {
     async placeOrder() {
       const axiosModule = await import('axios');
       const axios = axiosModule.default;
-
+      // quantity, limit_price가 숫자가 아니면 오류 메시지를 표시하고 함수를 종료
+      if (isNaN(this.orderQuantity) || isNaN(this.limitPrice)) {
+        this.orderStatus = 'error';
+        this.orderStatusMessage = '숫자를 입력해주세요.';
+        return;
+      }
       try {
+        //limit_price가 0보다 작거나 같으면 오류 메시지를 표시하고 함수를 종료
+        if (this.limitPrice <= 0 && this.priceType === 'limit') {
+          alert("가격을 0보다 크게 입력해주세요.")
+          return;
+        }
+        //quantity가 0보다 작거나 같으면 오류 메시지를 표시하고 함수를 종료
+        if (this.orderQuantity <= 0) {
+           alert("수량을 0보다 크게 입력해주세요.")
+          return;
+        }
+        //quantity가 구매 가능 주수보다 크면 오류 메시지를 표시하고 함수를 종료
+        if (this.orderQuantity > this.availableShares) {
+          alert("구매 가능 주수를 초과하였습니다.")
+          return;
+        }
         const response = await axios.post('https://dbspring.dongwoo.win/api/order/order', {
           account_id: this.$store.state.account_id,
           item_id: this.itemID,
           purchase_type: this.tradeType+'order',
           quantity: this.orderQuantity,
-          order_type: "limit",
+          order_type: this.priceType,
           limit_price: this.limitPrice,
         }, {
           headers: {
@@ -187,13 +272,14 @@ export default {
           }
         });
 
-        this.orderStatus = 'success';
-        this.orderStatusMessage = '주문이 성공적으로 처리되었습니다.';
+        alert("주문이 성공적으로 처리되었습니다.");
+
+        await this.fetchItemInfo();
+
 
       } catch (error) {
         console.error(error);
-        this.orderStatus = 'error';
-        this.orderStatusMessage = '주문 처리 중 오류가 발생했습니다.';
+        alert("주문이 실패하였습니다.")
       }
     },
     async placeModify(type) {
