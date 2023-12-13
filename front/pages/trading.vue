@@ -57,8 +57,8 @@
         <!-- 구매 가능 주수 및 총 주문 금액 표시 -->
         <div >
           <div v-if="tradeType !== 'modify'">구매 가능 주수(현재가 기준): {{ availableShares }}주</div>
-          <div v-if="priceType === 'limit' && tradeType !== 'modify'">총 주문 금액: {{ roundedTotalPrice }}원</div>
-          <div v-if="priceType === 'market' && tradeType !== 'modify'">최대 주문 금액: {{ roundedTotalPrice }}원</div>
+          <div v-if="priceType === 'limit' && tradeType !== 'modify'">총 주문 금액: {{ roundedTotalPrice }}</div>
+          <div v-if="priceType === 'market' && tradeType !== 'modify'">최대 주문 금액: {{ roundedTotalPrice }}</div>
         </div>
 
         <!-- 정정 주문 선택 -->
