@@ -20,6 +20,7 @@ public class BalanceController {
         Balance accountBalance = balanceService.selectBalance(account_id);
         BalanceOutputForm balanceOutputForm = new BalanceOutputForm();
         balanceOutputForm.setAccount_id(account_id);
+        balanceOutputForm.setReturn_rate(balanceService.returnRate(account_id));
         balanceOutputForm.setKRW_Balance(accountBalance.getKRW_Balance());
         balanceOutputForm.setUSD_Balance(accountBalance.getUSD_Balance());
         balanceOutputForm.setTotal_Balance(accountBalance.getTotal_Balance());
