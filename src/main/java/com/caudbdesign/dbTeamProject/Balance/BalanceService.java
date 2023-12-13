@@ -56,7 +56,14 @@ public class BalanceService {
   }
 
   public float returnRate(Integer account_id) {
-    return portfolioRepository.calculateTotalReturnInKrw(account_id);
+    List<Integer> item_id_list = portfolioRepository.selectItemIdInPortfolioByAccountId(account_id);
+    double total_investment = 0;
+    double total_purchase_price = portfolioRepository.totalPriceSum(account_id);
+    for(int item_id : item_id_list) {
+      float investment = portfolioRepository.calculateTotalReturnInKrw(item_id, account_id);
+      total_investment += investment;
+    }
+    return (float) (total_investment / total_purchase_price) * 100;
   }
 
 }

@@ -25,6 +25,7 @@ public class OrderService {
       if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return false;
     }
     int order_id = orderRepository.insertOrder(order, orderType);
+    portfolioRepository.updateCurrentPrice(order.getItem_id(), itemRepository.getCurrentPriceByItemId(order.getItem_id()).getCurrent_price());
     order.setOrder_id(order_id);
     return true;
   }
@@ -33,6 +34,7 @@ public class OrderService {
     Order order = orderRepository.findOrderById(order_id);
     if(order.getOrder_status().equals("success")) return false;
     orderRepository.deleteOrder(order_id);
+    portfolioRepository.updateCurrentPrice(order.getItem_id(), itemRepository.getCurrentPriceByItemId(order.getItem_id()).getCurrent_price());
     return true;
   }
 
@@ -47,6 +49,7 @@ public class OrderService {
     else if(order.getPurchase_type().equalsIgnoreCase("sellorder")) {
       if(portfolioRepository.selectPortfoliobyItemId(order.getAccount_id(), order.getItem_id()).getQuantity() < orderType.getQuantity()) return -1;
     }
+    portfolioRepository.updateCurrentPrice(order.getItem_id(), itemRepository.getCurrentPriceByItemId(order.getItem_id()).getCurrent_price());
     return orderRepository.insertOrder(order, orderType);
   }
 
