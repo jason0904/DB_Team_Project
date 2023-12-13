@@ -216,7 +216,7 @@ CREATE TABLE `Stock` (
 );
 
 CREATE TABLE `StockData` (
-  `item_id` integer,
+  `item_id` integer PRIMARY KEY,
   `volume` bigint,
   `market_cap` bigint,
   `PER` decimal(20, 6),
