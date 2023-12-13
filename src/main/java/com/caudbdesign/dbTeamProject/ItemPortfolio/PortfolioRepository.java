@@ -55,7 +55,7 @@ public class PortfolioRepository {
   }
 
   public float calculateTotalReturnInKrw(Integer account_id, Integer item_id) {
-    String sql = "select CalculateInvestmentReturn(?, ?)";
+    String sql = "select CalculateInvestment(?, ?)";
     return jdbcTemplate.queryForObject(sql, BigDecimal.class, account_id, item_id).floatValue();
   }
 
