@@ -49,7 +49,7 @@ DELIMITER ;
 DELIMITER $$
 
 create
-    definer = root@`%` function CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
+    function CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
     deterministic
 BEGIN
     DECLARE investmentReturn DECIMAL(20, 6);
