@@ -62,69 +62,30 @@ END $$
 
 DELIMITER ;
 ```
-- [X] **수익률 계산**: 투자 자산의 수익률을 계산합니다.
+- [X] **수익 계산**: 투자 자산의 수익을 계산합니다.
 ```sql
-DELIMITER //
+DELIMITER $$
 
-CREATE FUNCTION calculate_total_return_in_krw (accountId INT)
-    RETURNS DECIMAL(65,7)
-    DETERMINISTIC
+create
+    definer = root@`%` function CalculateInvestment(p_account_id int, p_item_id int) returns decimal(20, 6)
+    deterministic
 BEGIN
-    DECLARE finished INTEGER DEFAULT 0;
-    DECLARE item_id INT;
-    DECLARE purchase_price, current_price, quantity DECIMAL(65,7);
-    DECLARE total_investment, total_current_value DECIMAL(65,7) DEFAULT 0;
-    DECLARE market CHAR(1);
-    DECLARE exchange_rate DECIMAL(65,7);
-    DECLARE currency CHAR(3);
-    DECLARE item_cursor CURSOR FOR
-        SELECT sp.item_id, sp.total_purchase_price, sp.quantity, cp.current_price, LEFT(i.market, 1)
-        FROM ItemPortfolio sp
-                 JOIN CurrentPrice cp ON sp.item_id = cp.item_id
-                 JOIN Item i ON sp.item_id = i.item_id
-        WHERE sp.account_id = accountId;
-    DECLARE CONTINUE HANDLER
-        FOR NOT FOUND SET finished = 1;
+    DECLARE investmentReturn DECIMAL(20, 6);
+    DECLARE currentPrice DECIMAL(20, 6);
+    DECLARE quantity INT;
+    DECLARE totalInvestment DECIMAL(20, 6);
 
-    -- 현재 환율 가져오기 (USD to KRW), 가장 최신 정보 사용
-    SELECT current_exchange_rate INTO exchange_rate
-    FROM CurrentExchangeRate
-    WHERE base_currency = 'USD' AND foreign_currency = 'KRW'
-    ORDER BY updated_at DESC
-    LIMIT 1;
-
-    OPEN item_cursor;
-
-    read_loop: LOOP
-        FETCH item_cursor INTO item_id, purchase_price, quantity, current_price, market;
-
-        IF finished = 1 THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- 통화 결정 및 환율 적용
-        IF UPPER(market) = 'K' THEN
-            SET currency = 'KRW';
-        ELSE
-            SET currency = 'USD';
-            SET current_price = current_price * exchange_rate;
-            SET purchase_price = purchase_price * exchange_rate;
-        END IF;
-
-        -- 총 투자액과 현재 가치 계산
-        SET total_investment = total_investment + (purchase_price * quantity);
-        SET total_current_value = total_current_value + (current_price * quantity);
-    END LOOP;
-
-    CLOSE item_cursor;
-
-    -- 총 수익률 계산
-    IF total_investment > 0 THEN
-        RETURN (total_current_value - total_investment) / total_investment * 100;
-    ELSE
-        RETURN 0;
+    SELECT quantity INTO quantity FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
+    -- 수량이 NULL인 경우 함수 종료
+    IF quantity IS NULL THEN
+        RETURN 1234;
     END IF;
-END //
+    SELECT current_price INTO currentPrice FROM CurrentPrice WHERE item_id = p_item_id ORDER BY updated_at DESC LIMIT 1;
+    SELECT total_purchase_price INTO totalInvestment FROM ItemPortfolio WHERE account_id = p_account_id AND item_id = p_item_id;
+
+    SET investmentReturn = currentPrice * quantity - totalInvestment;
+    RETURN investmentReturn;
+END$$
 
 DELIMITER ;
 ```
@@ -342,7 +303,29 @@ DELIMITER ;
                 }
             ]
           ```   
-      - [ ] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
+      - [X] 주문창 페이지 created - account_id, itemid / balance, 주식 종목 명, current_price, start_price, 현재 나와있는 물량(가격,수량)
+            - input
+          ```json
+            {
+               "account_id" : 1,
+               "item_id" : 1
+            }
+          ```
+          - output
+          ```json
+            {
+                "balance": 10000.0,
+                "name": "Apple Inc.",
+                "current_price": 149.0,
+                "start_price": 145.0,
+                "order_left_form": [
+                    {
+                        "quantity": 1,
+                        "limit_price": 450.0
+                    }
+                ]
+            }
+          ```   
       - [X] 주문 창 - (/api/order/order)
         - input
          ```json
@@ -379,27 +362,35 @@ DELIMITER ;
            }
          ```
         - output : OK or BadRequest
-      - [] 잔고 조회 - account_id / 현재환율, 잔고에있는 종목들(종목명, 평가손익, 수익률, 보유수량, 평가금액, 비중, 매입단가, 매수금액, 현재가), 예수금, 원화 달러 여부(/api/account) -> 더 추가할예정
+      - [X] 잔고 조회 - (/api/balance)
+
          - input
           ```json
           {
-            "account_number" : "120312312-1231231"
-            "password": "1234"
+                "account_id" : 1
           }
           ```
-         - output(아직 미완성)
+         - output
           ```json
             {
-                "stock_value": 2012030.0, // Account 평가금액
-                "KRW_balance": 100001, // balance //예수금
-                "name": 삼성전자 // item
-                "평가손익": 40000  // (current_price - average_purchase_price) * quantity
-                "수익률": 3 // (current_price - average_purchase_price) / average_purchase_price * 100
-                "quantity": 3 // stockportfolio 보유수량
-                "평가금액": 120000 // current_price * quantity
-                "average_purchase_price": 90000 // 매입단가 stockportfolio
-                "매수금액": 270000 // average_purchase_price * quantity
-                "current_price": 40000 // 현재가 CurrentPrice
+                    "account_id": 1,
+                    "total_Balance": 10000.0,
+                    "krw_Balance": 8000.0,
+                    "usd_Balance": 2.0,
+                    "itemPortfolios": [
+                        {
+                            "item_id": 1,
+                            "name": "Apple Inc.",
+                            "profit_loss": 10000.0,
+                            "return_rate": -85.1,
+                            "quantity": 10,
+                            "current_value": 11000.0,
+                            "weight": 1.0,
+                            "purchase_price": 100.0,
+                            "purchase_amount": 1000.0,
+                              "current_price": 149.0
+                        }
+                    ]
             }
           ``` 
       - [X] 환율 기록조회(/api/exchange/rate)
