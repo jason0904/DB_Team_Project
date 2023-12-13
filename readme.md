@@ -87,48 +87,43 @@ DELIMITER ;
 ```
 - [X] **주문 유효성 검사**: 주문이 유효한지 검사하는 데 사용됩니다.
 ```sql
-DELIMITER $$
+DELIMITER //
 
-CREATE FUNCTION CheckOrderValidity(input_order_id INT, input_account_id INT)
-RETURNS BOOLEAN DETERMINISTIC
+CREATE FUNCTION CheckOrderValidity(p_item_id INT, p_quantity INT, p_account_id INT) 
+RETURNS BOOLEAN
+DETERMINISTIC
 BEGIN
-    DECLARE itemMarket CHAR(1);
-    DECLARE accountBalance DECIMAL(65, 7);
-    DECLARE orderAmount DECIMAL(65, 7);
-    DECLARE currencyType VARCHAR(3);
-    DECLARE purchaseType CHAR(1);
+    DECLARE v_currencyType VARCHAR(3);
+    DECLARE v_itemPrice DECIMAL(65, 7);
+    DECLARE v_balance DECIMAL(65, 7);
+    DECLARE v_sufficientBalance BOOLEAN;
 
-    -- Order의 purchase_type과 Item의 market 정보를 가져옵니다.
-    SELECT `Order`.purchase_type, Item.market INTO purchaseType, itemMarket
-    FROM `Order` INNER JOIN Item ON `Order`.item_id = Item.item_id
-    WHERE `Order`.order_id = input_order_id LIMIT 1;
+    -- 아이템의 마켓을 확인하여 통화 유형 결정
+    SELECT IF(LEFT(market, 1) = 'k', 'KRW', 'USD') INTO v_currencyType
+    FROM Item
+    WHERE item_id = p_item_id;
 
-    -- 화폐 타입 결정
-    IF LEFT(itemMarket, 1) = 'k' THEN
-        SET currencyType = 'KRW';
+    -- 해당 아이템의 현재 가격 조회
+    SELECT current_price INTO v_itemPrice
+    FROM CurrentPrice
+    WHERE item_id = p_item_id;
+
+    -- 사용자의 해당 통화 잔액 조회
+    IF v_currencyType = 'KRW' THEN
+        SELECT krw_balance INTO v_balance
+        FROM Balance
+        WHERE account_id = p_account_id;
     ELSE
-        SET currencyType = 'USD';
+        SELECT usd_balance INTO v_balance
+        FROM Balance
+        WHERE account_id = p_account_id;
     END IF;
 
-    -- 계정의 잔액을 가져옵니다.
-    SELECT IF(currencyType = 'KRW', krw_balance, usd_balance) INTO accountBalance
-    FROM Balance
-    WHERE account_id = input_account_id LIMIT 1;
+    -- 잔액이 충분한지 확인
+    SET v_sufficientBalance = v_balance >= (v_itemPrice * p_quantity);
 
-    -- 주문 금액 계산
-    IF LEFT(purchaseType, 1) = 'B' THEN
-        SELECT quantity * limit_price INTO orderAmount
-        FROM `BuyOrder`
-        WHERE order_id = input_order_id LIMIT 1;
-    ELSE
-        SELECT quantity * limit_price INTO orderAmount
-        FROM `SellOrder`
-        WHERE order_id = input_order_id LIMIT 1;
-    END IF;
-
-    -- 잔액과 주문 금액 비교
-    RETURN accountBalance >= orderAmount;
-END$$
+    RETURN v_sufficientBalance;
+END //
 
 DELIMITER ;
 ```
